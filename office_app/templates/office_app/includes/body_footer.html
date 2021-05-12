@@ -1,0 +1,309 @@
+{% load static %}
+<!-- FOOTER ================================================== -->
+<footer class="top-padding bg-info">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="footer-widget">
+
+                    <a href="#" class="footer-brand text-white">
+                        Software Development Department - Team Unicorn
+                    </a>
+                    <p>This Application was designed and developed by Team Unicorn, a Software Development Team using competitive and responsive design that uses a lightweight web-based technology. This Application was developed using modularized functions which is readable and easy to change, defined to meet the user's designed needs</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row justify-content-md-center footer-copy">
+            <div class="col-lg-8 col-md-6 col-sm-6 text-center">
+                <p class="lead text-white-50">&copy; Copyright Reserved to Foxconn | Design and Developed by Team Unicorn </p>
+                <img src="{% static 'soon/images/Monicle Run (1).gif' %}">
+            </div>
+        </div>
+    </div>
+
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+<script src="{% static 'office_app/js/dashboard/jquery.min.js' %}"></script>
+<script src="{% static 'office_app/js/dashboard/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'office_app/js/dashboard/jquery.easing.min.js' %}"></script>
+<script src="{% static 'office_app/js/dashboard/theme.js' %}"></script>
+<script src="{% static 'office_app/js/dashboard/password sweet alert.js' %}"></script>
+<script src="{% static 'office_app/js/timeago.js' %}"></script>
+<script src="{% static 'office_app/js/jquery.magicsearch.js' %}"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.17.0/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment-with-locales.min.js"></script>
+
+
+<script>
+    {# Open message and mark as read #}
+    var open_message = function (message_id, sender_name, message_text, is_unread, recipient_id) {
+        html = '<p class="message-display">"' + unescape(message_text) + '"</p>';
+
+        if(is_unread === true) {
+            let num = parseInt($('#message-unread').text());
+
+            if (num === 1) {
+                $('#message-unread').text('');
+            }
+            else
+                $('#message-unread').text(num - 1);
+
+            $('#message_' + message_id).removeClass('new');
+
+            $.ajax({
+                url: "{% url 'messages_api' %}?" + $.param({message_id: message_id}),
+                type: "PUT",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                }
+            });
+        }
+
+        bootbox.dialog({
+            title: "Message from <b>" + sender_name + "</b>",
+            message: html,
+            closeButton: false,
+            buttons: {
+                cancel: {
+                    label: "Close",
+                },
+                ok: {
+                    label: "Reply",
+                    className: 'btn-info',
+                    callback: function() {
+                        open_send_message(message_id);
+                        $('#recipients_field').attr('data-id', recipient_id);
+                    }
+                }
+            }
+        });
+    };
+
+    {# Open notification link and mark as read #}
+    var open_notification = function (notification_id, notification_url) {
+        $.ajax({
+            url: "{% url 'notifications_api' %}?" + $.param({notification_id: notification_id}),
+            type: "PUT",
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+            },
+            success: function (result) {
+                window.location.href = notification_url
+            },
+            error: function (err) {
+                window.location.href = notification_url
+            }
+        });
+    };
+
+    {# Get messages #}
+    var get_messages = function () {
+        $.ajax({
+            url: "{% url 'messages_api' %}?" + $.param({view: "unread_messages"}),
+            type: "GET",
+            dataSrc: "messages",
+            success: function (result) {
+                $('#messages_wrapper').html("");
+                if (result['messages'].length > 0) {
+                    result['messages'].forEach(element => {
+                        $('#messages_wrapper').append(
+                            "<a class='content' style='cursor: pointer' onclick='open_message(" + element.id + ",\"" + element.sender_name + "\",\"" + escape(element.message) + "\"," + element.is_unread + ",\"" + element.sender_id + "\")'>\n" +
+                            "   <div id= 'message_" + element.id + "' class='notification-item"  + (element.is_unread ? " new" : "") + "'>\n" +
+                            "       <div class='time'>" + jQuery.timeago(element.sent_on) + "</div>\n" +
+                            "       <div class='item-title'>" + element.sender_name + "</div>\n" +
+                            "       <div class='item-info'>" + element.message + "</div>\n" +
+                            "   </div>\n" +
+                            "</a>")
+                    });
+
+                    $('#message-unread').html(result['messages'].length);
+
+                } else {
+                    $('#messages_wrapper').html("<div class='notification-alert'>No new messages</div>");
+                }
+            },
+            error: function (result) {
+                $('#notifications-wrapper').html(
+                    "<div class='notification-alert'>Error loading notifications</div>"
+                );
+            }
+        });
+    };
+
+    {# Get notifications #}
+    var get_notifications = function () {
+        $.ajax({
+            url: "{% url 'notifications_api' %}?" + $.param({view: "unread"}),
+            type: "GET",
+            dataSrc: 'notifications',
+            success: function (result) {
+                $('#notifications_wrapper').html("");
+                if (result['notifications'].length > 0) {
+                    result['notifications'].forEach(element => {
+                        $('#notifications_wrapper').append(
+                            "<a class='content' style='cursor: pointer' onclick='open_notification(" + element.id + ",\"" + element.link + "\")'>\n" +
+                            "   <div class='notification-item "  + (element.is_unread ? "new" : "") + "'>\n" +
+                            "       <div class='time'>" + jQuery.timeago(element.created_on) + "</div>\n" +
+                            "       <div class='item-title'>" + element.title + "</div>\n" +
+                            "       <div class='item-info'>" + element.body + "</div>\n" +
+                            "   </div>\n" +
+                            "</a>")
+                    });
+                    $('#notify-unread').html(result['notifications'].length);
+
+                } else {
+                    $('#notifications_wrapper').html("<div class='notification-alert'>No new notifications</div>");
+                }
+            },
+            error: function (result) {
+                $('#notifications_wrapper').html(
+                    "<div class='notification-alert'>Error loading notifications</div>"
+                );
+            }
+        });
+    };
+
+    {# Create message box #}
+    var open_send_message = function () {
+        html = '<div class="form-group">Select Recipient(s): <input class="form-control" id="recipients_field" placeholder="Type in to search"></div>' +
+            '<div>Type Your Message: <textarea class="form-control" id="message-box"></textarea></div>';
+
+        var dialog = bootbox.dialog({
+            title: "<i class='fas fa-paper-plane text-info'></i> Send New Message",
+            message: html,
+            closeButton: false,
+            buttons: {
+                cancel: {
+                    label: "Cancel",
+                },
+                ok: {
+                    label: "Send",
+                    className: 'btn-info',
+                    callback: function () {
+                        $.ajax({
+                            url: "{% url 'messages_api' %}",
+                            type: "POST",
+                            data: {
+                                csrfmiddlewaretoken: '{{ csrf_token }}',
+                                recipients_id: $('#recipients_field').attr('data-id'),
+                                message: $('#message-box').val(),
+                            },
+                            beforeSend: function() {
+                                Swal.fire({
+                                    text: 'Sending...',
+                                    icon: 'info',
+                                    showCancelButton: false,
+                                    showConfirmButton: false,
+                                });
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    text: response,
+                                    icon: 'success',
+                                });
+                            },
+                            error: function (err) {
+                                Swal.fire({
+                                    text: err.responseText,
+                                    icon: 'success',
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
+        $('#message-box').emojioneArea({
+            filtersPosition: "bottom",
+            pickerPosition: "bottom",
+            search: false,
+            events: {
+                emojibtn_click: function (button, event) {
+                    $('#message-box').data("emojioneArea").hidePicker()
+                }
+            }
+        });
+
+        $('#recipients_field').magicsearch({
+            dataSource: "{% url 'messages_api' %}?" + $.param({view: "recipients"}),
+            type:'ajax',
+            fields: ['fullName', 'email'],
+            format: '%fullName% &lt%email%&gt',
+            id: 'id',
+            multiple: true,
+            showSelected: false,
+            multiField: 'fullName',
+            noResult: 'No result found',
+            multiStyle: {
+                space: 5,
+                width: 100
+            }
+        }).css('width', '100%',);
+        $('.magicsearch-wrapper').css('width', '100%');
+
+    };
+
+    $(function() {
+        get_notifications();
+        get_messages();
+        setInterval(get_notifications, 10000);
+        setInterval(get_messages, 10000);
+        $('#send_message').click(open_send_message);
+
+        toastr.options = {
+            "positionClass": "toast-bottom-right",
+            "timeOut": 10000,
+            "preventDuplicates": true,
+            "newestOnTop": true,
+        };
+
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+
+        window.onresize = function(event) {
+            if ($('.navbar-toggler').is(":hidden"))
+                $('.notification-dropdown').show();
+            else if ($('.navbar-toggler').is(":visible") && $('.navbar-collapse').is(":visible") )
+                $('.notification-dropdown').hide();
+        };
+
+        $('.navbar-toggler').click(function () {
+            $('.notification-dropdown').toggle()
+        })
+    });
+</script>
+
+<!--
+<script>
+$(function() {
+$('#menu > .item-submenu .submenu').click(function(){
+    if($('.item-submenu .sub-menu').css('display') == 'none'){
+            $('.item-submenu .sub-menu').css({'display':'block'});
+    } else {
+            $('#menu > .item-submenu .sub-menu').css({'display':'none'});
+}
+});
+$('#menuToggle > input').click(function(){
+    $('#menu > .item-submenu .sub-menu').cspage-tops({'display':'none'});
+});
+});
+</script>-->
+{#<script>#}
+{#function openNav() {#}
+{##}
+{#  document.getElementById("container").style.marginLeft = "250px";#}
+{#</script>#}

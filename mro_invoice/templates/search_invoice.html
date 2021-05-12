@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Foxconn - Search Invoice (MRO)</title>
+
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/12.1.2/css/intlTelInput.css'>
+    <link rel='stylesheet' href='https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css'>
+    <link rel='stylesheet'
+          href='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.css"/>
+    <link rel="stylesheet" href="{% static 'office_app/css/chat.css' %}">
+    <!-- font icon -->
+    <link href="{% static 'mro_invoice/css/elegant-icons-style.css' %}" rel="stylesheet"/>
+    <!-- Custom styles -->
+    <link href="{% static 'mro_invoice/css/style2.css' %}" rel="stylesheet">
+    <link href="{% static 'mro_invoice/css/style-responsive.css' %}" rel="stylesheet"/>
+
+</head>
+
+<body class="gr_form">
+
+
+<!-- Multi step form -->
+<section class="multi_step_form">
+    <form id="msform" name="msform" method="POST">
+        {% csrf_token %}
+        <!-- Tittle -->
+        <div class="tittle">
+            <h1>Foxconn MRO Invoice</h1>
+
+        </div>
+        {#        <!--menu bar-->#}
+        {#        <nav class="navbar navbar-expand-lg navbar-light  bg-light rounded nav nav-tabs">#}
+        {#            <a class="ml-5 h7">Welcome, {{ request.session.full_name }} !</a>#}
+        {##}
+        {#            <div class="collapse navbar-collapse justify-content-end " id="navbarNavDropdown">#}
+        {#                <ul class="nav nav-pills nav-fill" style="float: right">#}
+        {##}
+        {#                    <li class="nav-item">#}
+        {#                        <a href="{% url 'smart_office_dashboard' %}" class="nav-link">Smart Office</a>#}
+        {#                    </li>#}
+        {##}
+        {#                    <li class="nav-item mr-sm-2">#}
+        {#                        <a href="{% url 'logout' %}" class="nav-link">Log Out</a>#}
+        {#                    </li>#}
+        {##}
+        {##}
+        {#                </ul>#}
+        {#            </div>#}
+        {#        </nav>#}
+
+        <!-- fieldsets -->
+        <fieldset>
+
+
+        </fieldset>
+
+
+        <!-- End Multi step form -->
+    </form>
+</section>
+<!-- JS Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/12.1.2/js/intlTelInput.js'></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"
+        integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn"
+        crossorigin="anonymous"></script>
+<!--Moments Js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment-with-locales.min.js"></script>
+<!--Emoji Js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.js"></script>
+
+<!-- custom javascripts -->
+<script src="{% static 'mro_invoice/js/corrinas_Invoice_javascript.js' %}"></script>
+<script src="{% static 'mro_invoice/js/script.js' %}"></script>
+
+
+<script>
+    Swal.fire({
+        title: 'Please Input PO Number.',
+        width: 800,
+        padding: '3em',
+        imageUrl: '{% static 'office_app/img/dashboard/mro_invoice.jpg' %}',
+        imageWidth: 800,
+        imageHeight: 200,
+        imageAlt: 'Custom image',
+        background: '{% static 'office_app/img/dashboard/mro_invoice.jpg' %}',
+        backdrop: ` rgba(189, 195, 199, 1)
+                    {#url('{% static 'office_app/img/dashboard/fii_wi.jpg' %}')#}
+                    center
+                    no-repeat
+                    `,
+        showCancelButton: true,
+        confirmButtonText: 'Search Invoice',
+        //footer: '<a href="#">Create New GR</a>',
+        showLoaderOnConfirm: true,
+        allowOutsideClick: false,
+
+        html: '<form id="invoice_search" method="POST">' +
+            '<div>' +
+            '<div>' +
+            '<label class="form-label mt-3"> PO Number</label>' +
+            '<input class="form-control" name="po_number" type="text"><br>' +
+            '<div>' +
+            '<br></form>'
+    }).then((result) => {
+
+//vvv If they clicked 'Search' vvv
+        if (result.value) {
+            return submit();
+// vvv If they clicked 'Cancel' vvv
+        } else if (result.dismiss) {
+            Swal.fire({
+                title: 'Heading back to Smart Office',
+                icon: 'info',
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 15000,
+
+            });
+            window.location.href = "../../";
+        }
+    });
+
+    var frm = $('#invoice_search');
+    frm.submit(function () {
+       return submit();
+    });
+</script>
+
+
+
+<script>
+    function submit() {
+            var form = document.getElementById('invoice_search');
+            var formData = new FormData(form);
+            console.log("gonna send data");
+            $.ajax({
+                data: formData,
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                cache: false,
+                contentType: false,
+                processData: false,
+                html: true,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    //console.log("sending data");
+                },
+                success: function (data) {
+                    console.log(data);
+                    console.log("It worked!");
+                    if (data['result'] === 'found') {
+                        Swal.fire({
+                            title: 'Form Found!',
+                            width: 800,
+                            icon: 'success',
+                            padding: '3em',
+                            background: '#fff url{% static "office_app/img/dashboard/fii_wi.jpg" %}',
+                            backdrop: ` rgba(38, 166, 91, 1)
+
+                                        center
+                                        no-repeat
+                                        `,
+                            showCancelButton: false,
+                            confirmButtonText: 'Go to Form',
+                            //footer: '<a href="#">Create New GR</a>',
+                            showLoaderOnConfirm: true,
+                            allowOutsideClick: false,
+                        }).then((result) => {
+                            window.location.href = data['dir_to_form'];
+                        });
+                    } else {
+                        Swal.fire({
+                            title: data['result'],
+                            width: 800,
+                            icon: 'error',
+                            padding: '3em',
+                            background: '#fff url{% static "office_app/img/dashboard/fii_wi.jpg" %}',
+                            backdrop: ` rgba(210, 77, 87, 1)
+
+                                        center
+                                        no-repeat
+                                        `,
+                            showCancelButton: false,
+                            confirmButtonText: 'Ok',
+                            showLoaderOnConfirm: true,
+                            allowOutsideClick: false,
+                        }).then((result) => {
+                            window.location.href = "";
+                        });
+                    }
+                },
+                // If there was a ajax error do this
+                error: function (data) {
+                    console.log("Something went wrong!");
+                    swal.fire({
+                        title: "Something went wrong!",
+                        text: "Error completing creation! Please contact IT.",
+                        icon: "warning",
+                        buttons: {
+                            cancel: "Ok"
+                        }
+                    }).then((result) => {
+                        window.location.href = "";
+                    });
+                    console.log(data);
+                }
+            });
+            return false;
+    }
+</script>
+
+
+<script>
+    // CSRF for Jquery Ajax form
+$(function() {
+    // This function gets cookie with a given name
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+    /*
+    The functions below will create a header with csrftoken
+    */
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    function sameOrigin(url) {
+        // test that a given url is a same-origin URL
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url === origin || url.slice(0, origin.length + 1) === origin + '/') ||
+            (url === sr_origin || url.slice(0, sr_origin.length + 1) === sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+});
+</script>
+
+
+</body>
+
+</html>

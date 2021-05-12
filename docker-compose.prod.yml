@@ -1,0 +1,29 @@
+version: '3.3'
+
+services:
+  web:
+    container_name: web
+    build: .
+    command: gunicorn Smart_Office.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./smart-office/:/var/www/html/
+      - static_volume:/var/www/html/static
+      - media_volume:/var/www/html/media
+    expose:
+      - 8000
+
+  nginx:
+    container_name: nginx
+    build: nginx
+    volumes:
+      - static_volume:/var/www/html/static
+      - media_volume:/var/www/html/media
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - web
+
+volumes:
+  static_volume:
+  media_volume:

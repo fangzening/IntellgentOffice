@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Smart Office - Contact Us</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'office_app/css/contact_us/css/bootstrap/css/bootstrap.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'office_app/css/contact_us/fonts/font-awesome-4.7.0/css/font-awesome.min.css'%}">
+
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'office_app/css/contact_us/css/util.css'%}">
+    <link rel="stylesheet" type="text/css" href="{% static 'office_app/css/contact_us/css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <!--===============================================================================================-->
+    <script>
+        function showOther(id, element) {
+            element_list = ["Other", "Report Bug", "Give Feedback"];
+            if(element_list.includes(element.value))
+                document.getElementById(id).style.display = 'block';
+            else
+                document.getElementById(id).style.display = 'none';
+        }
+    </script>
+</head>
+<body>
+
+<div class="full_background" style="background-image: url('{% static 'office_app/css/contact_us/images/fii_wi.jpg' %}')">;
+    <div class="smart-container">
+        <div class="contactus_container">
+            <div class="contactus_img js-tilt" data-tilt>
+                <img src="{% static 'office_app/css/contact_us/images/envelope.jpg'%}" alt="contact_img">
+            </div>
+
+
+            <form class="contact_us_form" method="post"> {% csrf_token %}
+                <span class="contact_us_form-title">
+					Need Assistance? <br>Contact Us.
+					</span>
+
+{#                <div class="contact_input">#}
+{#                    <input class="input_info" type="text" name="email" placeholder="Email" value="{{ user.email }}">#}
+{#                    <span class="focus-input_info"></span>#}
+{#                    <span class="icon-input_info">#}
+{#							<i class="fa fa-envelope" aria-hidden="true"></i>#}
+{#						</span>#}
+{#                </div>#}
+
+                <div class="contact_input">
+                    <select class="input_info" id="subject" name="subject" onchange="showOther('subject_other', this)">
+                        {% for option in options %}
+                            <option class="form-control input_info" name="{{ option }}" value="{{ option }}">{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="focus-input_info"></span>
+                </div>
+                <div class="contact_input">
+                    <input class="input_info" type="text" id="subject_other" name="subject_other" placeholder="What's up?"
+                           style="display: none;">
+                    <span class="focus-input_info"></span>
+                </div>
+
+{#                <div class="contact_input">#}
+{#                    <textarea class="input_info" name="message" placeholder="Message"></textarea>#}
+{#                    <span class="focus-input_info"></span>#}
+{#                </div>#}
+
+                <div class="smart-container-form-btn">
+                    <input class="contact_us_form-btn" type="submit" name="submit" value="Submit"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="{% static 'office_app/css/contact_us/css/util.css'%}"></script>
+<!--===============================================================================================-->
+<script src="{% static 'office_app/js/contact_us/js/jquery/jquery-3.2.1.min.js' %}"></script>
+<!--===============================================================================================-->
+<script src="{% static 'office_app/css/contact_us/css/bootstrap/js/popper.js'%}"></script>
+<script src="{% static 'office_app/css/contact_us/css/bootstrap/js/bootstrap.min.js' %}"></script>
+<!--===============================================================================================-->
+<script src="{% static 'office_app/js/contact_us/js/tilt/tilt.jquery.min.js' %}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script >
+    $('.js-tilt').tilt({
+        scale: 1.5
+    });
+
+    {# Toaster Notification #}
+    $(function() {
+        toastr.options = {
+            "positionClass": "toast-bottom-right",
+            "timeOut": 5000,
+            "preventDuplicates": true,
+            "newestOnTop": true,
+        };
+
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    });
+</script>
+
+
+</body>
+</html>

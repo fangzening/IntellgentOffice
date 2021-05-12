@@ -1,0 +1,366 @@
+{% include 'office_app/admin/includes/start.html' %}
+<main>
+    <div class="container-fluid">
+        <h2 class="mt-4">Account</h2>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item" onclick="$('#collapseGeneral').show();"><a href="#">General</a></li>
+            <li class="breadcrumb-item active">Account</li>
+        </ol>
+        <div class="card mb-4">
+            <div class="card-header"><i class="fas fa-table mr-1"></i>List of Account</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>Associate ID</th>
+                            <th>Username</th>
+                            <th>Active</th>
+                            <th>Staff</th>
+                            <th>Superuser</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <form id="add_account_form">
+            <div class="card mb-4">
+                <div class="card-header"><i class="fas fa-plus-square mr-1"></i>Add Account</div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="associate">Associate</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-control selectpicker required" data-size="10" id="associate_id" name="associate_id" data-live-search="true" required>
+                                    <option value="" selected disabled></option>
+                                    {% for employee in employees %}
+                                        <option id="{{ employee.email }}" value="{{ employee.associateID }}">{{ employee.associateID }} ({{ employee.full_legal_name}})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="username">Username</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input class="form-control" type="text" name="username" id="username" placeholder="Select Associate ID" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="password">Password</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input class="form-control" data-toggle="password" type="password" name="password" id="password" maxlength="50" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="active">Active</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input class="form-control" name="active" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger" >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="staff">Staff</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input class="form-control" name="staff" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger" >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="superuser">Superuser</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input class="form-control" name="superuser" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger" >
+                            </div>
+                        </div>
+                    </div>
+                    <p>
+                    <div class="form-row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" id="add_account_btn">Add Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+{% include 'office_app/admin/includes/body_footer.html' %}
+<!-- custom javascript function will go here -->
+<!-- Written by Zaawar Ejaz -->
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            ajax: {
+                url: "{% url 'account_api' %}",
+                dataSrc: 'accounts',
+                error: function (err) {
+                    swal.fire({
+                        text: "Error getting data. Please contact IT Administrator",
+                        icon: "error"
+                    });
+                }
+            },
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                    type: 'none',
+                    target: ''
+                }
+            },
+            columns: [
+                { data: 'employee' },
+                { data: 'email' },
+                {
+                    "render": function (data, type, row) {
+                        if (row.is_active) return "<i class='fas fa-check text-success'></i>";
+                        else return "<i class='fas fa-times text-danger'></i>";
+                    }
+                },
+                {
+                    "render": function (data, type, row) {
+                        if (row.is_staff) return "<i class='fas fa-check text-success'></i>";
+                        else return "<i class='fas fa-times text-danger'></i>";
+                    }
+                },
+                {
+                    "render": function (data, type, row) {
+                        if (row.is_superuser) return "<i class='fas fa-check text-success'></i>";
+                        else return "<i class='fas fa-times text-danger'></i>";
+                    }
+                },
+                {
+                    "render": function (data, type, row) {
+                        if (row.employee !== 'administrator')
+                            return "<i class='fas fa-key fa-1x text-warning mr-2 ' title='Authorize Password Change' onclick='authorize_passwordchange(\"" + row.employee + "\")' style='cursor: pointer'></i>" +
+                                "<i class='fas fa-edit text-secondary mr-2' title='Edit' onclick='edit_account(\"" + row.employee + "\")' style='cursor: pointer'></i>" +
+                                "<i class='fas fa-minus-circle fa-1x text-danger mr-2' title='Delete' onclick='delete_account(\"" + row.employee + "\")' style='cursor: pointer'></i>";
+                        else
+                            return ""
+
+                    }
+                }
+            ]
+        });
+    });
+
+    function authorize_passwordchange(associate_id) {
+        Swal.fire({
+            text: "Do you want to authorize password change request?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.value) {
+                Swal.fire({
+                    text: 'Working...',
+                    icon: 'warning',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                });
+                $.ajax({
+                    url: "{% url 'account_api' %}?" + $.param({request_type:"authorize_pwdchange", associateID: associate_id}),
+                    type: "PUT",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    },
+                    success: function (response) {
+                        Swal.fire({
+                            text: response,
+                            icon: 'success'
+                        });
+                    },
+                    error: function (err) {
+                        Swal.fire({
+                            text: err.responseText,
+                            icon: 'error'
+                        })
+                    }
+                });
+            }
+        });
+    }
+
+
+    function edit_account(associate_id) {
+        $.ajax({
+            url: "{% url 'account_api' %}",
+            type: "GET",
+            beforeSend: function (xhr) {
+                Swal.fire({
+                    text: "Working...",
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                });
+            },
+            success: function (response) {
+                html = '<hr><input type=hidden name="associate_id" value="'+ associate_id +'">' +
+                    '<label class="form-label col-md-3 mt-3">Active</label><input class="form-control edit-toggle" name="active" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger" ><br>' +
+                    '<label class="form-label col-md-3 mt-3">Staff</label><input class="form-control edit-toggle" name="staff" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger" ><br>' +
+                    '<label class="form-label col-md-3 mt-3">Superuser</label><input class="form-control edit-toggle" name="superuser" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger" >';
+                Swal.fire({
+                    title: 'Edit Account',
+                    html: '<form id="edit_form">' + html + '</form>',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: "Submit",
+                    focusConfirm: false,
+                    preConfirm: () => {
+                        let form = $('#edit_form');
+                        validate_and_collect_form_data(form, 'PUT')
+                    }
+                });
+                $('.edit-toggle').bootstrapToggle();
+            },
+            error: function (err) {
+                Swal.fire({
+                    text: err.responseText,
+                    icon: 'error'
+                })
+            }
+        });
+    }
+
+    function delete_account(associate_id) {
+        Swal.fire({
+            text: "Are you sure you want to delete?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.value) {
+                Swal.fire({
+                    text: 'Working...',
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                });
+                $.ajax({
+                    url: "{% url 'account_api' %}?" + $.param({associateID: associate_id}),
+                    type: "DELETE",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    },
+                    success: function (response) {
+                        Swal.fire({
+                            text: response,
+                            icon: 'success'
+                        });
+                        $('#dataTable').DataTable().ajax.reload(null, false);
+                    },
+                    error: function (err) {
+                        Swal.fire({
+                            text: err.responseText,
+                            icon: 'error'
+                        })
+                    }
+                });
+            }
+        });
+    }
+
+    function add_account(data, request_type) {
+        $.ajax({
+            url: "{% url 'account_api' %}?" + $.param({request_type: "update", data: JSON.stringify(data)}),
+            type: request_type,
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                data: JSON.stringify(data)
+            },
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                Swal.fire({
+                    text: 'Working...',
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                })
+            },
+            success: function (response) {
+                Swal.fire({
+                    text: response,
+                    icon: 'success'
+                });
+                $('#dataTable').DataTable().ajax.reload(null, false);
+            },
+            error: function (err, msg) {
+                Swal.fire({
+                    text: err.responseText,
+                    icon: 'error'
+                })
+            }
+        })
+    }
+
+    function validate_and_collect_form_data(form, request_type) {
+        if ( validateForm(form) ) {
+            var data = {};
+            form.find(':input').each(function(){
+                if ( $(this).is(':checkbox') )
+                    data[$(this).prop('name')] = $(this).prop('checked');
+                else
+                    data[$(this).prop('name')] = $(this).val();
+            });
+            add_account(data, request_type);
+        }
+    }
+
+    $('#add_account_btn').click(function () {
+        let form = $('#add_account_form');
+        validate_and_collect_form_data(form, 'POST')
+    });
+
+    $('#associate_id').change(function () {
+        let email = $(this).children(":selected").attr("id");
+        $('#username').val(email)
+    })
+
+</script>
+<!--------------------------------------------->
+
+{% include 'office_app/admin/includes/end.html' %}

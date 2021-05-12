@@ -1,0 +1,487 @@
+{% include 'office_app/admin/includes/start.html' %}
+{% load static %}
+<main>
+    <div class="container-fluid">
+        <h2 class="mt-4">Approval Process</h2>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item" onclick="$('#collapseForms').show();"><a href="#">Forms</a></li>
+            <li class="breadcrumb-item active">Approval Process</li>
+        </ol>
+        <div class="card mb-4">
+            <form id="edit_existing_process" method="POST">
+                {% csrf_token %}
+                <input hidden readonly id="processName2" name="processName">
+                <div class="card-header"><i class="fas fa-table mr-1"></i>List of Approval Process</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>Process Name</th>
+                                <th>Process Description</th>
+                                <th>Stages</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card mb-4" id="add_approval_process">
+            <div class="card-header"><i class="fas fa-plus-square mr-1"></i>Add Approval Process</div>
+            <div class="card-body">
+                <form id="stage_approvers">
+                    <!-- Basic Process Information Section -------------------------------------------------------------------------------------------------------------------------------------------------->
+                    <h2>Process Information:</h2><br>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="processName">Process Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input class="form-control" type="text" name="processName" id="processName" maxlength="10" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="processDesc">Process Description</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input class="form-control" maxlength="50" type="text" name="processDesc" id="processDesc" placeholder="(optional)">
+                            </div>
+                        </div>
+                    </div>
+                    {#                    <div class="form-row">#}
+                    {#                        <div class="col-md-3">#}
+                    {#                            <div class="form-group">#}
+                    {#                                <label class="form-label" for="processForm">Process Form</label>#}
+                    {#                            </div>#}
+                    {#                        </div>#}
+                    {#                        <div class="col-md-4">#}
+                    {#                            <div class="form-group">#}
+                    {#                                <select class="form-control" type="text" name="processForm" id="processForm">#}
+                    {#                                    {% for formType in formTypes %}#}
+                    {#                                        <option value="{{ formType }}">{{ formType }}</option>#}
+                    {#                                    {% endfor %}#}
+                    {#                                </select>#}
+                    {#                            </div>#}
+                    {#                        </div>#}
+                    {#                    </div>#}
+
+                    <!-- Stages Section ----------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+                    <h2>Process Stages:</h2>
+                    <br>
+                    <div id="stages">
+                        <div style="border: 1px solid lightgrey; padding: 10px; margin: 10px;" id="stage-0">
+                            <!-- condition information section -->
+                            <h4>Conditions</h4>
+                            <br>
+
+                            <div id="conditions-0"> <!-- This div will contain all conditions for the approver to appear in the process -->
+
+                            </div><!-- end conditions div -->
+
+                            <div class="col-md-2">
+                                <div class="form-group form-inline">
+                                    <button type="button" class="btn btn-secondary" id="add_condition_btn-0" onclick="add_condition('0')">+ Add Condition</button> <!-- This is the add condition button -->
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group form-inline">
+                                    <button type="button" class="btn btn-danger" id="clear_conditions_btn-0" onclick="clear_conditions('0')" hidden>Remove all Conditions</button> <!-- This is the add condition button -->
+                                </div>
+                            </div>
+
+                            <!-- approver information section -->
+                            <h4>Approver</h4>
+                            <br>
+                            <!-- stage number--------------------------------------->
+                            <div class="form-row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label" for="stage_number">Stage Number</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        <input class="form-control" type="number" name="stage_number" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- approver role --------------------------------------->
+                            <div class="form-row" id="select-row-0">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label" for="processForm">Approver Role</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <select class="form-control" data-size="10" id="stageApprover-0" name="stageApprover-0" onchange="select_approver($(this).prop('id'), $(this).find('option:selected').text())" required>
+                                            {% for approver in processApprovers %}
+                                                <option value="{{approver.approverRole.roleID}}">{{ approver.approverRole.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Get Approver Based on------------------------------------------------>
+                            <div class="form-row" id="based-row-0">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label" for="processForm">Get Approver Based on</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <radiogroup name="get_approver_by-0">
+                                            <input type="radio" name="get_approver_by-0" value="users data" checked> User's Data <br>
+                                            <input type="radio" name="get_approver_by-0" value="field data"> Form Data from field with name attribute: <input name="field_name" id="field_name" placeholder="field name attribute">
+                                        </radiogroup>
+                                    </div>
+                                </div>
+                            </div>
+                            <button hidden type="button" class="btn btn-danger" name="remove_stage_btn" id="remove_stage_btn-0" onclick="remove_stage('0');">Remove Stage</button>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group form-inline">
+                            <!-- add stage button -->
+                            <button type="button" class="btn btn-secondary" id="add_approver_btn" onclick="add_stage();">+ Add Stage</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!---Create Approval Process Button ---------------------------------------------------------------------------------------------------------------------------->
+                <p>
+                <div class="form-row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-9">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" id="add_approvalprocess_btn">Add Approval Process</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% include 'office_app/admin/includes/body_footer.html' %}
+<!-- custom javascript function will go here -->
+<!-- Written by Zaawar Ejaz -->
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            ajax: {
+                url: "{% url 'approval_process_api' %}",
+                dataSrc: 'approval_process',
+                error: function (err) {
+                    swal.fire({
+                        text: "Error getting data. Please contact IT Administrator",
+                        icon: "error"
+                    });
+                }
+            },
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                    type: 'none',
+                    target: ''
+                }
+            },
+            columns: [
+                { data: 'processName' },
+                { data: 'processDesc' },
+                {
+                    "render": function (data, type, row) {
+                        let html = '';
+                        (row.stages).forEach(function (stage) {
+                            html = html.concat(stage.stage + " : " + stage.approver + "<br>") ;
+                        });
+                        return '<div class="h6">' + html + '</div'
+                    }
+                },
+                {
+                    "render": function (data, type, row) {
+                        return "<i class='fas fa-edit text-secondary mr-2' title='Edit' onclick='edit_approvalprocess(\"" + row.processName + "\")' style='cursor: pointer'></i>" +
+                            "<i class='fas fa-minus-circle text-danger mr-2' title='Delete' onclick='delete_approvalprocess(\"" + row.processName + "\")' style='cursor: pointer'></i>"
+                    }
+                }
+            ]
+        });
+    });
+
+    function delete_approvalprocess(processName) {
+        Swal.fire({
+            text: "Are you sure you want to delete?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.value) {
+                Swal.fire({
+                    text: 'Working...',
+                    icon: 'warning',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                });
+                $.ajax({
+                    url: "{% url 'approval_process_api' %}?" + $.param({processName: processName}),
+                    type: "DELETE",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    },
+                    success: function (response) {
+                        Swal.fire({
+                            text: response,
+                            icon: 'success'
+                        });
+                        $('#dataTable').DataTable().ajax.reload(null, false);
+                    },
+                    error: function (err) {
+                        Swal.fire({
+                            text:  err.responseText,
+                            icon: 'error'
+                        })
+                    }
+                });
+            }
+        });
+    }
+
+    function edit_approvalprocess(processName) {
+        document.getElementById('processName2').value = processName;
+        let form = $('#edit_existing_process');
+        $.ajax({
+            url: "{% url 'get_approval_process_info' %}",
+            type: "POST",
+            data: form.serializeArray(),
+            beforeSend: function (xhr) {
+                Swal.fire({
+                    text: "Working...",
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                });
+            },
+            success: function (response) {
+                var msg = fill_fields_for_editing(response);
+                update_clear_condition_buttons();
+                if (msg === 'Data Loaded Successfully'){
+                    Swal.fire({
+                        text: 'Data loaded successfully. Scroll Down To View',
+                        icon: 'success'
+                    });
+                }
+                else{
+                    Swal.fire({
+                        text: msg,
+                        icon: 'error'
+                    });
+                }
+
+                {#let html = '<input type="hidden" name="processName" value="' + processName + '">' +#}
+                {#    '<i class="fas fa-plus-square text-success mr-2" title="Add" style="cursor: pointer" ' +#}
+                {#    'onclick="$(\'#edit_field\').clone().appendTo($(this).parent()).find(\'input\').val(\'\')"></i>';#}
+                {##}
+                {#$.each(response['approval_process'], function( index, process ) {#}
+                {#    if(process.processName === processName) {#}
+                {#        $.each(process['stages'], function( index, stage ) {#}
+                {#            let options = "";#}
+                {#            $.each(response['approvers'], function( index, approver ) {#}
+                {#                $.each([approver], function( index, item ) {#}
+                {#                    let selected = function() {#}
+                {#                        if (item.roleId === stage.approverRoleId)#}
+                {#                            return "selected"#}
+                {#                    }();#}
+                {#                    options += '<option ' + selected + ' value="'+ item.roleId +'">' + item.role + '</option>'#}
+                {#                });#}
+                {#            });#}
+                {#            html += '<div id="edit_field" class="form-inline m-1">' +#}
+                {#                        '<input class="form-control col-md-2 mr-2" type="text" name="stageNumber" placeholder="Stage #" maxlength="2" value="' + stage.stage + '" required>' +#}
+                {#                        '<select class="form-control col-md-8 mr-2" id="stageApprover" name="stageApprover" placeholder="Approver" required>' +#}
+                {#                            options +#}
+                {#                        '</select>' +#}
+                {#                        '<i class="fas fa-minus-circle text-danger mr-2" title="Delete" style="cursor: pointer" onclick="$(this).parent().remove()"></i>' +#}
+                {#                    '</div>'#}
+                {#        });#}
+                {#    }#}
+                //});
+            },
+            error: function (err) {
+                Swal.fire({
+                    text: err.responseText,
+                    icon: 'error'
+                })
+            }
+        });
+    }
+
+    // Works both for adding and modifying approval process
+    function add_approvalprocess(data, request_type) {
+        //console.log("data: " + data.toString());
+        $.ajax({
+            url: "{% url 'approval_process_api' %}?", //+ $.param({processName: data['processName'], processStageApprover: data['processStageApprover'], all_post_data: data}),
+            type: request_type,
+            data: data,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                Swal.fire({
+                    text: 'Working...',
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                })
+            },
+            success: function (response) {
+                Swal.fire({
+                    text: response,
+                    icon: 'success'
+                });
+                $('#dataTable').DataTable().ajax.reload(null, false);
+            },
+            error: function (err) {
+                //console.log("error status: " + err.status.toString());
+                if (err.status.toString().trim() === '409'){
+                    Swal.fire({
+                        text: err.responseText,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        showConfirmButton: true,
+                        cancelButtonText: 'Cancel',
+                        confirmButtonText: 'Overwrite'
+                    }).then((result) => {
+                        if(result.value){
+                            data.push({key: "overwrite", value: "true"});
+                            add_approvalprocess(data, 'POST');
+                        }
+                    });
+                }
+                else{
+                    Swal.fire({
+                        text: err.responseText,
+                        icon: 'error'
+                    })
+                }
+            }
+        })
+    }
+
+    function validate_and_collect_form_data(form, request_type) {
+        if ( validateForm(form) ) {
+            let form_data = form.serializeArray();
+            data = [];
+
+            stageNumber = [];
+            stageApprover = [];
+
+            form_data.forEach(e => {
+                if (e.name === 'processName')
+                    data['processName'] = e.value;
+                else if (e.name === 'processDesc')
+                    data['processDesc'] = e.value;
+                else if (e.name === 'stageNumber')
+                    stageNumber.push(e.value);
+                else if (e.name === 'stageApprover')
+                    stageApprover.push(e.value);
+            });
+
+            stageApproverPair = {};
+            for (var i = 0; i < stageNumber.length; i++) {
+                stageApproverPair[stageNumber[i]] = stageApprover[i]
+            }
+            data['processStageApprover'] = JSON.stringify(stageApproverPair);
+            add_approvalprocess(form_data, request_type)
+        }
+    }
+
+    $('#add_approvalprocess_btn').click(function () {
+        let form = $('#stage_approvers');
+        validate_and_collect_form_data(form, 'POST')
+    });
+
+    function select_approver(id, val) {
+        id = id.substring(14);
+        if (val === "Specific Person From Employees") {
+            $('#based-row-' + id).hide().find('input').each(function () {
+                 $(this).attr('disabled', true);
+            });
+
+            let html = "<div class=\"form-row\" id=\"employee-row-" + id + "\">\n" +
+                "                                <div class=\"col-md-3\">\n" +
+                "                                    <div class=\"form-group\">\n" +
+                "                                        <label class=\"form-label\" for=\"processForm\">Employee</label>\n" +
+                "                                    </div>\n" +
+                "                                </div>\n" +
+                "                                <div class=\"col-md-4\">\n" +
+                "                                    <div class=\"form-group\">\n" +
+                "                                        <select class=\"form-control\" data-size=\"10\" name=\"field_name\" required>\n" +
+                "                                            {% for employee in employees %}\n"+
+                "                                                <option value=\"{{employee.associateID}}\">{{ employee.full_name }}</option>\n"+
+                "                                            {% endfor %}\n" +
+                "                                        </select>\n" +
+                "                                    </div>\n" +
+                "                                </div>\n" +
+                "                            </div>";
+
+            $(html).insertAfter($('#select-row-' + id))
+
+        }
+        else {
+            $('#employee-row-' + id).remove();
+               $('#based-row-' + id).show().find('input').each(function () {
+                 $(this).attr('disabled', false);
+            });
+        }
+
+    }
+
+    {#$('#add_approver_btn').click(function () {#}
+    {#    $('#stage_approvers').append(#}
+    {#        "<div class=\"form-row\">\n" +#}
+    {#        "                        <div class=\"col-md-3\"></div>\n" +#}
+    {#        "                        <div class=\"col-md-1\">\n" +#}
+    {#        "                            <div class=\"form-group\">\n" +#}
+    {#        "                                <input class=\"form-control\" type=\"text\" name=\"stageNumber\" placeholder=\"Stage #\" maxlength=\"2\" required>\n" +#}
+    {#        "                            </div>\n" +#}
+    {#        "                        </div>\n" +#}
+    {#        "                        <div class=\"col-md-3\">\n" +#}
+    {#        "                            <div class=\"form-group\">\n" +#}
+    {#        "                                <select class=\"form-control selectpicker\" data-size=\"10\" id=\"stageApprover\" name=\"stageApprover\" placeholder=\"Approver\" required>\n" +#}
+    {#                                                {% for approver in processApprovers %}#}
+    {#            "                                        <option value=\"{{ approver.approverRole.roleID }}\">{{ approver.approverRole.title }}</option>\n" +#}
+    {#                                                {% endfor %}#}
+    {#        "                                </select>\n" +#}
+    {#        "                            </div>\n" +#}
+    {#        "                        </div>\n" +#}
+    {#        "                    </div>"#}
+    {#    );#}
+    {##}
+    {#    $(function () {#}
+    {#        $('select').selectpicker();#}
+    {#    });#}
+    //})
+</script>
+<script>
+    let employees = {};
+    {% for emp in employees %}
+        employees['{{ emp.associateID }}'] = "{{ emp.full_name }}";
+    {% endfor %}
+</script>
+<script src="{% static 'office_app/admin/js/corrinas_admin_js.js' %}"></script>
+<!--------------------------------------------->
+{% include 'office_app/admin/includes/end.html' %}

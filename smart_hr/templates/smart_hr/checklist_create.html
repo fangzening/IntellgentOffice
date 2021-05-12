@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+
+    {% load static %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Smart HR &mdash; Foxconn Smart HR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Foxconn Smart HR" />
+    <meta name="author" content="Josua Ataansuyi" />
+
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/animate.css' %}">
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/icomoon.css' %}">
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/bootstrap.css' %}">
+    <!-- Flexslider  -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/flexslider.css' %}">
+    <!-- Theme style  -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/style.css'%}">
+    <!-- Toastr notification -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+    <!-- Fonts Awesome-->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <!-- Jquery UI -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <style>
+        .ui-autocomplete {
+            max-height: 200px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            overflow-x: hidden;
+            /* add padding to account for vertical scrollbar */
+            padding-right: 20px;
+        }
+        .loading {
+            background: transparent url("{% static 'smart_hr/images/loading.gif' %}") center no-repeat;
+            background-size: 25px 25px;
+        }
+        .required {
+            color: indianred;
+        }
+    </style>
+
+</head>
+
+<body>
+<div id="smart_hr_page">
+    <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"><i></i></a>
+    <aside id="fh5co-aside" role="complementary" class="border js-fullheight">
+        <h5 class="text-center">Welcome, {{ request.session.full_name }}</h5>
+        <h1 id="fh5co-logo"><a href="{% url 'smart_hr_home' %}">Smart HR (Foxconn)</a></h1>
+        <nav id="fh5co-main-menu" role="navigation">
+            <ul>
+                <li><a href="{% url 'smart_office_dashboard' %}">Smart Office</a></li>
+                {% if 'create_checklist' in request.session.user_perm  %}
+                    <li class="fh5co-active"><a href="{% url 'checklist_create' %}">Create New Checklist</a></li>
+                {% endif %}
+                <li><a href="{% url 'checklist_list' %}">List All Checklist</a></li>
+            </ul>
+        </nav>
+
+        <div class="fh5co-footer">
+            <p><small>&copy; {% now "Y" %} Foxconn IT Software Development </span> </small></p>
+
+        </div>
+
+    </aside>
+    <div id="fh5co-main">
+
+        <div class="fh5co-narrow-content animate-box" data-animate-effect="fadeInLeft">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>New Hire Checklist</h2>
+                </div>
+            </div>
+
+        </div>
+        <form id="form" method="POST"> {% csrf_token %}
+            <div class="col-md-12">
+                <label for="employee_name" class="control-label col-lg-12">Employee Name <b class="required">*</b></label>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input type="text" maxlength="20" class="form-control" placeholder="First Name" id="first_name" name="first_name" value="{{ form.first_name }}" required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input type="text" maxlength="20" class="form-control" placeholder="Middle Name (optional)" id="middle_name" name="middle_name" value="{{ form.middle_name }}" >
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input type="text" maxlength="20" class="form-control" placeholder="Last Name" id="last_name" name="last_name" value="{{ form.last_name }}" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="preferred_name" class="control-label col-lg-6">Preferred Name</label>
+                <div class="form-group">
+                    <input type="text" maxlength="20" class="form-control" placeholder="Preferred Name (optional)" id="preferred_name" name="preferred_name" value="{{ form.preferred_name }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="employee_email" class="control-label col-lg-6">Email Address <b class="required">*</b></label>
+                <div class="form-group">
+                    <input type="email" maxlength="50" class="form-control" placeholder="Email Address" id="email" name="email" value="{{ form.email }}" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="position" class="control-label col-lg-6">Position <b class="required">*</b></label>
+                <div class="form-group">
+                    <input type="text" maxlength="50" class="form-control" placeholder="Position" id="position" name="position_label" value="{{ form.position_label }}" required>
+                    <input type="hidden" name="position" value="{{ form.position }}">
+                    <input type="hidden" name="position_desc" value="{{ form.position_desc }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="business_unit" class="control-label col-lg-6">Business Unit <b class="required">*</b></label>
+                <div class="form-group">
+                    <input type="text" maxlength="50" class="form-control" placeholder="Business Unit" id="business_unit" name="business_unit_label" value="{{ form.business_unit_label }}" required>
+                    <input type="hidden" name="business_unit" value="{{ form.business_unit }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="department" class="control-label col-lg-6">Department <b class="required">*</b></label>
+                <div class="form-group">
+                    <input type="text" maxlength="50" class="form-control" placeholder="Department" id="department" name="department_label" value="{{ form.department_label }}" required>
+                    <input type="hidden" name="department" value="{{ form.department }}">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="manager" class="control-label col-lg-6">Manager <b class="required">*</b></label>
+                <div class="form-group">
+                    <input type="text" maxlength="60" class="form-control" placeholder="Manager" id="manager" name="manager_label" value="{{ form.manager_label }}" required>
+                    <input type="hidden" name="manager" value="{{ form.manager }}">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="cost_code" class="control-label col-lg-6">Cost Code</label>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Cost Code (optional)" id="cost_code" name="cost_code" value="{{ form.cost_code }}">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="hire_date" class="control-label col-lg-6">Hire Date <b class="required">*</b></label>
+                <div class="form-group">
+                    <input type="date" class="form-control" placeholder="Hire Date" id="hire_date" name="hire_date" value="{{ form.hire_date }}" required>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <table class="table table-striped" id ="checklist">
+                    <thead>
+                    <tr>
+                        <th class="col-md-6">TASK</th>
+                        <th class="col-md-2">DEPARTMENT</th>
+                        <th class="col-md-3">TASK ASSIGNEE <b class="required">*</b></th>
+                        <th class="col-md-1">DUE DATE</th>
+                    </tr>
+                    </thead>
+                    <tbody id="checklist">
+                    {% for task in checklist_tasks %}
+                        <tr>
+                            <td class="col-md-6"> {{ task.description }}</td>
+                            <td class="col-md-2"> {{ task.department.costCenterName }}</td>
+                            <td class="col-md-3"><input type="text" class="form-control taskAssignee" id="{{ task.department.costCenterCode }}" placeholder="Enter Employee Name" value="" required></td>
+                            <input type="hidden" name="assignee_{{ task.taskID }}" value="">
+                            <td class="col-md-1"><input type="date" class="form-control" name="date_{{ task.taskID }}"></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary btn-md" value="Submit">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+
+<!-- jQuery -->
+<script src="{% static 'smart_hr/js1/jquery.min.js' %}"></script>
+<!-- jQuery Easing -->
+<script src="{% static 'smart_hr/js1/jquery.easing.1.3.js' %}"></script>
+<!-- Bootstrap -->
+<script src="{% static 'smart_hr/js1/bootstrap.min.js' %}"></script>
+<!-- Waypoints -->
+<script src="{% static 'smart_hr/js1/jquery.waypoints.min.js' %}"></script>
+<!-- Flexslider -->
+<script src="{% static 'smart_hr/js1/jquery.flexslider-min.js' %}"></script>
+<!-- Google Map -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCefOgb1ZWqYtj7raVSmN4PL2WkTrc-KyA&sensor=false"></script>
+<script src="{% static 'smart_hr/js1/google_map.js' %}"></script>
+<!-- Toastr notification -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<!-- JqueryUI JS -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- Bootbox -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+<!-- Modernizr JS -->
+<script src="{% static 'smart_hr/js1/modernizr-2.6.2.min.js' %}"></script>
+<!-- FOR IE9 below -->
+<!--[if lt IE 9]>
+<script src="{% static 'smart_hr/js/respond.min.js' %}"></script>
+    <![endif]-->
+<!-- MAIN JS -->
+<script src="{% static 'smart_hr/js1/main.js' %}"></script>
+
+<!-- Written by Zaawar Ejaz -->
+<script>
+    {# Load box when form is submitted #}
+    $('#form').submit(function() {
+        bootbox.dialog({
+            message: '<p class="text-center mb-0"><i class="fa fa-spin fa-spinner"></i> Please wait we are submitting the form...</p>',
+            closeButton: false
+        });
+    });
+
+    {# Toastr Notification #}
+    $(function() {
+        toastr.options = {
+            "positionClass": "toast-bottom-right",
+            "timeOut": 10000,
+            "preventDuplicates": true,
+            "newestOnTop": true,
+        };
+
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    });
+
+    {#  Autocomplete #}
+    $.ui.autocomplete.prototype._renderItem = function (ul, item) {
+    var t = String(item.label).replace(
+            new RegExp(this.term, "gi"),
+            "<strong>$&</strong>");
+    return $("<li></li>")
+        .data("item.autocomplete", item)
+        .append("<div>" + t + "</div>")
+        .appendTo(ul);
+    };
+
+    $('#business_unit').autocomplete({
+        minLength: 0,
+        source: {{ units | safe }},
+        select: function (event, ui) {
+            event.preventDefault();
+            $(this).val(ui.item.label);
+            $(this).next().val(ui.item.value);
+        },
+        change: function(event,ui){
+            if(!ui.item) {
+                bootbox.alert({
+                    message: "You must select from the list.",
+                    closeButton: false,
+                    size: 'small'
+                });
+                $(this).val("");
+                $(this).next().val("");
+            }
+        }
+    });
+
+    $('#department').autocomplete({
+        minLength: 0,
+        source: {{ departments | safe }},
+        select: function (event, ui) {
+            event.preventDefault();
+            $(this).val(ui.item.label);
+            $(this).next().val(ui.item.value);
+        },
+        change: function(event,ui){
+            if(!ui.item) {
+                bootbox.alert({
+                    message: "You must select from the list.",
+                    closeButton: false,
+                    size: 'small'
+                });
+                $(this).val("");
+                $(this).next().val("");
+            }
+        }
+    });
+
+    $('#position').autocomplete({
+        minLength: 0,
+        source: {{ positions | safe }},
+        select: function (event, ui) {
+            event.preventDefault();
+            $(this).val(ui.item.label);
+            $(this).next().val(ui.item.value);
+        },
+        change: function (event, ui) {
+            if (!ui.item) {
+                html = '<div class="form-group">Position Title: <input class="form-control" type="text" id="pos_name"></div>' +
+                    '<div>Position Description: <input class="form-control" type="text" id="pos_desc"></div>' +
+                    '<i class="small">* Position will be created after the form is submitted.<i>';
+                var dialog = bootbox.dialog({
+                    title: "Position not found. Do you want to add a new Position?",
+                    message: html,
+                    closeButton: false,
+                    buttons: {
+                        cancel: {
+                            label: "cancel",
+                            callback: function () {
+                                $('#position').val("");
+                                $('#position').next().val("");
+                                $('#position').next().next().val("");
+                            }
+                        },
+                        ok: {
+                            label: "add",
+                            className: 'btn-info',
+                            callback: function () {
+                                $('#position').val($('#pos_name').val());
+                                $('#position').next().val($('#pos_name').val());
+                                $('#position').next().next().val($('#pos_desc').val());
+                            }
+                        }
+                    }
+                });
+                dialog.init(function(){
+                    $('#pos_name').val($('#position').val());
+                });
+
+            }
+        }
+    });
+
+    $('#manager').autocomplete({
+        minLength: 0,
+        source: {{ managers | safe }},
+        select: function (event, ui) {
+            event.preventDefault();
+            $(this).val(ui.item.label);
+            $(this).next().val(ui.item.value);
+        },
+        change: function(event,ui){
+            if(!ui.item) {
+                bootbox.alert({
+                    message: "You must select from the list.",
+                    closeButton: false,
+                    size: 'small'
+                });
+                $(this).val("");
+                $(this).next().val("");
+            }
+        }
+    });
+
+    $('.taskAssignee').autocomplete({
+        minLength: 0,
+        source: function (request, response) {
+            var department = this.element.attr('id');
+            var employees = $.grep({{ employees | safe }}, function(item) {
+                return item.department === department && item.label.toLowerCase().includes(request.term.toLowerCase());
+            });
+            response(employees)
+        },
+        select: function (event, ui) {
+            event.preventDefault();
+            $(this).val(ui.item.label);
+            $(this).parent().next().val(ui.item.value);
+        },
+        change: function(event,ui){
+            if(!ui.item) {
+                bootbox.alert({
+                    message: "You must select from the list.",
+                    closeButton: false,
+                    size: 'small'
+                });
+                $(this).val("");
+                $(this).parent().next().val("");
+            }
+        }
+    });
+
+    $('#business_unit, #department, #position, #manager, .taskAssignee').keydown(function(){
+        $(this).addClass('loading');
+    }).keyup(function(){
+        $(this).removeClass('loading');
+    }).focusout(function () {
+        $(this).removeClass('loading');
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Josua Ataansuyi">
+    <meta name="description" content="Foxconn FII USA Visitor Application Form">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="{% static 'visitor/css.css' %}">
+
+
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+
+
+    <title>FII USA Visitor Form</title>
+</head>
+
+<body>
+
+<div id="menu">
+    <div id="menu-bar" onclick="menuOnClick()">
+        <div id="bar1" class="bar"></div>
+        <div id="bar2" class="bar"></div>
+        <div id="bar3" class="bar"></div>
+    </div>
+    <nav class="nav" id="nav">
+        <ul>
+            <li><a href="{% url 'smart_office_dashboard' %}">Smart Office</a></li>
+            <li><a href="{% url 'visitor_create' %}">Create New Form</a></li>
+            <li><a href="{% url 'visitor_myforms' %}">View My Visitor Form</a></li>
+            <li><a href="{% url 'visitor_approveforms' %}">Approve a Visitor Form</a></li>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
+        </ul>
+    </nav>
+</div>
+
+<div class="menu-bg" id="menu-bg"></div>
+
+<h1 class="title rounded-pill"><img src="{% static 'visitor/img/fii.png' %}" alt="fii"> - USA Visitor Application Form </h1>
+
+<section class="visitor_app">
+
+    <form id="visitor_form" class="visitor_form row surround" method="POST">
+        {% csrf_token %}
+        <div class="col-lg-12">
+            <p class="text-monospace">Personal Information</p>
+            <hr />
+        </div>
+        <div class="form-field col-lg-4 ">
+            <input id="applicant_name" name="applicant_name" value="{{ applicant_name }}" class="input-text js-input" type="text" placeholder="Employee Name" readonly required>
+            <label class="label" for="applicant_name">Applicant Name</label>
+        </div>
+
+        <div class="form-field col-lg-4">
+            <select class="input-text js-input" name="bu_name" id="bu_name">
+                {% for bu in businessunits %}
+                    <option value="{{ bu.buName }}">{{ bu.buName }}</option>
+                {% endfor %}
+            </select>
+            <label class="label" for="bu_name">Applying Business Unit</label>
+        </div>
+        <div class="form-field col-lg-4 ">
+            <input id="submission_date" name="submission_date" value="{{ today_date }}" class="input-text js-input" type="text" required>
+            <label class="label" for="submission_date">Submission Date</label>
+        </div>
+        <div class="form-field col-lg-4 "></div>
+        <div class="form-field col-lg-4 ">
+            <input id="visit_date" name="visit_date" class="input-text js-input" type="date" required>
+            <label class="label" for="visit_date">Visit Date</label>
+        </div>
+        <div class="col-lg-12">
+            <p class="text-monospace drop">Visitor Information</p>
+            <hr />
+        </div>
+
+
+
+        <div class="form-field col-lg-8 ">
+            <input id="company" name="company" class="input-text js-input" type="text" placeholder="Name of the company or Organization">
+            <label class="label" for="company">Company/ Organization</label>
+        </div>
+        <div class="form-field col-lg-2">
+            <input id="numberof_people" name="numberof_people" class="input-text js-input" type="number" min="0" placeholder="No. of people">
+            <label class="label" for="numberof_people">No of People</label>
+        </div>
+
+        <div class="form-field col-lg-2 ">
+            <input id="nda" name="nda" type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-on="YES" data-off="NO">
+            <label class="label" for="nda">NDA </label>
+        </div>
+
+        <div class="form-field col-lg-12">
+            <input id="company_description" name="company_description" class="input-text js-input" type="text" placeholder="Please briefly describe">
+            <label class="label" for="company_description">Company/ Organization Description</label>
+        </div>
+
+{#    <div>#}
+{#  <input type="number" min="0" max="23" placeholder="23">:#}
+{#  <input type="number" min="0" max="59" placeholder="00">#}
+{#</div>#}
+
+
+        <div class="form-field col-lg-12">
+            <button type="button" name="button" id="add_visitor" class="btn btn-primary addbutton float-right">Add New Visitor
+                <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-plus-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                </svg>
+            </button><br>
+
+            <table id="visitor" class="table">
+
+                <thead class="thead-dark">
+
+                <tr>
+                    <th scope="col" ></th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Job Title</th>
+                    <th scope="col">Sex(M/F)</th>
+                    <th scope="col">Job Role</th>
+                    <th scope="col">Visiting History</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td scope="row" style="visibility:hidden;">1</td>
+                    <td><input id="visitor_name_" name="visitor_name" class="input-text js-input" type="text" placeholder="Visitor's Name"></td>
+                    <td><input id="job_title_" name="job_title" class="input-text js-input" type="text" placeholder="Job Title"></td>
+                    <td><input id="sex" name="sex" class="input-text js-input" type="text" placeholder="M/F"></td>
+                    <td><input id="job_role_" name="job_role" class="input-text js-input" type="text" placeholder="Job Role"></td>
+                    <td><input id="visiting_history_" name="visiting_history" class="input-text js-input" type="text" placeholder="Y/N"></td>
+                    <td><button type="button" class="btn btn-outline-danger delete_visitor" name="button"><svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-person-x-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                              d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708z" />
+                    </svg></button></td>
+                </tr>
+                <tr>
+                    <td scope="row" style="visibility:hidden;">2</td>
+                    <td><input id="visitor_name_2" name="visitor_name" class="input-text js-input" type="text" placeholder="Visitor's Name"></td>
+                    <td><input id="job_title_2"  name="job_title" class="input-text js-input" type="text" placeholder="Job Title"></td>
+                    <td><input id="sex_2" name="sex" class="input-text js-input" type="text" placeholder="M/F"></td>
+                    <td><input id="job_role_2" name="job_role" class="input-text js-input" type="text" placeholder="Job Role"></td>
+                    <td><input id="visiting_history_2" name="visiting_history" class="input-text js-input" type="text" placeholder="Y/N"></td>
+                    <td><button type="button" class="btn btn-outline-danger delete_visitor" name="button"><svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-person-x-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                              d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708z" />
+                    </svg></button></td>
+                </tr>
+                <tr>
+                    <td scope="row" style="visibility:hidden;">3</td>
+                    <td><input id="visitor_name_3" name="visitor_name" class="input-text js-input" type="text" placeholder="Visitor's Name"></td>
+                    <td><input id="job_title_3" name="job_title" class="input-text js-input" type="text" placeholder="Job Title"></td>
+                    <td><input id="sex_3" name="sex" class="input-text js-input" type="text" placeholder="M/F"></td>
+                    <td><input id="job_role_3" name="job_role" class="input-text js-input" type="text" placeholder="Job Role"></td>
+                    <td><input id="visiting_history_3" name="visiting_history" class="input-text js-input" type="text" placeholder="Y/N"></td>
+                    <td><button type="button" class="btn btn-outline-danger delete_visitor" name="button"><svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-person-x-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                              d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708z" />
+                    </svg></button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="col-lg-12">
+            <p class="text-monospace drop">Visit Purpose</p>
+            <hr />
+        </div>
+
+
+
+        <div class="form-field col-lg-2 ">
+            <input id="official_visit" name="visit_type" value="official_visit" class="input-text js-input" type="checkbox">
+            <label class="label" for="official_visit">Official Visit</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="business_visit" name="visit_type" value="business_visit" class="input-text js-input" type="checkbox">
+            <label class="label" for="business_visit">Business Visit</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="event_visit" name="visit_type" value="event_visit" class="input-text js-input" type="checkbox">
+            <label class="label" for="event_visit">Event Visit</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="social_visit" name="visit_type" value="social_visit" class="input-text js-input" type="checkbox">
+            <label class="label" for="company">Social Visit</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="other_visit" class="input-text js-input" type="checkbox">
+            <label class="label" for="company">Other Visit</label>
+        </div>
+
+        <div class="form-field col-lg-2">
+            <input id="other_visit_field" name="visit_type" class="input-text js-input" type="text" placeholder="Please Specify" disabled>
+        </div>
+
+        <div class="col-lg-12 " id="objectives">
+            <div class="form-field col-lg-12 ">
+                <input id="objectives_1" name="objectives" class="input-text js-input" type="text" placeholder="1.">
+                <label class="label" for="company">Objectives <a id="add_obj" href="#" class="  obj visitor"> (Add More Objectives)</a></label>
+            </div>
+            <div class="form-field col-lg-12">
+                <input id="objectives_2" name="objectives" class="input-text js-input" type="text" placeholder="2.">
+            </div>
+            <div class="form-field col-lg-12">
+                <input id="objectives_3" name="objectives" class="input-text js-input" type="text" placeholder="3.">
+            </div>
+
+        </div>
+        <div class="form-field col-lg-2  ">
+            <label class="label" for="">FII BU :</label>
+        </div>
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline">
+            <input id="l_5" name="fii-bu" value="L5" class="input-text js-input form-check-input" type="checkbox">
+            <label class="label form-check-label" for="official_visit">L5</label>
+        </div>
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline ">
+            <input id="l_6" name="fii-bu" value="L6" class="input-text js-input form-check-input" type="checkbox">
+            <label class="label form-check-label" for="business_visit">L6</label>
+        </div>
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline ">
+            <input id="l_10" name="fii-bu" value="L10" class="input-text js-input form-check-input" type="checkbox">
+            <label class="label form-check-label" for="event_visit">L10</label>
+        </div>
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline">
+            <input id="l_11" name="fii-bu" value="L11" class="input-text js-input form-check-input" type="checkbox">
+            <label class="label form-check-label" for="company">L11</label>
+        </div>
+
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline">
+            <input id="other_bu_check" name="other_bu_check" class="input-text js-input form-check-input" type="checkbox">
+            <label class="label form-check-label" for="company">Other</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="other_bu_field" name="fii-bu" class="input-text js-input" placeholder="Please Specify" type="text" disabled>
+        </div>
+
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline ">
+            <input id="other_bu_check2" class="input-text js-input form-check-input" type="checkbox">
+            <label class="label form-check-label" for="company">Other</label>
+        </div>
+
+        <div class="form-field col-lg-2 ">
+            <input id="other_bu_field2" name="fii-bu" class="input-text js-input" placeholder="Please Specify" type="text" disabled>
+        </div>
+
+
+        <div class="form-field col-lg-2 ">
+            <label class="label" for="">Location :</label>
+        </div>
+
+        <div class=" form-field col-lg-3 form-check">
+            <input id="mpb" name="location" value="MPB" class="input-text form-check-input js-input" type="checkbox">
+            <label class="label form-check-label" for="mpb">M. P. B</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="smc" name="location" value="SMC" class="input-text js-input" type="checkbox">
+            <label class="label" for="smc">S. M. C</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="globe" name="location" value="GLOBE" class="input-text js-input" type="checkbox">
+            <label class="label" for="globe">GLOBE</label>
+        </div>
+        <div class="form-field col-lg-3 ">
+            <input id="868" name="location" value="868" class="input-text js-input" type="checkbox">
+            <label class="label" for="868">868</label>
+        </div>
+
+        <div class="col-lg-12">
+            <p class="text-monospace drop">Schedule</p>
+            <hr />
+        </div>
+        <div id="visitor_schedule" class="form-field col-lg-12 ">
+            <button type="button" name="schedule" id="add_schedule" class="btn btn-primary addbutton float-right">Add New Schedule
+                <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-plus-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                </svg>
+            </button><br>
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col" style="width: 500px"> Agenda</th>
+                    <th scope="col" style="width: 200px">Location</th>
+                    <th scope="col">Fii Participants</th>
+                </tr>
+                </thead>
+
+                <tr id="schedule_0">
+                    <td rowspan="2"><input id="schedule_date_1" name="schedule_date" class="input-text js-input date" type="date" ></td>
+                    <td>
+                        <div class="form-field  ">
+                            <input id="schedule_time_1_from" name="meeting_time_from" class="input-text js-input time" type="time">
+                            <label class="label2" for="schedule_meeting_1">Time (From) </label>
+                        </div>
+                        <div class="form-field  ">
+                            <input id="schedule_time_1_to" name="meeting_time_to" class="input-text js-input time" type="time">
+                            <label class="label2" for="schedule_meeting_1">Time (To) </label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field  ">
+                            <input id="schedule_meeting_1" name="meeting_explain_0" class="input-text js-input" type="text" placeholder="Explain">
+                            <label class="label2" for="schedule_meeting_1">Meeting <input id="meeting_length" name="meeting_length" type="number" class="labelinput"> (Mins)</label>
+                        </div>
+
+                        <div class="form-field  ">
+                            <input id="explain_meeting_1" name="meeting_explain_0" class="input-text js-input" type="text" placeholder="Explain">
+                        </div>
+                        <div class="form-field  ">
+                            <input id="explain_meeting_2" name="meeting_explain_0" class="input-text js-input" type="text" placeholder="Explain">
+                        </div>
+                        <div class="form-field  ">
+                            <input id="presenter_meeting_1" name="meeting_presenter" class="input-text js-input" type="text" placeholder="Presenter">
+
+                        </div>
+                        <div class="form-field  ">
+                            <input id="resource_meeting_1"  name="meeting_resources" class="input-text js-input" type="text" placeholder="Resources">
+
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field">
+                            <input id="schedule_location_1"  name="meeting_location" class="input-text js-input time" type="text" placeholder="Room No">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field">
+                            <textarea name="meeting_participants" id="meeting_participants" rows="12"  placeholder="List participants"></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr id="tour_0">
+                    <td>
+                        <div class="form-field  ">
+                            <input id="tour_time_from_1" name="tour_time_from" class="input-text js-input time" type="time">
+                            <label class="label2" for="schedule_meeting_1">Time (From) </label>
+                        </div>
+                        <div class="form-field  ">
+                            <input id="tour_time_to_1" name="tour_time_to" class="input-text js-input time" type="time">
+                            <label class="label2" for="schedule_meeting_1">Time (To)</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field  ">
+                            <input id="schedule_tour_1" name="tour_explain_0" class="input-text js-input" type="text" placeholder="Explain">
+                            <label class="label2" for="schedule_meeting_1">Tour <input id="tour_length" name="tour_length" type="number" class="labelinput"> (Mins)</label>
+                        </div>
+                        <div class="form-field  ">
+                            <input id="explain_tour_1" name="tour_explain_0" class="input-text js-input" type="text" placeholder="Explain">
+                        </div>
+                        <div class="form-field  ">
+                            <input id="explain_tour_2" name="tour_explain_0" class=" input-text js-input" type="text" placeholder="Explain">
+                        </div>
+                        <div class="form-field  ">
+                            <input id="presenter_tour_1" name="tour_presenter" class="input-text js-input" type="text" placeholder="Presenter">
+
+                        </div>
+                        <div class="form-field  ">
+                            <input id="resource_tour_1" name="tour_resources" class="input-text js-input" type="text" placeholder="Resources">
+
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field">
+                            <input id="tour_location_1" name="tour_location" class="input-text js-input time" type="text" placeholder=" Eg. MPB">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field">
+                            <textarea name="tour_participants" rows="12"  placeholder="List participants"></textarea>
+                        </div>
+
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+
+        </div>
+        <div class="form-field col-lg-12">
+            <input class="submit-btn" id="submit_btn" type="button" value="Submit">
+        </div>
+
+    </form>
+</section>
+
+
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+<script src="{% static 'visitor/js/visitor_js.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+{# Written by Zaawar Ejaz <zaawar.ejaz@fii-usa.com #}
+<script>
+
+    function validateForm() {
+        let flag = true;
+
+        if($("[name='visit_type']:checked").length === 0) {
+            swal.fire("Visit Type Missing", "Please select at least one visit type", "warning");
+            flag = false
+        }
+
+        if ($("[name='fii-bu']:checked").length === 0) {
+            swal.fire("FII BU Missing", "Please select at least one FII BU", "warning");
+            flag = false
+        }
+
+        if ($("[name='location']:checked").length === 0)
+        {
+            swal.fire("Location Missing", "Please select at least one location", "warning");
+            flag = false
+        }
+
+        if (!$("#visit_date").val())
+        {
+            swal.fire("Visit Date Missing", "Please fill in the visit date", "warning");
+            flag = false
+        }
+
+        return flag
+    }
+
+    $('#submit_btn').click(function () {
+
+        if (validateForm()) {
+            var data = {};
+
+            $('#visitor_form').find(':input').each(function() {
+                let key = $(this).prop('name');
+                if ( $(this).is(':checkbox')) {
+                    if (key in data) {
+                        if ($(this).prop('checked'))
+                            data[key].push($(this).val());
+                        else
+                            data[key].push("")
+                    } else {
+                        data[key] = [];
+                        if ($(this).prop('checked'))
+                            data[key].push($(this).val());
+                        else
+                            data[key].push("")
+                    }
+                }
+                else if (! $(this).is(':checkbox')) {
+                    if (key in data) {
+                        data[key].push($(this).val())
+                    } else {
+                        data[key] = [];
+                        data[key].push($(this).val())
+                    }
+                }
+            });
+
+            $.ajax({
+                url: "{% url 'visitor_api' %}",
+                type: "POST",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    data: JSON.stringify(data)
+                },
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    Swal.fire({
+                        text: 'Working...',
+                        icon: 'info',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        allowEscapeKey: false,
+                        allowOutsideClick: false
+                    })
+                },
+                success: function (response) {
+                    Swal.fire({
+                        text: response,
+                        icon: 'success'
+                    }).then(function (result) {
+                        window.location.href = "{{ BASE_URL }}/visitor/my_applications";
+                    });
+                },
+                error: function (err, msg) {
+                    Swal.fire({
+                        text: err.responseText,
+                        icon: 'error'
+                    })
+                }
+            })
+        }
+    });
+
+    $('#other_visit').click(function () {
+        if ($('#other_visit').prop('checked'))
+            $('#other_visit_field').removeAttr('disabled');
+        else {
+            $('#other_visit_field').val("");
+            $('#other_visit_field').prop('disabled', 'true');
+        }
+    });
+
+    $('#other_bu_check').click(function () {
+        if ($('#other_bu_check').prop('checked'))
+            $('#other_bu_field').removeAttr('disabled');
+        else {
+            $('#other_bu_field').val("");
+            $('#other_bu_field').prop('disabled', 'true');
+        }
+    });
+
+    $('#other_bu_check2').click(function () {
+        if ($('#other_bu_check2').prop('checked'))
+            $('#other_bu_field2').removeAttr('disabled');
+        else {
+            $('#other_bu_field2').val("");
+            $('#other_bu_field2').prop('disabled', 'true');
+        }
+    });
+
+    function menuOnClick() {
+        document.getElementById("menu-bar").classList.toggle("change");
+        document.getElementById("nav").classList.toggle("change");
+        document.getElementById("menu-bg").classList.toggle("change-bg");
+    }
+
+    document.querySelectorAll('input[type=number]')
+  .forEach(e => e.oninput = () => {
+    // Always 2 digits
+    if (e.value.length >= 2) e.value = e.value.slice(0, 2);
+    // 0 on the left (doesn't work on FF)
+    if (e.value.length === 1) e.value = '0' + e.value;
+    // Avoiding letters on FF
+    if (!e.value) e.value = '00';
+  });
+</script>
+
+
+
+</body>
+
+</html>

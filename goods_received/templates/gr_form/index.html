@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Foxconn - Goods Received - GR Form</title>
+
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/12.1.2/css/intlTelInput.css'>
+    <link rel='stylesheet' href='https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css'>
+    <link rel='stylesheet'
+          href='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-mentions-input@1.6.0/jquery.mentionsInput.min.css">
+    <link rel="stylesheet" href="{% static 'office_app/css/chat.css' %}">
+    <!-- font icon -->
+    <link href="{% static 'purchase/css/elegant-icons-style.css' %}" rel="stylesheet"/>
+    <!-- Custom styles -->
+    <link href="{% static 'purchase/css/style2.css' %}" rel="stylesheet">
+    <link href="{% static 'purchase/css/style-responsive.css' %}" rel="stylesheet"/>
+
+</head>
+
+<body class="pr_form">
+
+{% if show_chat %}
+<div class="container chat-container">
+    <div class="row">
+        <div class="chat-block col-md-3">
+            <div class="card card-primary text-secondary">
+                <div class="card-header p-2" id="accordion">
+                    <i id="chat-badge" class="fas fa-comment pl-2"></i> Chat
+                    <div class="btn-group float-right pr-2">
+                        <a type="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                            <i id="toggle_icon" class="fas fa-arrow-down"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-collapse collapse show" id="collapseOne">
+                    <div class="card-header text-center text-info p-1">Chat for GR Form: {{ form_id }}</div>
+                    <div id="chat-body" class="card-body card-body-chat">
+                        <ul class="chat" id="chat_list"></ul>
+                    </div>
+                    <div class="card-footer p-2">
+                        <div class="input-group" style="flex-wrap: nowrap">
+                            <textarea id="chat-input" type="text" class="form-control form-control-sm" placeholder="Type your message here..." ></textarea>
+                            <i class="btn fas fa-level-down-alt text-primary" id="chat-scroll" title="Auto scroll on new message"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Multi step form -->
+<section class="multi_step_form">
+    <form id="msform" name="msform" method="POST">
+        {% csrf_token %}
+        <!-- Tittle -->
+        <div class="tittle">
+            <h1>Foxconn Goods Received - GR Form</h1>
+
+            <h2 id="declined_message" {% if gr_form.isDeclined == False %}hidden{% endif %} style="color: firebrick">
+                This Form is Declined</h2>
+            <h2 id="approved_message" {% if gr_form.isApproved == False %}hidden{% endif %} style="color: limegreen">
+                This Form has been Completely Approved</h2>
+        </div>
+        <!--menu bar-->
+        <nav class="navbar navbar-expand-lg navbar-light  bg-light rounded nav nav-tabs">
+            <a class="ml-5 h7">Welcome, {{ request.session.full_name }} !</a>
+
+            <div class="collapse navbar-collapse justify-content-end " id="navbarNavDropdown">
+                <ul class="nav nav-pills nav-fill" style="float: right">
+
+                    <li class="nav-item">
+                        <a href="{% url 'smart_office_dashboard' %}" class="nav-link">Smart Office</a>
+                    </li>
+
+                    <li class="nav-item mr-sm-2">
+                        <a href="{% url 'logout' %}" class="nav-link">Log Out</a>
+                    </li>
+
+
+                </ul>
+            </div>
+        </nav>
+
+        <!-- fieldsets -->
+        <fieldset>
+            <div class="mt-3">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <header class="card-header bg-foxconn">
+                                Requisition Info (GR Form)
+                            </header>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group col-md-4 float-left">
+                                        <label for="form_id">Form ID: (Auto Generated)</label>
+                                        <input type="text" class="form-control" id="form_id" name="form_id" readonly
+                                               placeholder="Form ID"
+                                               {% if gr_form.formID != None %}value="{{ gr_form.formID }}"{% endif %}>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="status">Status: </label>
+                                        <input type="text" class="form-control" id="status" name="status" readonly
+                                               placeholder="Form Status"
+                                                {% if gr_form.isApproved %}
+                                               value="Approved" style="background-color: limegreen"
+                                                {% elif gr_form.isDeclined %}
+                                               value="Declined" style="background-color: red"
+                                                {% else %}
+                                               value="Pending Approval"{% endif %}>
+                                    </div>
+                                    <div class="form-group col-md-4 float-right">
+                                        <label for="sap_document_date">SAP Document Date:</label>
+                                        <input class="form-control" id="sap_document_date" name="sap_document_date" placeholder="matching PR not found"
+                                               {% if sap_pr_post_date != None %} value="{{ sap_pr_post_date}}" {% endif %} readonly>
+                                    </div>
+                                    <div class="form-group col-md-4 float-left">
+                                        <label for="legal_entity">Legal Entity {% if pr_form != None %}(Auto Generated From PR){% else %}(Auto Generated From SAP){% endif %}:</label>
+                                        <input type="text" class="form-control" id="legal_entity" name="legal_entity"
+                                               readonly {% if sap_data.0.Companycode == None %} value="{{ pr_form.legalEntity }}"{% else %} value="{{ sap_data.0.Companycode }}"{% endif %}>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="vendor_name">Vendor Name {% if pr_form != None %}(Auto Generated From PR){% else %}(Auto Generated From SAP){% endif %}:</label>
+                                        <input type="text" class="form-control" id="vendor_name" name="vendor_name"
+                                               readonly {% if sap_data.0.Vendorname == None %}value="{{ supplier_info.vendorName }}"{% else %} value="{{ sap_data.0.Vendorname }}"{% endif %}>
+                                    </div>
+                                    <div class="form-group col-md-4 float-right">
+                                        <label for="sap_gr_postdate">SAP GR Post Date :</label> <!-- will populate once GR is completely approved-->
+                                        <input type="text" class="form-control" id="sap_gr_postdate"
+                                               name="sap_gr_postdate" readonly placeholder="will be populated once both users approve GR" {% if sap_gr_post_date != None %}value="{{ sap_gr_post_date }}"{% endif %}>
+                                    </div>
+                                    <div class="form-group col-md-4 float-left">
+                                        <label for="business_group">Business Group {% if pr_form != None %}(Auto Generated From PR){% endif %}:</label>
+                                        {% if pr_form != None %}
+                                            <input type="text" class="form-control" id="business_group"
+                                                   name="business_group" readonly value="{{ basic_info.businessGroup }}">
+                                        {% else %}
+                                            <select class="form-control" id="business_group" name="business_group">
+                                            {% for group in business_groups %}
+                                                <option value="{{ group.pk }}" {% if group == gr_form.businessGroup %}selected{% endif %}>{{ group }}</option>
+                                            {% endfor %}
+                                            </select>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <label for="vendor_code">Vendor Code {% if pr_form != None %}(Auto Generated From PR){% else %}(Auto Generated From SAP){% endif %}:</label>
+                                        <input type="text" class="form-control" id="vendor_code" name="vendor_code"
+                                              readonly {% if sap_data.0.Vendor == None %} value="{{ supplier_info.vendor.vendorCode }}"{% else %} value="{{ sap_data.0.Vendor }}"{% endif %}>
+                                    </div>
+                                    <div class="form-group col-md-4 float-right">
+                                        <label for="sap_gr_postdate">SAP GR Number:</label>
+                                        <input type="text" class="form-control" id="sap_gr_number"
+                                               name="sap_gr_number" readonly placeholder="will be populated once both users approve GR">
+                                    </div>
+                                    <div class="form-group col-md-4 float-left">
+                                        <label for="business_unit">Business Unit {% if pr_form != None %}(Auto Generated From PR){% endif %}:</label>
+                                        {% if pr_form != None %}
+                                        <input type="text" class="form-control" id="business_unit"
+                                               name="business_unit" readonly value="{{ basic_info.businessUnit }}">
+                                        {% else %}
+                                            <select class="form-control" name="business_unit" id="business_unit">
+                                                {% for unit in business_units %}
+                                                    <option value="{{ unit.pk }}" {% if unit == gr_form.businessUnit %}selected{% endif %}>{{ unit }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group col-md-4 float-left">
+                                        <label for="pr_requester">PR Requester {% if pr_form != None %}(Auto-generated From PR){% endif %}:</label>
+                                        {% if pr_form != None %}
+                                            <input type="text" class="form-control" id="pr_requester"
+                                                   name="pr_requester" value="{{ pr_form.employee }}" readonly>
+                                        {% else %}
+                                                <input id="pr_requester" name="pr_requester" {% if gr_form.requester != None %}value="{{ gr_form.requester }}"{% endif %} class="form-control" placeholder="Will be filled once requester takes action" readonly>
+                                        {% endif %}
+
+                                    </div>
+                                    <div class="form-group col-md-4 float-right">
+                                        <label for="sap_acc_doc">SAP Account Document Number:</label>
+                                        <input type="text" class="form-control" id="sap_acc_doc" name="sap_acc_doc"
+                                               readonly placeholder="will be populated once both users approve GR">
+                                    </div>
+                                    <div class="form-group col-md-4 float-left">
+                                        <label for="plant">Plant {% if pr_form != None %}(Auto Generated From PR){% else %}(Auto Generated From SAP){% endif %}:</label>
+                                        <input type="text" class="form-control" id="plant" name="plant" readonly
+                                               {% if gr_form.plantCode != None %}value="{{ gr_form.plantCode }}" {% else %}value="{{ basic_info.plantCode }}"{% endif %}>
+                                    </div>
+                                    <div class="form-group col-md-4 float-left">
+                                        <label for="packaging_slip">Packaging Slip (Upload file):</label>
+                                        <div id="slip">
+                                            {% if packaging_slip == None %}
+                                                <input type="file" class="form-control" id="packaging_slip"
+                                                       name="packaging_slip">
+                                            {% else %}
+                                                <a href="{% get_media_prefix %}{{ packaging_slip.location }}/{{ packaging_slip.fileName }}"
+                                                   target="_blank">{{ packaging_slip.fileName }}</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-4 float-right">
+                                        <label for="po_number">PO Number (Auto-generated From PO):</label>
+                                        <input type="text" class="form-control" id="po_number" name="po_number"
+                                               value="{{ po_num }}"
+                                               readonly>
+                                    </div>
+
+                                    <div class="form-group col-md-4 float-left">
+                                        <label for="ref_num">Ref Number:</label>
+                                        <input type="text" class="form-control numberinput" id="ref_num" name="ref_num"
+                                               {% if gr_form.refNumber != None %}value="{{ gr_form.refNumber }}"{% endif %}>
+                                    </div>
+
+                                    <div class="form-group col-md-4 float-right">
+                                        <label for="header_text">Header Text:</label>
+                                        <input type="text" class="form-control" id="header_text" name="header_text"
+                                                value="{{ gr_form.headerText }}">
+                                    </div>
+
+                                    <div class="form-group col-md-12 float-left">
+                                        <label for="memo">Memo:</label>
+                                        <textarea class="form-control" id="memo"
+                                                  name="memo">{% if gr_form.memo != None %}{{gr_form.memo}}{% endif %}</textarea>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <div class="">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <header class="card-header bg-foxconn">
+                                Open GR List
+                            </header>
+                            <div class="card-body">
+
+                                <div class="table-responsive-xl">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>
+                                                PO Number
+                                            </th>
+                                            <th>
+                                                PO Item
+                                            </th>
+                                            <th>
+                                                Part Number
+                                            </th>
+                                            <th>
+                                                Description
+                                            </th>
+                                            <th>
+                                                GR Quantity
+                                            </th>
+                                            <th>
+                                                PO Quantity
+                                            </th>
+                                            <th>
+                                                CC Description
+                                            </th>
+                                            <th>
+                                                CC Code
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for item in sap_data %}
+                                                <tr>
+                                                    <td><input class="form-control" type="text" id="po_number"
+                                                               placeholder="Auto-filled" name="po_number" readonly
+                                                               value="{{ po_num }}"></td>
+                                                    <td><input class="form-control" type="text" id="po_item" name="po_item"
+                                                               readonly value="{{ item.POITEM }}"></td>
+                                                    <td><input class="form-control" type="text" id="part_number"
+                                                               name="part_number" readonly value="{{ item.Material }}"></td>
+                                                    <td><textarea class="form-control" id="description" name="description" readonly>{{item.Materialdesc}}</textarea></td>
+                                                    <td><input class="form-control" id="gr_quantity" name="gr_quantity" value="{{ item.grQuantity }}"></td>
+                                                    <td><input class="form-control" id="po_quantity"
+                                                               placeholder="Auto-filled" name="po_quantity"
+                                                               value="{{ item.OpenPOQty }}" readonly></td>
+                                                    {% if gr_form.prForm != None and gr_form.prForm != ''%}
+                                                        <td><textarea class="form-control" id="cc_description"
+                                                                      name="cc_description" readonly>{{ item.costname }}</textarea></td>
+                                                        <td><input class="form-control" id="cost_center"
+                                                                    name="cost_center" readonly
+                                                                   value="{{ item.chosen_cost_center }}"></td>
+                                                    {% else %}
+                                                            <td>
+                                                                <select class="form-control" id="cc_description-{{ item.gr_pk }}" name="cc_description" onchange="update_cost_center_codes()">
+                                                                    {% for center in cost_centers %}
+                                                                        <option value="{{ center.costCenterCode }}" title="{{ center.costCenterCode }}" {% if item.chosen_cost_center == center.costCenterCode %}selected{% endif %}>{{ center.costCenterName }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </td>
+                                                            <td><input class="form-control" id="cost_center" name="cost_center" readonly></td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+
+
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+
+            <hr>
+            <div class="">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <header class="card-header bg-foxconn">
+                                MRO GR Attachment
+                            </header>
+                            <div class="card-body">
+
+                                <div class="well clearfix">
+                                    <button type="button"
+                                            class="btn btn-primary btn-group float-right"
+                                            name="add" value="Add Attachment"
+                                            id="addnew_attchment" onclick="add_attachment()"> Add New Attachment
+                                    </button>
+
+                                </div>
+                                <div>
+
+                                    <div class="form-group col-md-5" id="uploaded_attachments"
+                                            {% if attachments == None %} hidden{% endif %}>
+                                        Already Uploaded Attachments:
+                                        {% for file in attachments %}
+                                            <br><a href="{% get_media_prefix %}{{ file.location }}/{{ file.fileName }}"
+                                                   target="_blank">{{ file.fileName }}</a>:
+                                            {% if file.description != '' %}{{ file.description }}{% else %}
+                                                <i>No Description</i>{% endif %}
+                                        {% endfor %}
+                                    </div>
+
+                                    <div id="attachments">
+                                        <div class="form-group col-md-5">
+                                            <input type="file" class="form-control" id="attachment"
+                                                   name="attachment">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                                        <textarea class="form-control" id="attachment_description"
+                                                                  name="attachment_description"
+                                                                  placeholder="File Description"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </section>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="panel panel-default">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <header class="card-header bg-foxconn">
+                                Approver
+                            </header>
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            Title
+                                        </th>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            Comment
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            Warehouse Receiver
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" id="warehouse_manager"
+                                                   name="warehouse_manager" readonly
+                                                   title="Will be auto-filled once someone takes action as the warehouse receiver"
+                                                    {% if warehouse_stage != None %}
+                                                   value="{{ warehouse_stage.approver.full_name }}"{% endif %}>
+                                        </td>
+
+                                        <td>
+                                            <textarea class="form-control" id="comment_warehouse_manager"
+                                                      name="comment_warehouse_manager"
+                                                      {% if warehouse_editable != None %}{% if warehouse_editable == False %}readonly{% endif %}{% else %}readonly{% endif %}>{% if warehouse_stage != None %}{% if warehouse_stage.comments != None %}{{ warehouse_stage.comments}}{% endif %}{% endif %}</textarea>
+                                        </td>
+                                        <td id="warehouse_buttons">
+                                            {% if warehouse_editable and form.isApproved != True %}
+                                                <button type="submit" class="btn btn-primary" data-toggle="tooltip"
+                                                        data-placement="top" title="Save Changes"
+                                                        onclick="return set_submit_button('Save warehouse')">
+                                                    {% if warehouse_stage.actionTaken != 'Approved' and warehouse_stage.actionTaken != 'Declined' %}
+                                                        Save Changes{% else %}Update form data{% endif %}</button>
+                                                {% if warehouse_stage.actionTaken != 'Approved' and warehouse_stage.actionTaken != 'Declined' %}
+                                                    <button type="submit" class="btn btn-success" data-toggle="tooltip"
+                                                            data-placement="top" title="Approve"
+                                                            onclick="return set_submit_button('Finish warehouse')">
+                                                        Approve
+                                                    </button>
+                                                    <button type="submit" class="btn btn-danger" data-toggle="tooltip"
+                                                            data-placement="top" title="Decline"
+                                                            onclick="return set_submit_button('Decline warehouse')">
+                                                        Decline
+                                                    </button>
+                                                {% endif %}
+                                            {% else %}
+                                                {{ warehouse_stage.actionTaken }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Buyer
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" id="buyer" name="buyer"
+                                                   readonly
+                                                   title="Will be auto-filled once someone takes action as the buyer"
+                                                    {% if buyer_stage != None %}
+                                                   value="{{ buyer_stage.approver.full_name }}"{% endif %}>
+                                        </td>
+
+                                        <td>
+                                            <textarea class="form-control" id="comment_buyer"
+                                                      name="comment_buyer"
+                                                      {% if buyer_editable != None %}{% if buyer_editable == False %}readonly{% endif %}{% else %}readonly{% endif %}>{% if buyer_stage != None %}{% if buyer_stage.comments != None %}{{buyer_stage.comments}}{% endif %}{% endif %}</textarea>
+                                        </td>
+                                        <td id="buyer_buttons">
+                                            {% if buyer_editable and form.isApproved != True %}
+                                                <button type="submit" class="btn btn-primary" data-toggle="tooltip"
+                                                        data-placement="top" title="Save Changes"
+                                                        onclick="return set_submit_button('Save buyer')">
+                                                    {% if buyer_stage.actionTaken != 'Approved' and buyer_stage.actionTaken != 'Declined' %}
+                                                        Save Changes{% else %}Update form data{% endif %}</button>
+                                                {% if buyer_stage.actionTaken != 'Approved' and buyer_stage.actionTaken != 'Declined' %}
+                                                    <button type="submit" class="btn btn-success" data-toggle="tooltip"
+                                                            data-placement="top" title="Approve"
+                                                            onclick="return set_submit_button('Finish buyer')">
+                                                        Approve
+                                                    </button>
+                                                    <button type="submit" class="btn btn-danger" data-toggle="tooltip"
+                                                            data-placement="top" title="Decline"
+                                                            onclick="return set_submit_button('Decline buyer')">
+                                                        Decline
+                                                    </button>
+                                                {% endif %}
+                                            {% else %}
+                                                {{ buyer_stage.actionTaken }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+            <input hidden readonly id="submit_button" name="submit_button">
+            <input hidden readonly id="employee_name" name="employee_name" value="{{ request.session.full_name }}">
+        </fieldset>
+        <!-- End Multi step form -->
+    </form>
+</section>
+<!-- JS Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/12.1.2/js/intlTelInput.js'></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"
+        integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn"
+        crossorigin="anonymous"></script>
+<!--Moments Js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment-with-locales.min.js"></script>
+<!--Emoji Js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.js"></script>
+
+<!-- custom javascripts -->
+<script src="{% static 'gr_form/js/corrinas_GR_javascript.js' %}"></script>
+<script src="{% static 'gr_form/js/script.js' %}"></script>
+
+<script>
+    {% if pr_form == None %}
+        update_cost_center_codes();
+    {% endif %}
+</script>
+
+<script>
+    $('#item_detail').on('click', 'input[type="button"]', function () {
+        $(this).closest('tr').remove();
+    })
+    $('p input[type="button"]').click(function () {
+        $('#myTable').append('<tr><td><input type="text" class="fname" /></td><td><input type="button" value="Delete" /></td></tr>')
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $(".numberinput").forceNumeric();
+    });
+
+    // forceNumeric() plug-in implementation Author:Josh
+    jQuery.fn.forceNumeric = function () {
+        return this.each(function () {
+            $(this).keydown(function (e) {
+                var key = e.which || e.keyCode;
+
+                if (!e.shiftKey && !e.altKey && !e.ctrlKey &&
+                    // numbers
+                    key >= 48 && key <= 57 ||
+                    // Numeric keypad
+                    key >= 96 && key <= 105 ||
+                    // comma, period and minus, . on keypad
+                    key == 190 || key == 188 || key == 109 || key == 110 ||
+                    // Backspace and Tab and Enter
+                    key == 8 || key == 9 || key == 13 ||
+                    // Home and End
+                    key == 35 || key == 36 ||
+                    // left and right arrows
+                    key == 37 || key == 39 ||
+                    // Del and Ins
+                    key == 46 || key == 45)
+                    return true;
+
+                return false;
+            });
+        });
+    };
+</script>
+
+{% if show_chat %}
+    <script>
+        const url = '{% url 'chat_api' %}';
+        const form_id = '{{ form_id }}';
+        const user_id = '{{ request.session.user_id }}';
+        const form_type = '{{ form_type }}';
+        const csrf_token = '{{ csrf_token }}';
+        const chat_approver_url = '{%  url 'get_form_approver_api' %}'
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.11.0/underscore-min.js" type='text/javascript'></script>
+    <script src="http://podio.github.io/jquery-mentions-input/lib/jquery.elastic.js" type='text/javascript'></script>
+    <script src='http://podio.github.io/jquery-mentions-input/jquery.mentionsInput.js' type='text/javascript'></script>
+    <script src="{% static 'office_app/js/chat.js' %}"></script>
+{% endif %}
+
+<script>
+    {% if gr_form.isApproved %}
+        user_cannot_edit_form();
+        hide_selects();
+    {% endif %}
+</script>
+
+</body>
+
+</html>

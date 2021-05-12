@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <title>Travel Application and Reimbursement User Manual</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Travel APplication User Manual">
+    <meta name="author" content="Josua Ataansuyi">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <script defer src="{% static 'user_guide/assets/fontawesome/js/all.js' %}"></script>
+
+    <link rel="stylesheet" href="{% static 'user_guide/assets/plugins/bootstrap/css/bootstrap.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'user_guide/assets/plugins/elegant_font/css/style.css'%}">
+
+    <link id="theme-style" rel="stylesheet" href="{% static 'user_guide/assets/css/styles.css'%}">
+
+</head>
+
+<body class="body-blue">
+
+
+
+    <div class="page-wrapper">
+
+        <!-- ******Header****** -->
+        <header class="header text-center">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <span aria-hidden="true" class="icon_documents_alt icon"></span>
+                        <span class="text-highlight">Travel Application and Reimbursement </span><span class="text-bold">User Guide</span>
+                    </h1>
+                </div><!--//branding-->
+                <div class="tagline">
+                    <p>The Smart Office User Guide for the Travel Application and Reimbursement</p>
+
+                </div><!--//tagline-->
+
+	             <div class="main-search-box pt-3 pb-4 d-inline-block">
+	                 <form class="form-inline search-form justify-content-center" action="" method="get">
+
+			            <input type="text" placeholder="Enter search terms..." name="search" id="search_text" class="form-control search-input">
+
+			            <button type="submit" id="search_submit" class="btn search-btn" value="Search" onclick="search_page"><i class="fas fa-search"></i></button>
+
+			        </form>
+	             </div>
+                    <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'travel_home' %}">Dashboard</a></li>
+        </ol>
+            </div>
+
+              </header><!--//header-->
+
+        <section class="cards-section text-center">
+            <div class="container">
+                <h2 class="title">Getting familiar with our application is easy!</h2>
+                <div class="intro">
+                    <p>Welcome to the Travel Appication User Guide. This is a User Guide to help you use our application effectively. ou need to have access to Smart Office to be able to use the Travel Application and the Travel Reimbursement form. If you do not have access to Smart Office, contact the I.T. Department to set up the account for you.
+                      <div id="cards-wrapper" class="cards-wrapper row">
+                          <div class="item item-blue col-lg-4 col-6">
+                          </div>
+                          <div class="item item-blue col-lg-4 col-6">
+                              <div class="item-inner">
+                                  <div class="icon-holder">
+                                      <i class="icon fa fa-play"></i>
+                                  </div><!--//icon-holder-->
+                                  <h3 class="title">View Manual</h3>
+                                  <p class="intro">A quick link to the TA and TR overview</p>
+                                  <a class="link" href="{% url 'guide_info' %}"><span></span></a>
+                              </div><!--//item-inner-->
+                          </div><!--//item-->
+
+                      </div><!--//cards-->
+
+
+                    <div class="cta-container">
+                        <a class="btn btn-primary" href="{% url 'contact_us' %}" target="_blank"><i class="fas fa-address-book"></i> Contact IT Department</a>
+                    </div><!--//cta-container-->
+                </div><!--//intro-->
+
+            </div><!--//container-->
+        </section><!--//cards-section-->
+    </div><!--//page-wrapper-->
+
+    <footer id="footer" class="footer text-center">
+      <div class="container">
+
+        <small class="copyright">Designed by the software department (Team Unicorn)</small>
+
+      </div>
+      <!--//container-->
+    </footer>
+
+
+    <script type="text/javascript" src="{% static 'user_guide/assets/plugins/jquery-3.4.1.min.js'%}"></script>
+    <script type="text/javascript" src="{% static 'user_guide/assets/plugins/bootstrap/js/bootstrap.min.js'%}"></script>
+    <script type="text/javascript" src="{% static 'user_guide/assets/plugins/stickyfill/dist/stickyfill.min.js'%}"></script>
+    <script type="text/javascript" src="{% static 'user_guide/assets/js/main.js'%}"></script>
+
+</body>
+</html>

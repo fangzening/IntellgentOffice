@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Site Administration | Smart Office</title>
+    <link href="{%  static 'office_app/admin/css/styles.css' %}" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap4.min.css">
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@9.17.0/dist/sweetalert2.css'>
+</head>
+<body class="sb-nav-fixed">
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+    <a class="navbar-brand" href="{% url 'admin_dashboard' %}">Smart Office Admin</a>
+    <!-- User -->
+    <div class="d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0" style="color:rgba(255, 255, 255, 0.5)">
+        {{ request.session.full_name }}
+    </div>
+    <!-- Navbar-->
+    <ul class="navbar-nav ml-auto ml-md-0">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="userDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fas fa-user fa-fw"></i></a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="{% url 'smart_office_dashboard' %}">Smart Office</a>
+                <a class="dropdown-item" href="#">Activity Log</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+            </div>
+        </li>
+    </ul>
+</nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+            <div class="sb-sidenav-menu">
+                <div class="nav">
+                    <div class="sb-sidenav-menu-heading">View</div>
+                    <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>Dashboard
+                    </a>
+                    <a class="nav-link" href="{% url 'module' %}">
+                        <div class="sb-nav-link-icon"><i class="fas fa-clone"></i></div>Module
+                    </a>
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePT" aria-expanded="false" aria-controls="collapsePT" title="Approval Process Tracker">
+                        <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>AP Tracker<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                     <div class="collapse" id="collapsePT" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="{% url 'ta_ap_tracker' %}">Travel Application</a>
+                            <a class="nav-link" href="{% url 'tr_ap_tracker' %}">Travel Reimbursement</a>
+                            <a class="nav-link" href="{% url 'pr_ap_tracker' %}">Purchase Requisition</a>
+                        </nav>
+                    </div>
+
+                    <div class="sb-sidenav-menu-heading">Data</div>
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseGeneral" aria-expanded="false" aria-controls="collapseGeneral">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>General<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseGeneral" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="{% url 'account' %}">Account</a>
+                            <a class="nav-link" href="{% url 'employee' %}">Employee</a>
+                            <a class="nav-link" href="{% url 'costcenter' %}">Cost Center</a>
+                            <a class="nav-link" href="{% url 'businessunit' %}">Business Unit</a>
+                            <a class="nav-link" href="{% url 'businessgroup' %}">Business Group</a>
+                            <a class="nav-link" href="{% url 'legalentity' %}">Legal Entity</a>
+                            <a class="nav-link" href="#">Role</a>
+                            <a class="nav-link" href="#">GL Account</a>
+                            <a class="nav-link" href="#">Building</a>
+                            <a class="nav-link" href="{% url 'vendor' %}">Vendors</a>
+                        </nav>
+                    </div>
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSmartHR" aria-expanded="false" aria-controls="collapseSmartHR">
+                        <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>Smart HR <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseSmartHR" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                           <a class="nav-link" href="#">Checklist Task</a>
+                        </nav>
+                    </div>
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseForms" aria-expanded="false" aria-controls="collapseForms">
+                        <div class="sb-nav-link-icon"><i class="fab fa-wpforms"></i></div>Forms <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseForms" aria-labelledby="headingThree" data-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="{% url 'approver' %}">Approver</a>
+                            <a class="nav-link" href="{% url 'approval_process' %}">Approval Process</a>
+                            <a class="nav-link" href="{% url 'combination' %}">Link Processes to Forms</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <div class="sb-sidenav-footer"></div>
+        </nav>
+    </div>
+    <div id="layoutSidenav_content">

@@ -1,0 +1,238 @@
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>Approved Forms</title>#}
+{#</head>#}
+{#<body>#}
+{#<h1>Your Forms that have been Submitted</h1>#}
+{##}
+{#{% for form in forms_to_show %}#}
+{#    {{ form }}#}
+{#    {% if form in approved_forms %} Form is Approved {% endif %}#}
+{#    {% if form in declined_forms %} Form is Declined <a href="{% url 'travel_application' %}">WORK ON ANOTHER TRAVEL APPLICATION</a>#}
+{#        or <a href="{% url 'work_from_declined_form' pk=form.pk %}">CREATE NEW BASED ON DECLINED FORM</a>{% endif %}#}
+{#    {% if form in not_submitted %} Form is Saved but Not Submitted. Note: You can only have one form that is saved but not submitted.{% endif %}#}
+{#    <br><br>#}
+{#{% endfor %}#}
+{##}
+{#</body>#}
+{#</html>#}
+
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
+      xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Foxconn Travel Application </title>
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="{% static 'travel/style.css' %}">
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap4.min.css">
+    <!-- Toastr notification -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+    <style>
+        tr {
+            cursor: pointer;
+        }
+    </style>
+
+    <!-- Jquery UI -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+</head>
+<body id="test">
+<!-- partial:index.partial.html -->
+
+<!--PEN HEADER-->
+<header class="header">
+    <h1 class="header__title">Foxconn Travel Application</h1>
+</header>
+
+<!--PEN CONTENT     -->
+<div class="content">
+    <!--content inner-->
+    <div class="content__inner">
+        <div class="container overflow-hidden">
+            <!--multisteps-form-->
+            <div class="multisteps-form scaleIn">
+                <!--menu bar-->
+                <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3 rounded">
+                    <a class="h7">Welcome, {{ request.session.full_name }}</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a href="{% url 'travel_home' %}" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'smart_office_dashboard' %}" class="nav-link">Smart Office</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                                   aria-haspopup="true" aria-expanded="false">Travel Application Menu</a>
+                                <div class="dropdown-menu">
+
+                                    <a href="{% url 'travel_application' %}" class="dropdown-item">Create New Application</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{% url 'submitted_forms' %}" class="dropdown-item">View My Applications</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{% url 'travel_list' %}" class="dropdown-item">Approve Applications</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                                   aria-haspopup="true" aria-expanded="false">Travel Reimbursement Menu</a>
+                                <div class="dropdown-menu">
+                                    <a href="{% url 'my_travel_rem' %}" class="dropdown-item">View My TR Applications</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{% url 'travel_rem_list' %}" class="dropdown-item">Approve TR Applications</a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'logout' %}" class="nav-link">Log Out</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <!--form panels-->
+                <div class="row">
+                    <div class="col-12 col-lg-12 m-auto">
+                        <form class="multisteps-form__form">
+                            <!--Personal Info form panel-->
+                            <div class="multisteps-form__panel shadow p-4 rounded bg-white js-active" data-animation="scaleIn">
+                                <h3 class="multisteps-form__title">Your Travel Applications</h3>
+                                <br>
+                                <div class="multisteps-form__content">
+                                    <!--first row-->
+                                    <div class="col-md-12" data-animation="scaleIn">
+                                        <table id="my_travel_table" class="table table-striped table-hover responsive" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Form ID</th>
+                                                    <th>Travel Type</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Applicant Name</th>
+                                                    <th>App. Stage</th>
+                                                    <th>App. Status</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.js"></script>
+<!-- DataTable -->
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<!-- Toastr notification -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<!-- JqueryUI JS -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- Bootbox -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+<!-- Toastr notification -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<script>
+    {# Datatable #}
+    {# Toaster Notification #}
+    $(function() {
+        toastr.options = {
+            "positionClass": "toast-bottom-right",
+            "timeOut": 10000,
+            "preventDuplicates": true,
+            "newestOnTop": true,
+        };
+
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    });
+
+    $(document).ready(function() {
+        let my_travel_table = $('#my_travel_table').DataTable({
+            ajax: {
+                url: "{% url 'my_travel_forms_json' %}",
+                error: function () {
+                    alert("Error getting data. Please Refresh or Contact System Administrator");
+                }
+            },
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                    type: 'none',
+                    target: ''
+                }
+            },
+            order: [ 0, 'desc'],
+
+            columns: [
+                { "data": "formID" },
+                { "data": "travelType" },
+                { "data": "startDate" },
+                { "data": "endDate" },
+                {
+                    "render": function (data, type, row) {
+                        if(row['middleName'])
+                            return row['firstName'] + " " + row['middleName'] + " " + row['lastName'];
+                        else
+                            return row['firstName'] + " " + row['lastName'];
+                    }
+                },
+                { "data": "currentStage" },
+                {
+                    "render": function (data, type, row) {
+                        if(row['isCompleted'] === false)
+                            return "Needs to be submitted";
+                        else if (row['actionTaken']==='Declined' || row['isDeclined'] === true)
+                            return "Declined";
+                        else if(row['isApproved'] === true)
+                            return "Approved";
+                        else
+                            return "Pending";
+                    }
+                }
+            ]
+        });
+
+        $('#my_travel_table tbody').on('click', 'tr', function () {
+            let data = my_travel_table.row(this).data();
+            window.location.href = "../travel_application/" + data["formID"];
+        });
+    });
+
+    {# Toastr Notification #}
+    $(function() {
+        toastr.options = {
+            "positionClass": "toast-bottom-right",
+            "timeOut": 5000,
+            "preventDuplicates": true,
+            "newestOnTop": true,
+        };
+
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    });
+</script>
+<!--<script type="text/javascript" src="{% static 'travel/js/countries.js' %}"></script>-->
+
+</body>
+</html>

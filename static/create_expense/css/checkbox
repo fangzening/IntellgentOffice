@@ -1,0 +1,80 @@
+@import "checkbox";
+
+// options
+$option-color:           #cbd1d8;
+$checked-option-color:   #40e0d0;
+$option-size:            40px;
+$explosion-distance:     5; // multiplied by $option-size
+$explosion-duration:     0.65s;
+
+// on-click animation
+@include keyframes(click-wave) {
+  $offset: ((($option-size * $explosion-distance) - $option-size) / 2);
+
+  0% {
+    @include size($option-size);
+    opacity: 0.35;
+    position: relative;
+  }
+
+  100% {
+    @include size($option-size*$explosion-distance);
+    margin-left: -$offset;
+    margin-top: -$offset;
+    opacity: 0;
+  }
+}
+
+// Checkbox/Radio replacement
+.option-input {
+  @include appearance(none);
+  @include position($option-size/3 0 0 0);
+  @include size($option-size);
+  @include transition;
+  background: $option-color;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 0.5rem;
+  outline: none;
+  position: relative;
+  z-index: 1000;
+
+  &:hover {
+    background: darken($option-color, 15%);
+  }
+
+  &:checked {
+    background: $checked-option-color;
+
+    // checkmark
+    &::before {
+      @include size($option-size);
+      @include position(absolute);
+      content: '\2716';
+      display: inline-block;
+      font-size: $option-size/1.5;
+      text-align: center;
+      line-height: $option-size;
+    }
+
+    // animted wave
+    &::after {
+      @include animation(click-wave $explosion-duration);
+      background: $checked-option-color;
+      content: '';
+      display: block;
+      position: relative;
+      z-index: 100;
+    }
+  }
+
+  &.radio {
+    border-radius: 50%;
+
+    &::after {
+      border-radius: 50%;
+    }
+  }
+}

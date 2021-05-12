@@ -1,0 +1,149 @@
+{% load static %}
+{% include 'office_app/includes/start.html' %}
+<!-- Applications================================================== -->
+<section class="section bg-light" id="smartofficeapplications">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="card w-100">
+                <div class="card-header">Notifications</div>
+                <div class="card-header m-3" id="filterType">
+                    <label class="pr-3">Show:</label>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Description</th>
+{#                            <th>Status</th>#}
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% include 'office_app/includes/body_footer.html' %}
+{# Custom Js scritps will go here #}
+{# Written by Zaawar Ejaz #}
+<script>
+    $(document).ready(function() {
+
+        let dataTable = $('#dataTable').DataTable({
+            ajax: {
+                url: "{% url 'notifications_api' %}",
+                dataSrc: 'notifications',
+                error: function (err) {
+                    swal.fire({
+                        text: "Error getting data. Please contact IT Administrator",
+                        icon: "error"
+                    });
+                }
+            },
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                    type: 'none',
+                    target: ''
+                }
+            },
+            order: [0, 'desc'],
+            orderCellsTop: true,
+            columns: [
+                {
+                    "render": function (data, type, row) {
+                        return moment(row.created_on).format("YYYY-MM-DD hh:mm A")
+                    }
+                },
+                { data: 'title', title: 'Type' },
+                { data: 'body' },
+                {#{#}
+                {#    "render": function (data, type, row) {#}
+                {#        if (row.is_unread) {#}
+                {#            return "Unread";#}
+                {#        }#}
+                {#        else#}
+                {#            return "Read";#}
+                {#    }#}
+               // {#},#}
+            ],
+            columnDefs: [{
+                "createdCell": function (td) {
+                    $(td).css('font-size', '14px')
+                },
+                "defaultContent": "",
+                "targets": '_all',
+            }],
+
+            createdRow: function( row, data, dataIndex){
+                if( data.is_unread) {
+                    $(row).css('background-color', 'rgba(255, 0, 0, 0.10)');
+                }
+            },
+
+            initComplete: function () {
+
+                this.api().columns(1).every( function () {
+                    var column = this;
+
+                    var buttons = $('<button class="btn btn-secondary">All</button>' +
+                        '<button class="btn btn-light">Travel Application</button>' +
+                        '<button class="btn btn-light">Travel Reimbursement</button>' +
+                        '<button class="btn btn-light">Purchase Request</button>' +
+                        '<button class="btn btn-light">Good Received</button>' +
+                        '<button class="btn btn-light">Visitor Request</button>' +
+                        '<button class="btn btn-light">Chat</button>' +
+                        '<button class="btn btn-light">Others</button>');
+
+                    buttons.appendTo($('#filterType'))
+                        .on( 'click', function () {
+                            buttons.removeClass('btn-secondary').addClass('btn-light');
+                            $(this).removeClass('btn-light').addClass('btn-secondary');
+
+                            let val = this.innerText;
+
+                            if  (val === 'All')
+                                column.search('', true, false ).draw();
+
+                            else if (val === 'Others')
+                                column
+                                    .search('^(?!.*Travel Application|Travel Reimbursement|Purchase Request|Good Received|Chat|Visitor Request).*$', true, false )
+                                    .draw();
+                            else
+                                column.search( val ? '^'+val+'$' : '', true, false ).draw();
+                        });
+
+                    {#var select = $('<select class="form-control-sm"><option value="">All</option></select>')#}
+                    {#    .appendTo( $('#filterType') )#}
+                    {#    .on( 'change', function () {#}
+                    {#        var val = $.fn.dataTable.util.escapeRegex(#}
+                    {#            $(this).val()#}
+                    {#        );#}
+                    {##}
+                    {#        column#}
+                    {#            .search( val ? '^'+val+'$' : '', true, false )#}
+                    {#            .draw();#}
+                    {#    } );#}
+                    {##}
+                    {#column.data().unique().sort().each( function ( d, j ) {#}
+                    {#    select.append( '<option value="'+d+'">'+d+'</option>' )#}
+                    // {#} );#}
+                } );
+            }
+        });
+
+        $('#dataTable tbody').on( 'mouseover', 'tr', function () {
+            $(this).css('cursor', 'pointer')
+        });
+
+        $('#dataTable tbody').on('click', 'tr', function () {
+            let row = dataTable.row(this).data();
+            open_notification(row.id, row.link);
+        });
+
+        setInterval(function () { dataTable.ajax.reload(null, false) }, 10000)
+    });
+</script>
+{% include 'office_app/includes/end.html' %}

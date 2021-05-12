@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <title>Travel Application and Reimbursement User Manual</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Travel Application User Manual">
+    <meta name="author" content="Josua Ataansuyi">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <script defer src="{% static 'user_guide/assets/fontawesome/js/all.js' %}"></script>
+
+    <link rel="stylesheet" href="{% static 'user_guide/assets/plugins/bootstrap/css/bootstrap.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'user_guide/assets/plugins/prism/prism.css'%}">
+
+    <link rel="stylesheet" href="{% static 'user_guide/assets/plugins/elegant_font/css/style.css'%}">
+
+    <link id="theme-style" rel="stylesheet" href="{% static 'user_guide/assets/css/styles.css'%}">
+
+</head>
+
+<body class="body-blue">
+  <div class="page-wrapper">
+    <!-- ******Header****** -->
+    <header id="header" class="header">
+      <div class="container">
+        <div class="branding">
+          <h1 class="logo">
+            <a href="{% url 'user_manual' %}">
+              <span aria-hidden="true" class="icon_documents_alt icon"></span>
+              <span class="text-highlight">Travel Application and Reimbursement </span><span class="text-bold">User Guide</span>
+            </a>
+          </h1>
+
+        </div>
+        <!--//branding-->
+
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'user_manual' %}">Home</a></li>
+          <li class="breadcrumb-item active">Quick Start</li>
+        </ol>
+
+{#        <div class="top-search-box">#}
+{#          <form class="form-inline search-form justify-content-center" action="" method="get">#}
+{##}
+{#            <input type="text" placeholder="Search..." name="search" id="search_text"  class="form-control search-input">#}
+{##}
+{#            <button type="submit" class="btn search-btn" value="Search"><i class="fas fa-search"></i></button>#}
+{##}
+{#          </form>#}
+{#        </div>#}
+
+      </div>
+      <!--//container-->
+    </header>
+    <!--//header-->
+    <div class="doc-wrapper">
+      <div class="container">
+        <div id="doc-header" class="doc-header text-center">
+          <h1 class="doc-title"><i class="icon fa fa-paper-plane"></i> Quick Start</h1>
+          <div class="meta"><i class="far fa-clock"></i> Last updated: July 6th, 2020</div>
+        </div>
+        <!--//doc-header-->
+        <div class="doc-body row">
+          <div class="doc-content col-md-9 col-12 order-1">
+            <div class="content-inner">
+              <section id="getting-started" class="doc-section">
+                <h2 class="section-title">Getting Started</h2>
+                <div class="section-block">
+                  <p>The Travel Application is part of Smart Office. You need to have access to Smart Office to be able to use the Travel Application and the Travel Reimbursement form. If you do not have access to Smart Office, contact the I.T.
+                    Department to set up the account for you.
+                  </p>
+                  <a class="btn btn-primary" href="{% url 'contact_us' %}" target="_blank"><i class="fas fa-address-book"></i> Contact IT Department</a>
+                </div>
+              </section>
+              <!--//doc-section-->
+              <section id="TA-general_information" class="doc-section">
+                <h2 class="section-title">Travel Application General Information </h2>
+                <div id="step1" class="section-block">
+                  <h3 class="block-title">How to navigate to the Travel Application </h3>
+                  <p>Log on to the Smart Office website with your login credentials here: foxoffice.fii-usa.com (if this link does not work, go to this <a href="http://10.20.193.66">url: http://10.20.193.66/</a> You will see the web page shown below:
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/log_inpng.png' %}" class="img-fluid" alt="Log In image">
+                  </p>
+                  <p>
+                    Once you are successfully logged in, you will be directed to the Smart Office Dashboard with different modules to choose from. To navigate to the Travel Application, first click on the START HERE button or scroll down.
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/dash.png'%}" class="img-fluid" alt="Dashboard image">
+                  </p>
+                  <p>
+                    Click on the Travel Forms Module
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/TA module.png'%}" class="img-fluid" alt="Module image">
+                  </p>
+                  <p>
+                    This is the Travel Application home page. Click “CREATE TRAVEL APPLICATION”
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/Picture1.png'%}" class="img-fluid" alt="picture image">
+                  </p>
+                  <p>
+                    And now you have successfully navigated to the Travel Application!
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/TA.png'%}" class="img-fluid" alt="TA image">
+                  </p>
+
+                </div>
+                <!--//section-block-->
+                <div id="step2" class="section-block">
+                  <h3 class="block-title">How to Create a Travel Application</h3>
+                  <p>Now that you know how to get to the travel application, let’s figure out how to save and submit it, and what all of the fields are for. Use the Next Button or the timeline above the form to navigate through the different pages of
+                    the form.
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/TA.png'%}" class="img-fluid" alt="TA image">
+                  </p>
+                  <p>The next few pages will be describing the different fields on the form.
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/PI.png'%}" class="img-fluid" alt="TA image">
+                  </p>
+
+                  <div class="row">
+                    <div class="col-md-6 col-12">
+                      <h6>Personal Information (Image Shown Above)</h6>
+                      <ul class="list">
+                        <li>Company: The Company that you belong to</li>
+                        <li>Form ID: No need to worry about this one, it just helps us keep track of the forms. If you are just creating a Travel Application, it will be blank. But if you are looking at a saved or submitted Travel Application, it
+                          will show the form ID.</li>
+                        <li>Business Group: The Business Group that you belong to</li>
+                        <li>Employee Name: Auto-filled to be your name</li>
+                        <li>BU (Profit Center): Auto-filled to be your Business Unit</li>
+                        <li>Department: Auto-filled to be your department</li>
+                        <li>Project: The project that you are traveling for</li>
+                        <li>Travel Type: Are you going to be traveling internationally or domestically?</li>
+                        <li>Estimated Expense: Automatically calculates the estimated expense of the trip based on the numbers you put into the form.</li>
+                        <li>Cost Center Description: Defaults to your Cost Center. If it needs to be changed for whatever reason, you can use it to change the cost center in charge of your trip.</li>
+                        <li>Budget Source Code: Automatically fills to whatever the budget source code is for the Cost Center Selected in the Cost Center Description Select Box</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-6 col-12">
+                      <h6>Travel Information (Image Shown below)</h6>
+                      <ol class="list">
+                        <li>Travel Date: The day you will start to travel. It cannot be today or any day before today.</li>
+                        <li>Travel To: The day you will come back from your travels.</li>
+                        <li>Estimated Period: Automatically calculates how many days you will be away</li>
+                        <li>Transportation: Would you be getting there by flight, train, or rental car?</li>
+                        <li>Departure (Country): What country you will be traveling from?</li>
+                        <li>Departure Factory Code: The factory you are associated with</li>
+                        <li>Departure State/City(Preferred): Where would you prefer to depart for your travels?</li>
+                        <li>Destination(Country): The country you will be traveling to.</li>
+                        <li>Destination (State): The state or province you will be traveling to.</li>
+                        <li>Destination City: The city you will be traveling to.</li>
+                        <li>Accommodation: Will you be in a hotel or a dormitory?</li>
+                        <li>Currency: The form of currency that you will need for the trip</li>
+                      </ol>
+
+                    </div>
+                  </div>
+                  <!--//row-->
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/TI.png'%}" class="img-fluid" alt="TA image">
+                  </p>
+                  <div class="row">
+                    <div class="col-md-12 col-12">
+                      <h6>Travel Purpose (Image Shown Below)</h6>
+                      <ul class="list">
+                        <li>Date: The date of the event</li>
+                        <li>Visit Company: The Company you will visit</li>
+                        <li>Department: The Department you work with</li>
+                        <li>Contact: The person you will be working with</li>
+                        <li>Precise work Item or Objective: What are you planning to achieve?</li>
+                        <li>Add Row: Click this to add a new row to the table if you need to add more information</li>
+                        <li>Delete Row: To delete a row in the table, check the checkbox next to the row and then click the Delete Row button.</li>
+                      </ul>
+                    </div>
+                    <p>
+                      <img src="{% static 'user_guide/assets/images/itinerary.png'%}" class="img-fluid" alt="TA image">
+                    </p>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 col-12">
+                      <h6>Expense (Image Shown Below)</h6>
+                      <ul class="list">
+                        <li>Airway Ticket: How much your plane ticket will cost in US dollars. If you will not be taking a plane, leave it at 0.</li>
+                        <li>Explanation (Airway Ticket): Explanation for why ticket costs what it does (where you are getting it from, how many tickets, ect.)</li>
+                        <li>Accommodation: How much it will cost to stay at where you are staying.</li>
+                        <li>Explanation (Accommodation/Hotel Options): This button shows you some options of where you can stay.</li>
+                        <li>Transportation: The cost of transportation (besides your plane ticket)</li>
+                        <li>Explanation (Transportation): The Enterprise Rental Code for your transportation</li>
+                        <li>Per Diem/Allowance Per Diem: You can leave it blank, or choose whichever country that you will be visiting and the per diem amount that you receive will be calculated for you.</li>
+                        <li>Explanation (Per Diem): Auto-fills based on per diem value chosen</li>
+                        <li>Public Relationship Expense: How much you think you will spend on a customer</li>
+                        <li>Explanation (Public Relationship Expense): Why you will spend this much on a customer</li>
+                        <li>Other Expense: Any other expenses you will have</li>
+                        <li>Explanation (other expense): What are the other expenses</li>
+                        <li>Total Expenses: Automatically calculated based on the numbers entered on the other expense fields</li>
+                      </ul>
+                    </div>
+                    <p>
+                      <img src="{% static 'user_guide/assets/images/itinerary.png'%}" class="img-fluid" alt="TA image">
+                    </p>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 col-12">
+                      <h6>Expense (Image Shown Below)</h6>
+                      <ul class="list">
+                        <li>Airway Ticket: How much your plane ticket will cost in US dollars. If you will not be taking a plane, leave it at 0.</li>
+                        <li>Explanation (Airway Ticket): Explanation for why ticket costs what it does (where you are getting it from, how many tickets, ect.)</li>
+                        <li>Accommodation: How much it will cost to stay at where you are staying.</li>
+                        <li>Explanation (Accommodation/Hotel Options): This button shows you some options of where you can stay.</li>
+                        <li>Transportation: The cost of transportation (besides your plane ticket)</li>
+                        <li>Explanation (Transportation): The Enterprise Rental Code for your transportation</li>
+                        <li>Per Diem/Allowance Per Diem: You can leave it blank, or choose whichever country that you will be visiting and the per diem amount that you receive will be calculated for you.</li>
+                        <li>Explanation (Per Diem): Auto-fills based on per diem value chosen</li>
+                        <li>Public Relationship Expense: How much you think you will spend on a customer</li>
+                        <li>Explanation (Public Relationship Expense): Why you will spend this much on a customer</li>
+                        <li>Other Expense: Any other expenses you will have</li>
+                        <li>Explanation (other expense): What are the other expenses</li>
+                        <li>Total Expenses: Automatically calculated based on the numbers entered on the other expense fields</li>
+                      </ul>
+                    </div>
+                    <p>
+                      <img src="{% static 'user_guide/assets/images/itinerary.png'%}" class="img-fluid" alt="TA image">
+                    </p>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-12 col-12">
+                      <h6>Travel Advance (Image Shown Below)</h6>
+                      <p>To apply for travel advance, click on Apply for Travel Advance Application on the bottom of page 3. Note: If you do not have a vendor code yet, you will need to get one if you want to apply for a travel advance amount
+                      </p>
+                    </div>
+                    <p>
+                      <img src="{% static 'user_guide/assets/images/advance.png'%}" class="img-fluid" alt="TA image">
+                    </p>
+                    <p>
+                      <img src="{% static 'user_guide/assets/images/advance2.png'%}" class="img-fluid" alt="TA image">
+                    </p>
+                    <p style="color:red">There is no vendor code attached to this account: means that you need to get a vendor code if you want to apply for travel advance. If you do have a vendor code but it says that you do not, please contact IT.
+                    </p>
+                    <p>Advance Amount: The only field you need to worry about if you are not an accountant. The advance amount cannot be greater than the total expenses of the trip.</p>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-12 col-12">
+                      <h6>Travel Policy (Image Shown Below)</h6>
+                      <p>Read the policy, then check the checkbox that says ‘I have read and Understand the Foxconn Travel Policy’
+                      </p>
+                    </div>
+                    <p>
+                      <img src="{% static 'user_guide/assets/images/policy.png'%}" class="img-fluid" alt="policy image">
+                    </p>
+                    <p>The green Send button will be enabled. When you click it, the form will be submitted.</p>
+                  </div>
+
+
+
+
+
+                </div>
+
+                <!--//section-block-->
+                <div id="step3" class="section-block">
+                  <h3 class="block-title">Saving the Travel Application</h3>
+                  <p>If you cannot finish the travel application, or you do not know all of the details about all of the required fields, you can click the Save and Return to Home button on the bottom of the application. This will take you back to
+                    the dashboard
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/save.png'%}" class="img-fluid" alt="policy image">
+                  </p>
+                  <p>To find your saved Travel Application from the dashboard, click again on the Travel Forms module</p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/module_save.png'%}" class="img-fluid" alt="module save image">
+                  </p>
+                  <p>
+                    Then, click on “View my Travel App”
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/view_save.png'%}" class="img-fluid" alt="view saved image">
+                  </p>
+                  <p>
+                    Next, click on the Travel Application Menu and choose ‘View my Applications’
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/myapplications.png'%}" class="img-fluid" alt="my applications image">
+                  </p>
+                  <p>
+                    This will take you to a page with all your travel applications on the website. Forms that are not submitted will be at app stage 0 and will say that they need to be submitted
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/saved_app.png'%}" class="img-fluid" alt="my saved image">
+                  </p>
+                  <p>To continue editing a saved form, click on it in the list. It will bring you to the saved form and you can continue editing it</p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/continue_edit.png'%}" class="img-fluid" alt="my saved image">
+                  </p>
+                </div>
+
+                <div id="step4" class="section-block">
+                  <h3 class="block-title">Monitoring Your Travel Application</h3>
+                  <p>This page has general information about all your travel applications. You can see if the travel application is approved, pending, or declined, and what stage of approval the form is currently on (as Shown in the Image above). If
+                    you click on a form that is submitted, it will show you the form, but all the fields will be greyed-out. This is because once a form is submitted for approval, it cannot be edited by the creator anymore.
+                  </p>
+                  <p>
+                    If you go to the timeline on the top, and click on ‘Approve’, it will take you to a page that shows the actions each approver has done to the form.
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/approve.png'%}" class="img-fluid" alt="approve image">
+                  </p>
+                </div>
+                <!--//section-block-->
+              </section>
+              <!--//doc-section-->
+
+              <section id="ta_approval_process" class="doc-section">
+                <h2 class="section-title">Travel Application Approval Process</h2>
+                <div class="section-block">
+                  <p>
+                    There are multiple ways that you can find travel applications that you need to approve.
+                  </p>
+                  <p>
+                    Check your email<br>
+                    When it is your turn to approve a form, an email will be sent to you with the link to the form that you need to approve. Click on the link and it will take you to the form that you need to approve
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/approve_email.png'%}" class="img-fluid" alt="approve email image">
+                  </p>
+                  <p>
+                    Check your notifications on the dashboard<br>
+                    On the dashboard, there is a little white bell on the top left corner. If there is a red number next to it, you can click on it and see your notifications.<br>
+                    When you need to approve a form, a notification will be given to you. If you click on the specific notification, it will take you to the form that you need to approve. <br>
+                    Note: when if you click on a notification, it will disappear from your notifications.
+
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/notify.png'%}" class="img-fluid" alt="approve email image">
+                  </p>
+                  <p>
+                    Go to the ‘Approve Forms’ page for Travel Applications<br>
+                    To get to the approve forms page from the Dashboard, go to the travel forms page.<br>
+                    Then click on Travel Application Menu to open the dropdown and click ‘Approve Applications’
+
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/approve_app.png'%}" class="img-fluid" alt="approve email image">
+                  </p>
+                  <p>
+                    This will take you to a page that has all the Travel Applications that you have approved and that you need to approve.<br>
+                    The ones you need to approve will have ‘Action Needed’ under Action Required. When you click on the form, it will take you to the page where you can approve the form.
+                  </p>
+
+                </div>
+
+
+
+                <div id="approve_ta" class="section-block">
+                  <h3 class="block-title"> Approving / Declining a Travel Application</h3>
+                  <p>When you get to the application you need to approve, go to the last page of the form.
+                  </p>
+                  <p>
+                    You can type a comment in the comments box. When you are ready to approve the form, you can click the Approve button. You will be redirected to the Dashboard and an email will be sent to the next approver.
+                  </p>
+
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/approve_ta.png'%}" class="img-fluid" alt="approve image">
+                  </p>
+                  <p>
+                    OR to Decline
+                  </p>
+                  <p>
+                    You can type a comment in the comments box. When you are ready to decline the form, you can click the Decline button. You will be redirected to the Dashboard and the creator of the form will be notified of their form being
+                    declined.
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/decline_ta.png'%}" class="img-fluid" alt="approve image">
+                  </p>
+
+                </div>
+
+
+                <div id="request_modification" class="section-block">
+                  <h3 class="block-title"> Requesting Modifications to a Travel Application</h3>
+                  <p>When you get to the application you need to modify, go to the last page of the form.
+                  </p>
+                  <p>
+                    You can type a comment in the comments box. When you are ready to modify the form, you can click the Modify button. You will then be able to go back to the rest of the form and change the information on the form. When you are
+                    finished with your modifications, click the button again.
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/modify.png'%}" class="img-fluid" alt="approve image">
+                  </p>
+                  <p>
+                    The request will be sent to the original creator of the form, and they will choose to either accept or decline your modifications. If they decline your modifications, you will be notified and the form will go back to you. If they
+                    accept the modifications, the form will go to the person after you in the approval process.
+                  </p>
+                </div>
+
+                <div id="change_approver" class="section-block">
+                  <h3 class="block-title"> Editing the Approver List</h3>
+                  <p>When you get to the application you need to modify, go to the last page of the form. Click the green ‘Edit Approver List’ button.
+                  </p>
+                  <p>
+                    You can then choose between three actions:
+                    <ul>
+                      <li>Replace yourself with someone else in the approval process</li>
+                      <li>Remove yourself from the approval process</li>
+                      <li> Add someone to the approval process</li>
+                    </ul>
+
+
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/edit_approver.png'%}" class="img-fluid" alt="approve image">
+                  </p>
+                  <p>
+                    The request will be sent to the original creator of the form, and they will choose to either accept or decline your modifications. If they decline your modifications, you will be notified and the form will go back to you. If they
+                    accept the modifications, the form will go to the person after you in the approval process.
+                  </p>
+                </div>
+
+                <div id="declined_application" class="section-block">
+                  <h3 class="block-title"> If your travel application gets declined</h3>
+                  <p>When your form is declined you will get an email and a notification with a link to the form telling you that your form was declined. To view the declined form, click on the link in the email or the notification on the dashboard.
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/declined1.png'%}" class="img-fluid" alt="Declined image">
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/declined2.png'%}" class="img-fluid" alt="Declined image">
+                  </p>
+                  <p>
+                    When you get to the form you may notice two buttons.
+                    <br>
+                    One says ‘Restart with a new form’, and the other says ‘Use as base for new form’. If you click on ‘Restart with a new form, all the data you entered from the declined form will be cleared and you can re-write everything. If you click ‘Use as base for new form’, the fields will remain unchanged except you will be able to edit them. After this, you can save or submit the form.
+                  </p>
+                </div>
+
+                <div id="approved_application" class="section-block">
+                  <h3 class="block-title"> When Travel Application Form is Completely Approved</h3>
+                  <p>When the travel form is completely approved, you will get an email and a notification on the website that it was completely approved.
+                    <br>
+                    You can click on the notification or the link in the email to view your approved travel application. You may notice that you can now apply for reimbursement.
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/reimbursement.png'%}" class="img-fluid" alt="Reimbursement image">
+                  </p>
+
+                  </div>
+
+
+
+                <!--//section-block-->
+                <div id="find_application" class="section-block">
+
+
+                </div>
+
+              </section>
+
+              <!--//doc-section-->
+              <section id="tr_general_information" class="doc-section">
+                <h2 class="section-title"> How to Create a Travel Reimbursement from</h2>
+                <div class="section-block">
+                  <p>In order for you to create a new travel reimbursement form, you must have at least one completely approved Travel Application that does not yet have a travel reimbursement form attached to it.
+                  </p>
+                  <p>To create the travel reimbursement form, go to your completely approved travel application. On the application there will be a button that says: ‘Apply for Reimbursement’. Click on it to create the travel reimbursement form.
+                  </p>
+                  <p><img src="{% static 'user_guide/assets/images/create_reimbursement.png'%}" class="img-fluid" alt="Reimbursement image"> </p>
+                  <p>You will be redirected to a page that will allow you to fill out your travel reimbursement form. Use the Next Button or the timeline above the form to navigate through the different pages of the form.
+                  </p>
+                  <p>
+                    	As the Applicant, you won’t have to worry about these fields too much because they are all greyed-out and auto-filled by the computer based on your employee information and the travel application associated with the travel reimbursement form.
+                  </p>
+                  <h3 class="block-title"> Mileage Buttons</h3>
+
+                </div>
+
+                <div class="section-block">
+                  <div class="callout-block callout-info">
+                    <div class="icon-holder">
+                      <i class="fas fa-edit"></i>
+                    </div>
+                    <!--//icon-holder-->
+                    <div class="content">
+                      <h4 class="callout-title">Edit Button</h4>
+                      <p>Click on this button to view the popup that contains all the fields you need to fill out about the week</p>
+                    </div>
+                    <!--//content-->
+                  </div>
+                  <!--//callout-block-->
+
+                  <div class="callout-block callout-danger">
+                    <div class="icon-holder">
+                      <i class="fas fa-trash-alt"></i>
+                    </div>
+                    <!--//icon-holder-->
+                    <div class="content">
+                      <h4 class="callout-title">Delete Week Button</h4>
+                      <p>Deletes all weeks in the section that are checked off, but it cannot delete every week. There must be at least one.</p>
+                    </div>
+                    <!--//content-->
+                  </div>
+                  <!--//callout-block-->
+
+                  <div class="callout-block callout-success">
+                    <div class="icon-holder">
+                      <i class="fas fa-plus"></i>
+                    </div>
+                    <!--//icon-holder-->
+                    <div class="content">
+                      <h4 class="callout-title">Add New Week:</h4>
+                      <p>Adds a new week to the form for the specified section.</p>
+                    </div>
+                    <!--//content-->
+                  </div>
+                  <h3 class="block-title"> Mileage Expenses</h3>
+                  <p>To fill out your mileage expenses, you must click the Edit button on the week you want to fill out information on. The popup below will appear. Fill in the information for each day of the week. If you did not travel on that day, leave it blank. If you fill out mileage or amount for a day, you will have to also tell where you traveled to and from. </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/mileage.png'%}" class="img-fluid" alt="Reimbursement image">
+                  </p>
+
+                  <h3 class="block-title"> Personal Meal</h3>
+                  <p>To fill out the personal meal expenses for the week, you must click the Edit button on the week you want to fill out information on. The popup below will appear. Fill in the information for each day of the week. If you were not away on travel during that day, or you did not eat during that meal, or the meal you had was not considered a personal meal, but instead a business meal, leave it blank. </p>
+                  <p>You can choose between filling out how much you spent on personal meals for each meal... OR if you chose the per diem option on the travel application you can fill-in that value for each day in the per diem section.</p>
+                  <p><b>Per Diem:</b> Can be filled out INSTEAD of filling out how much you spent for each meal. You could fill these out instead of the individual meals if you chose a per diem expense on your travel application. </p>
+                  <p><b>Sub Total $: </b>Automatically calculates how much money you spent on personal meals for the whole week</p>
+
+                  <h3 class="block-title"> Hotel Expenses </h3>
+                  <p>To fill out the personal meal expenses for the week, you must click the Edit button on the week you want to fill out information on. The popup below will appear. Fill in the information for each day of the week. If you were not away on travel during that day or did not spend any money on the specific expense, leave it blank. . </p>
+
+                  <h3 class="block-title"> Expenditure to be charged to Company  </h3>
+                  <p>Week Start Date: The start date of the week that you will be filling out other expenditure information for.
+                    <b>Requirements:</b> It must be a Monday. If you did not start traveling on a Monday, choose the Monday before you started traveling.
+                  </p>
+
+                  <h3 class="block-title">Upload Document </h3>
+                  <p>You need to prove your expenses on your trip(Mileage Document, Personal Expense, Business Expenses) by uploading a supporting document. Click the Choose File button to choose a file from your computer and upload it as proof of your mileage.
+                  </p>
+                </div>
+              </section>
+              <!--//doc-section-->
+              <section id="saving_tr" class="doc-section">
+                <h2 class="section-title">Saving your Travel Reimbursement Form</h2>
+                <div class="section-block">
+                  <p>If you want to save your Travel Reimbursement form, but it is not ready to submit yet, you can press the ‘Save’ button on the bottom of the form. Note: In order to save the form, you will need to have all date fields filled-out. You can change them later if they are incorrect
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/saving_tr.png'%}" class="img-fluid" alt="Reimbursement image">
+                  </p>
+                  <p>You will then be redirected to a page (as shown below) that has a list of all your travel reimbursement forms. Go to this page whenever you want to check on your travel reimbursement forms or work on a travel reimbursement that has not been saved yet.</p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/saved_tr.png'%}" class="img-fluid" alt="Reimbursement image">
+                  </p>
+                </div>
+
+                <!--//section-block-->
+              </section>
+              <!--//doc-section-->
+              <section id="monitor_tr" class="doc-section">
+                <h2 class="section-title">Monitoring Your Travel Reimbursement Form</h2>
+                <div class="section-block">
+                  <p>Not all the travel reimbursement forms on the View Your Travel Reimbursement Forms Page are unsubmitted, and some of them are submitted. Each form has general information about it on this page. You can see if the form is approved, pending, or declined, and what stage of approval the form is currently on.
+                  </p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/monitor_tr.png'%}" class="img-fluid" alt="Reimbursement image">
+                  </p>
+                  <p>If you go to the timeline on the top, and click on ‘Approve’, it will take you to a page that shows the actions each approver has done to the form</p>
+                  <p>
+                    <img src="{% static 'user_guide/assets/images/approve_tr.png'%}" class="img-fluid" alt="Reimbursement image">
+                  </p>
+
+
+                  <!--//row-->
+                </div>
+                <!--//section-block-->
+              </section>
+              <!--//doc-section-->
+              <section id="tr_approval_process" class="doc-section">
+                <h2 class="section-title">Travel Reimbursement Form Approval Process</h2>
+                <div class="section-block">
+                  <div class="row">
+                    <div class="col-md-12 col-12">
+                      <h6>How to Find Travel Reimbursement Forms that you need to Approve:</h6>
+                      <p>
+                        There are multiple ways that you can find travel reimbursement forms that you need to approve.<br>
+
+                        <p>
+                          <b>Check your email</b>
+                        When it is your turn to approve a form, an email will be sent to you with the link to the form that you need to approve. Click on the link and it will take you to the form that you need to approve</p>
+                        </p>
+                        <p><b>Check your notifications on the dashboard</b>
+                          On the dashboard, there is a little white bell on the top left corner. If there is a red number next to it, you can click on it and see your notifications.
+                        </p>
+                        <p>
+                          When you need to approve a form, a notification will be given to you. If you click on the specific notification, it will take you to the form that you need to approve. Be aware, though, that if you click on the notification, it will disappear from your notifications and you will not be able to use it to get to the form again.
+                        </p>
+                        <p>
+                          Go to the ‘Approve Forms’ page for Travel Reimbursement Forms
+                          To get to the approve forms page from the Dashboard, go to the travel forms page
+                          Then click on Travel Reimbursement Menu to open the dropdown and click ‘Approve Travel Reimbursement’
+                        </p>
+                        <p>
+                          <img src="{% static 'user_guide/assets/images/approval_tab.png'%}" class="img-fluid" alt="Reimbursement image">
+                        </p>
+                        <p>
+                          This will take you to a page that has all the Travel Reimbursement Forms that you have approved and that you need to approve
+                          The ones you need to approve will have ‘Action Needed’ under Action Required. When you click on the form, it will take you to the page where you can approve the form.
+                        </p>
+
+
+                    </div>
+
+                  </div>
+                  <!--//row-->
+                </div>
+                <!--//section-block-->
+                <section id="tr_approval_decline" class="doc-section">
+                  <h2 class="section-title">Approving a Travel Reimbursement Form</h2>
+                  <div class="section-block">
+                    <p>When you get to the application you need to approve, go to the last page of the form. You can type a comment in the comments box. When you are ready to approve the form, you can click the Approve button. You will be redirected to the Dashboard and an email will be sent to the next approver.
+                    </p>
+                    <p>
+                      <img src="{% static 'user_guide/assets/images/tr_app.png'%}" class="img-fluid" alt="Reimbursement image">
+                    </p>
+                    <h2 class="section-title">Declining a Travel Reimbursement Form</h2>
+                    <p>When you get to the application you need to approve, go to the last page of the form. You can type a comment in the comments box. When you are ready to decline the form, you can click the Decline button. You will be redirected to the Dashboard and the creator of the form will be notified of their form being declined.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+
+                  <!--//section-block-->
+
+                  <!--//section-block-->
+
+                </section>
+                <!--//doc-section-->
+
+                <!--//section-block-->
+                <section id="tr_modify" class="doc-section">
+                  <h2 class="section-title">Requesting Modifications to a Travel Application</h2>
+                  <div class="section-block">
+                    <p>When you get to the application you need to modify, go to the last page of the form. You can type a comment in the comments box. When you are ready to modify the form, you can click the Modify button. You will then be able to go back to the rest of the form and change the information on the form. When you are finished with your modifications, click the button again.
+                    </p>
+                    <p>
+                      <img src="{% static 'user_guide/assets/images/modify_tr.png'%}" class="img-fluid" alt="Reimbursement image">
+                    </p>
+
+                    <p>The request will be sent to the original creator of the form, and they will choose to either accept or decline your modifications. If they decline your modifications, you will be notified, and the form will go back to you. If they accept the modifications, the form will go to the person after you in the approval process.
+                    </p>
+                  </div>
+
+                  <!--//section-block-->
+
+                </section>
+
+                <section id="change_tr_approver" class="doc-section">
+                  <h2 class="section-title">Editing the Approver List</h2>
+                  <div class="section-block">
+                    <p>When you get to the application you need to modify, go to the last page of the form. If you want to edit the approver list, click the green ‘Edit Approver List’ button.
+                    </p>
+                    <p>
+                      <img src="{% static 'user_guide/assets/images/modify_tr.png'%}" class="img-fluid" alt="Reimbursement image">
+                    </p>
+
+                    <p>You can then choose between three actions:
+                      <ul>
+                    <li>Replace yourself with someone else in the approval process</li>
+
+                    <li>Remove yourself from the approval process</li>
+
+                    <li>Add someone to the approval process</li>
+                    </ul>
+                    </p>
+                  </div>
+
+                  <!--//section-block-->
+
+                </section>
+
+                <section id="declined_tr" class="doc-section">
+                  <h2 class="section-title">If your travel reimbursement form gets Declined </h2>
+                  <div class="section-block">
+                    <p>When your form is declined you will get an email and a notification with a link to the form telling you that your form was declined. To view the declined form, click on the link in the email or the notification on the dashboard. When you get to the form you may notice a button on the top of the form.
+                    </p>
+                    <p>
+                      <img src="{% static 'user_guide/assets/images/declined_tr.png'%}" class="img-fluid" alt="Reimbursement image">
+                    </p>
+
+                    <p>If you click on ‘Edit and Re-submit Form’, the fields will remain unchanged except you will be able to edit them. After this, you can save or submit the form.
+                    </p>
+                    <h2 class="section-title">If your travel reimbursement form gets Declined </h2>
+                    <p>When the travel reimbursement form is completely approved, you will get an email and a notification on the website that it was completely approved.
+                    </p>
+                    <p>You can click on the notification or the link in the email to view your approved travel reimbursement form.</p>
+                  </div>
+
+                  <!--//section-block-->
+
+                </section>
+
+              </section>
+              <!--//doc-section-->
+            </div>
+            <!--//content-inner-->
+          </div>
+          <!--//doc-content-->
+          <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+            <div id="doc-nav" class="doc-nav">
+
+              <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                <a class="nav-link scrollto" href="#getting-started">Getting Started</a>
+                <a class="nav-link scrollto" href="#TA-general_information">Travel Application General Information </a>
+                <nav class="doc-sub-menu nav flex-column">
+                  <a class="nav-link scrollto" href="#step1">How to navigate to the Travel Application </a>
+                  <a class="nav-link scrollto" href="#step2">How to create a Travel Application </a>
+                  <a class="nav-link scrollto" href="#step3">Saving a Travel Application </a>
+                  <a class="nav-link scrollto" href="#step4">How to monitor your travel application </a>
+                </nav>
+                <!--//nav-->
+                <a class="nav-link scrollto" href="#ta_approval_process">Travel Application Approval Process</a>
+                <nav class="doc-sub-menu nav flex-column">
+                  <a class="nav-link scrollto" href="#ta_approval_process">How an approver can find travel applications that then need to approve</a>
+                  <a class="nav-link scrollto" href="#approve_ta">Approving / Declining a Travel Application</a>
+
+                  <a class="nav-link scrollto" href="#request_modification">Requesting modifications to a Travel Application</a>
+                  <a class="nav-link scrollto" href="#change_approver">Editing the Approver List</a>
+                  <a class="nav-link scrollto" href="#declined_application">What you can do if your travel application is declined</a>
+                  <a class="nav-link scrollto" href="#approved_application">When Travel Application is completely approved</a>
+                </nav>
+                <!--//nav-->
+                <a class="nav-link scrollto" href="#tr_general_information">Travel Reimbursement General Information</a>
+                <nav class="doc-sub-menu nav flex-column">
+                  <a class="nav-link scrollto" href="#tr_general_information">How to create a Travel Reimbursement Form</a>
+                  <a class="nav-link scrollto" href="#saving_tr">Saving your Travel Reimbursement Form</a>
+                  <a class="nav-link scrollto" href="#monitor_tr">How to monitor your Travel Reimbursement form</a>
+                </nav>
+
+                <!--//nav-->
+                <a class="nav-link scrollto" href="#tr_approval_process">Travel Reimbursement form Approval Process</a>
+                <nav class="doc-sub-menu nav flex-column">
+                  <a class="nav-link scrollto" href="#tr_approval_decline">How an approver can approve or decline a Travel Reimbursement form</a>
+                  <a class="nav-link scrollto" href="#tr_modify">How an approver can request modifications to a Travel Reimbursement form</a>
+                  <a class="nav-link scrollto" href="#change_tr_approver">How an approver can change who is on the approval list:</a>
+                  <a class="nav-link scrollto" href="#declined_tr">What you can do if your Travel Reimbursement form is Declined or Approved</a>
+                </nav>
+
+
+              </nav>
+              <!--//doc-menu-->
+
+            </div>
+          </div>
+          <!--//doc-sidebar-->
+        </div>
+        <!--//doc-body-->
+      </div>
+      <!--//container-->
+    </div>
+    <!--//doc-wrapper-->
+
+    <!--//promo-block-->
+
+  </div>
+  <!--//page-wrapper-->
+
+  <footer id="footer" class="footer text-center">
+    <div class="container">
+
+      <small class="copyright">Designed with by the software department (Team Unicorn)</small>
+
+    </div>
+    <!--//container-->
+  </footer>
+  <!--//footer-->
+
+
+  <!-- Main Javascript -->
+<script  src="{% static 'user_guide/assets/plugins/jquery-3.4.1.min.js'%}"></script>
+  <script  src="{% static 'user_guide/assets/plugins/prism/prism.js' %}"></script>
+  <script  src="{% static 'user_guide/assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js' %}"></script>
+
+  <script  src="{% static 'user_guide/assets/plugins/bootstrap/js/bootstrap.min.js'%}"></script>
+  <script  src="{% static 'user_guide/assets/plugins/stickyfill/dist/stickyfill.min.js'%}"></script>
+  <script  src="{% static 'user_guide/assets/js/main.js'%}"></script>
+</body>
+
+</html>

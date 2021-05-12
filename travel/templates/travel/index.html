@@ -1,0 +1,2559 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
+      xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Foxconn Travel Application</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"/>
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.min.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.css" />
+    <link id="main" rel="stylesheet" href="{% static 'travel/style.css' %}">
+    <link id="summary_style"  href="{% static 'travel/page_summary.css' %}" rel="stylesheet" disabled="disabled" >
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-mentions-input@1.6.0/jquery.mentionsInput.min.css">
+    <link rel="stylesheet" href="{% static 'office_app/css/chat.css' %}">
+
+    <style>
+        tr {
+            cursor: pointer;
+        }
+        .ui-autocomplete {
+            max-height: 200px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            overflow-x: hidden;
+            /* add padding to account for vertical scrollbar */
+            padding-right: 20px;
+        }
+
+        .loading {
+            background: transparent url("{% static 'smart_hr/images/loading.gif' %}") center no-repeat;
+            background-size: 25px 25px;
+        }
+
+        .required {
+            color: indianred;
+        }
+
+        .dropdown-submenu {
+            position: relative;
+        }
+
+        .dropdown-submenu>.dropdown-menu {
+            top: 0;
+            left: 100%;
+            margin-top: -6px;
+            margin-left: -1px;
+            -webkit-border-radius: 0 6px 6px 6px;
+            -moz-border-radius: 0 6px 6px 6px;
+            border-radius: 0 6px 6px 6px;
+        }
+
+        .dropdown-submenu:hover>.dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-submenu>a:after {
+            display: block;
+            content: " ";
+            float: right;
+            width: 0;
+            height: 0;
+            border-color: transparent;
+            border-style: solid;
+            border-width: 5px 0 5px 5px;
+            border-left-color: #cccccc;
+            margin-top: 5px;
+            margin-right: -10px;
+        }
+
+        .dropdown-submenu:hover>a:after {
+            border-left-color: #ffffff;
+        }
+
+        .dropdown-submenu.pull-left {
+            float: none;
+        }
+
+        .dropdown-submenu.pull-left>.dropdown-menu {
+            left: -100%;
+            margin-left: 10px;
+            -webkit-border-radius: 6px 0 6px 6px;
+            -moz-border-radius: 6px 0 6px 6px;
+            border-radius: 6px 0 6px 6px;
+        }
+
+        /*the container must be positioned relative:*/
+        .autocomplete {
+            position: relative;
+            display: inline-block;
+        }
+
+        input {
+            border: 1px solid transparent;
+            background-color: #f1f1f1;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        input[type=text] {
+            background-color: #f1f1f1;
+            width: 100%;
+        }
+
+        input[type=submit] {
+            background-color: DodgerBlue;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            /*position the autocomplete items to be the same width as the container:*/
+            top: 100%;
+            left: 0;
+            right: 0;
+        }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+        /*when hovering an item:*/
+        .autocomplete-items div:hover {
+            background-color: #e9e9e9;
+        }
+
+        /*when navigating through the items using the arrow keys:*/
+        .autocomplete-active {
+            background-color: DodgerBlue !important;
+            color: #ffffff;
+        }
+
+        .emojionearea .emojionearea-editor {
+            min-height: 1em;
+        }
+    </style>
+
+
+</head>
+<body>
+
+<!-- partial:index.partial.html -->
+
+<!--PEN HEADER-->
+<header class="header">
+    <h1 class="header__title">Foxconn Travel Application</h1>
+</header>
+
+
+{% if show_chat %}
+    <div class="container chat-container">
+        <div class="row">
+            <div class="chat-block col-md-3">
+                <div class="card card-primary text-secondary">
+                    <div class="card-header p-2" id="accordion">
+                        <i id="chat-badge" class="fas fa-comment pl-2"></i> Chat
+                        <div class="btn-group float-right pr-2">
+                            <a type="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                <i id="toggle_icon" class="fas fa-arrow-down"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-collapse collapse show" id="collapseOne">
+                        <div class="card-header text-center text-info p-1">Chat for TA Form: {{ form_id }}</div>
+                        <div id="chat-body" class="card-body card-body-chat">
+                            <ul class="chat" id="chat_list"></ul>
+                        </div>
+                        <div class="card-footer p-2">
+                            <div class="input-group" style="flex-wrap: nowrap">
+                                <textarea id="chat-input" class="mention" placeholder="Type your message here..." ></textarea>
+                                <i class="btn fas fa-level-down-alt text-primary" id="chat-scroll" title="Auto scroll on new message"></i>
+
+                                {#                                <span class="input-group-btn ml-1">#}
+                                {##}
+                                {#                                    <button class="btn btn-primary btn-sm" id="chat-send">Send</button>#}
+                                {#                                </span>#}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endif %}
+
+<!--Main CONTENT     -->
+<div class="content">
+
+    <!--content inner-->
+    <div class="content__inner">
+
+        <div class="container overflow-hidden">
+            <!--multisteps-form-->
+            <div class="multisteps-form scaleIn">
+                <!--menu bar-->
+                <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3 rounded">
+
+                    <a class="h7">Welcome, {{ request.session.full_name }}</a>
+
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a href="{% url 'travel_home' %}" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'smart_office_dashboard' %}" class="nav-link">Smart Office</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                                   aria-haspopup="true" aria-expanded="false">Travel Application Menu</a>
+                                <div class="dropdown-menu">
+
+                                    <a href="{% url 'travel_application' %}" class="dropdown-item">Create New Application</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{% url 'submitted_forms' %}" class="dropdown-item">View My Applications</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{% url 'travel_list' %}" class="dropdown-item">Approve Applications</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a id ="summary" onclick="toggle(); javascript:toggle(this);"  class="dropdown-item">View Page Summary</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                                   aria-haspopup="true" aria-expanded="false">Travel Reimbursement Menu</a>
+                                <div class="dropdown-menu">
+                                    <a href="{% url 'my_travel_rem' %}" class="dropdown-item">View My TR Applications</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{% url 'travel_rem_list' %}" class="dropdown-item">Approve TR Applications</a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'logout' %}" class="nav-link">Log Out</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <!--progress bar-->
+                <div class="row">
+                    <div class="col-12 col-lg-12 ml-auto mr-auto mb-4 mt-4">
+                        <div class="multisteps-form__progress">
+                            <button class="multisteps-form__progress-btn js-active" type="button" title="personal_info">
+                                Personal Info
+                            </button>
+                            <button class="multisteps-form__progress-btn" type="button" title="travel_info">Travel
+                                Info
+                            </button>
+                            <button class="multisteps-form__progress-btn" type="button" title="expense">Expense</button>
+                            <button class="multisteps-form__progress-btn" type="button" title="policy">Policy</button>
+                            <button class="multisteps-form__progress-btn" type="button" title="approver">{% if user_is_creator and approving_modifications == False %}Form Status{% else %}Approve{% endif %}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!--form panels-->
+                <div class="row">
+                    <div class="col-12 col-lg-12 m-auto">
+                        <form class="multisteps-form__form" method="post" name="travel_form" id="travel_form">
+                            {% csrf_token %}
+                            <!--Personal Info form panel-->
+                            <div class="multisteps-form__panel shadow p-4 rounded bg-white js-active"
+                                 data-animation="scaleIn">
+                                {% if form_is_declined %}
+                                    {% if old_emp_form.employee.pk == request.session.id %}
+                                        <a href="{% url 'travel_application' %}"><input name="declined_form_button"
+                                                                                        class="btn btn-outline-primary  float-md-left "
+                                                                                        value="Restart with a new Form"
+                                                                                        readonly></a>
+                                        <input onclick="work_from_declined_form()" name="declined_form_button"
+                                               class="btn btn-outline-primary  float-right"
+                                               value="Create new Form Based off this one" readonly>
+                                    {% else %}
+                                        <b><h2 style="color:darkred">THIS FORM HAS BEEN DECLINED</h2></b>
+                                    {% endif %}
+                                    <br><br><br>
+                                {% endif %}
+                                {% if form_is_completely_approved and user_is_creator %}
+                                    <a href="{% url 'travel_reimbursement' pk=old_emp_form.formID %}"><input class="btn btn-primary  float-md-right col-4"
+                                                                                                             value="Apply for Reimbursement" readonly></a>
+                                    <br><br><br>
+                                {% endif %}
+                                <h3 class="multisteps-form__title">Personal Information
+
+                                    {#                                    <div class="btn-group float-md-right" role="group">#}
+                                    {#                                        <button id="ButtonGroup" type="button"#}
+                                    {#                                                class="btn btn-outline-primary dropdown-toggle " data-toggle="dropdown"#}
+                                    {#                                                aria-haspopup="true" aria-expanded="false">#}
+                                    {#                                            Travel Application Menu#}
+                                    {#                                        </button>#}
+                                    {#                                        <div class="dropdown-menu" aria-labelledby="ButtonGroup">#}
+                                    {#                                            <a href="{% url 'submitted_forms' %}"#}
+                                    {#                                               class="dropdown-item" >My Travel#}
+                                    {#                                                Applications</a>#}
+                                    {##}
+                                    {#                                            <a href="{% url 'travel_list' %}"#}
+                                    {#                                               class=" dropdown-item">Approve Forms Page</a>#}
+                                    {#                                        </div>#}
+                                    {#                                    </div>#}
+
+                                </h3>
+
+                                <div class="multisteps-form__content">
+                                    <!--first row-->
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+                                        <div class="col-12 col-sm-4">
+                                            <label for="company" class="control-label"> Company: </label>
+                                            <select class="multisteps-form__input form-control" id="company"
+                                                    name="company" disabled>
+                                                {% for company in companies %}
+                                                    <option value="{{ company.entityName }}"
+                                                            {% if employee_company.entityName == company.entityName %}
+                                                            selected="selected" {% endif %}> {{ company.entityName }} </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4 mt-4 mt-sm-0">
+                                            <label for="form_id" class="control-label col-lg-4"> Form ID </label>
+                                            <input id="form_id" class="multisteps-form__input form-control"
+                                                   placeholder="This field will be auto-generated"
+                                                    {% if old_emp_form.formID != None %}
+                                                   value="{{ old_emp_form.formID }}" {% endif %} readonly/>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <label for="business_group" class="control-label"> Business Group: </label>
+                                            <input class="multisteps-form__input form-control" id="business_group"
+                                                   name="business_group" disabled  value="{{ employee_business_group.name }}">
+                                        </div>
+                                    </div>
+                                    <!--second row-->
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+                                        <div class="col-12 col-sm-4 mt-4 mt-sm-0">
+                                            <label for="employee_name" class="control-label"> Employee Name: </label>
+                                            <input id="employee_name" class="multisteps-form__input form-control"
+                                                   placeholder="Employee Name" value="{{ full_name }}"
+                                                   readonly/>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <label for="profit_center" class="control-label"> Business Unit: </label>
+                                            <input class="multisteps-form__input form-control" id="profit_center"
+                                                   name="profit_center"  value='{{ business_unit }}' readonly="T">
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <label for="department" class="control-label"> Department: </label>
+                                            <input class="multisteps-form__input form-control" id="department"
+                                                   name="department" readonly="T" value="{{ user_dept }}">
+                                        </div>
+
+                                    </div>
+
+                                    <!--third row-->
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+
+
+                                        <div class="col-12 col-sm-4">
+                                            <label for="project" class="control-label"> Project : </label>
+                                            <input class="multisteps-form__input form-control" maxlength="100" id="project"
+                                                   name="project"  placeholder=" Project"
+                                                    {% if old_emp_form.project != Null %}
+                                                   value="{{ old_emp_form.project }}" {% endif %}/>
+                                        </div>
+
+                                        <!-- If form is uneditable, make it an input field. Use Javascript to make it readonly. Use Javascript to make it a select thing -->
+                                        <div class="col-12 col-sm-4">
+
+                                            <label for="travel_type" class="control-label"> Travel Type: </label>
+                                            {% if form_is_being_shown_to_approver %}
+                                                <input class="multisteps-form__input form-control"
+                                                       id="travel_type_input" name="travel_type"
+                                                       {% if old_emp_form.travelType != None %}value="{{ old_emp_form.travelType }}"{% endif %}>
+                                            {% endif %}
+
+                                            <select class="multisteps-form__input form-control" id="travel_type"
+                                                    name="travel_type" {% if form_is_being_shown_to_approver %}
+                                                    disabled="" hidden="" {% endif %}>
+                                                <option value="International"
+                                                        {% if old_emp_form.travelType == 'International' %}
+                                                        selected="selected"{% endif %}> International
+                                                </option>
+                                                <option value="Domestic" {% if old_emp_form.travelType == 'Domestic' %}
+                                                        selected="selected" {% endif %}> Domestic
+                                                </option>
+                                            </select>
+
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <label for="estimated_expense" class="control-label"> Estimated Expense
+                                                : </label>
+                                            <input class="multisteps-form__input form-control " id="estimated_expense"
+                                                   name="estimated_expense" maxlength="10"
+                                                   placeholder="Will be calculated based on section 3"
+                                                    {% if old_expense_form.total != Null %}
+                                                   value="{{ old_expense_form.total }}"{% endif %} readonly/>
+                                        </div>
+
+                                    </div>
+
+
+                                    <!--fourth row -->
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+
+                                        <div class="col-12 col-sm-4" id="cost-desc">
+
+                                            <label for="cost_description" class="control-label"> Cost Center Description
+                                                : </label>
+                                            <!-- If form is uneditable, make it an input field. Use Javascript to make it readonly. Use Javascript to make it a select thing -->
+                                            <!--Cost Center Input Version (for when uneditable) -->
+                                            {% if form_is_being_shown_to_approver %}
+                                                <input class="multisteps-form__input form-control"
+                                                       id="cost_description_input" name="cost_description_input"
+                                                        {% for center in departments %}
+                                                            {% if old_emp_form.budgetSourceCode != Null %}
+                                                                {% if old_emp_form.budgetSourceCode == center.costCenterCode %}
+                                                       value="{{ center.costCenterName }}"/>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                <!-- Cost Center Select Version (for when editable)--->
+
+                                                <button class="multisteps-form__input form-control  btn btn-primary dropdown-toggle" type="button"
+                                                        id="cost_select_button" data-toggle="dropdown">
+                                                    {% if old_emp_form.budgetSourceCode != Null %}
+                                                        {% for dept in departments %}
+                                                            {% if dept.costCenterCode == old_emp_form.budgetSourceCode %}
+                                                                {{ dept.costCenterName }}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {{ user_dept }}
+                                                    {% endif %}</button>
+                                                <ul class="dropdown-menu">
+                                                    {% for unit in business_units %}
+
+                                                        <li class="dropdown-submenu" role="presentation">
+
+                                                        <a role="presentation" tabindex="-1" onclick="changeInput('{{ unit }}')" class="dropdown-item test"
+                                                           tabindex="-1">{{ unit }}</a>
+
+
+                                                        <ul class="dropdown-menu">
+
+                                                            {% for dept in departments %}
+
+                                                                {% if dept.businessUnit.buName == unit.buName %}
+                                                                    <li class=" dropdown-item">
+                                                                    <a class="test dropdown-item" tabindex="-1"
+                                                                       onclick="changeInput('{{ dept.costCenterCode }}', '{{ dept.costCenterName }}', '{{ dept.profitCenterCode }}')">{{ dept.costCenterName }}</a>
+
+                                                                {% endif %}</li>
+                                                            {% endfor %}
+                                                        </ul>
+
+                                                    {% endfor %}
+                                                    </li>
+                                                </ul>
+
+
+                                            {% else %}
+
+                                                <button class="multisteps-form__input form-control  btn btn-primary dropdown-toggle" type="button"
+                                                        id="cost_select_button" data-toggle="dropdown">
+                                                    {% if old_emp_form.budgetSourceCode != Null %}
+                                                        {% for dept in departments %}
+                                                            {% if dept.costCenterCode == old_emp_form.budgetSourceCode %}
+                                                                {{ dept.costCenterName }}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {{ user_dept }}
+                                                    {% endif %}</button>
+                                                <ul class="dropdown-menu">
+                                                    {% for unit in business_units %}
+
+                                                        <li class="dropdown-submenu" role="presentation">
+
+                                                        <a role="presentation" tabindex="-1" onclick="changeInput('{{ unit }}')" class="dropdown-item test"
+                                                           tabindex="-1">{{ unit }}</a>
+
+
+                                                        <ul class="dropdown-menu">
+
+                                                            {% for dept in departments %}
+
+                                                                {% if dept.businessUnit.buName == unit.buName %}
+                                                                    <li class=" dropdown-item">
+                                                                    <a class="test dropdown-item" tabindex="-1"
+                                                                       onclick="changeInput('{{ dept.costCenterCode }}', '{{ dept.costCenterName }}', '{{ dept.profitCenterCode }}')">{{ dept.costCenterName }}</a>
+
+                                                                {% endif %}</li>
+                                                            {% endfor %}
+                                                        </ul>
+
+                                                    {% endfor %}
+                                                    </li>
+                                                </ul>
+
+
+
+
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        {#                                                <select class="multisteps-form__input form-control"#}
+                                        {#                                                        id="cost_description" name="cost_description"#}
+                                        {#                                                        oninput="myFunction()" {% if form_is_being_shown_to_approver %}#}
+                                        {#                                                        hidden="" disabled="" {% endif %}>#}
+                                        {#                                                    {% for unit in business_units %}#}
+                                        {#                                                        <optgroup label ="{{ unit }}">#}
+                                        {#                                                            {% for dept in departments %}#}
+                                        {#                                                                {% if dept.businessUnit.name == unit.name %}#}
+                                        {#                                                                    {% if old_emp_form.budgetSourceCode != Null %}#}
+                                        {#                                                                        {% if old_emp_form.budgetSourceCode == dept.departmentCode %}#}
+                                        {#                                                                            <option value="{{ dept.departmentCode }}" selected>{{ dept.name }}</option>#}
+                                        {#                                                                        {% else %}#}
+                                        {#                                                                            <option value="{{ dept.departmentCode }}">{{ dept.name }}</option>#}
+                                        {#                                                                        {% endif %}#}
+                                        {#                                                                    {% else %}#}
+                                        {#                                                                        <option value="{{ dept.departmentCode }}"#}
+                                        {#                                                                        {% if dept.name == user_dept %}#}
+                                        {#                                                                            selected="selected"#}
+                                        {#                                                                        {% endif %}>{{ dept.name }}</option>#}
+                                        {#                                                                    {% endif %}#}
+                                        {#                                                                {% endif %}#}
+                                        {#                                                            {% endfor %}#}
+                                        {#                                                        </optgroup>#}
+                                        {#                                                    {% endfor %}#}
+                                        {#                                                    placeholder="Cost Center Description" />#}
+                                        {#                                                </select>#}
+
+                                        <div class="col-12 col-sm-4">
+                                            <label for="budget_sc" class="control-label"> Budget Source
+                                                Code: </label>
+                                            <input class="multisteps-form__input form-control" id="budget_sc"
+                                                   name="budget_sc"
+
+                                                    {% if old_emp_form.budgetSourceCode != None %}
+                                                        {% for center in departments %}
+                                                            {% if center.costCenterCode == old_emp_form.budgetSourceCode %}
+                                                   value="{{ center.costCenterCode }}"
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                   value="{{ user_dept_code }}"
+                                                    {% endif %} readonly="readonly">
+
+                                        </div>
+
+                                    </div>
+
+
+
+
+                                    <div class="form-row mt-4" data-animation="scaleIn" style="color:red">
+                                        <div class="col-12 col-sm-12">
+                                            <label for="cost_description" class="control-label"><em>Note: Kindly choose
+                                                another budget source code if supporting other department. </em> </label>
+                                        </div>
+                                    </div>
+
+
+                                    <!--Next Button-->
+                                    <div class="button-row d-flex mt-4">
+                                        <button type = "button" onclick="focusScrollMethod()" class="btn btn-primary ml-auto js-btn-next" type="button" title="Next">
+                                            Next
+                                        </button>
+                                    </div>
+                                    <div class="button-row d-flex mt-4 col-12" name="save_button_div">
+                                        <input class="btn btn-outline-info btn-lg btn-block" type="submit"
+                                               name="submit_button" value="Save and Return to Home" title="Save"
+                                                {% if form_is_being_shown_to_approver %} hidden {% endif %} onclick="document.getElementById('submit_button').value='Save and Return to Home'">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input name="submit_button" id="submit_button" hidden readonly>
+
+
+                            <!--Travel Information panel-->
+
+                            <div class="multisteps-form__panel shadow p-4 rounded bg-white" data-animation="scaleIn">
+
+
+                                {% if form_is_declined %}
+                                    {% if old_emp_form.employee.pk == request.session.id %}
+                                        <a href="{% url 'travel_application' %}"><input name="declined_form_button"
+                                                                                        class="btn btn-outline-primary  float-md-left "
+                                                                                        value="Restart with a new Form"
+                                                                                        readonly></a>
+                                        <input onclick="work_from_declined_form()" name="declined_form_button"
+                                               class="btn btn-outline-primary  float-right"
+                                               value="Create new Form Based off this one" readonly>
+                                    {% else %}
+                                        <b><h2 style="color:darkred">THIS FORM HAS BEEN DECLINED</h2></b>
+                                    {% endif %}
+                                    <br><br><br>
+                                {% endif %}
+
+                                <h3 class="multisteps-form__title">Travel Information</h3>
+                                <div class="multisteps-form__content">
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+
+                                        <div class="col-12 col-sm-4 mt-4 mt-sm-0">
+                                            <label for="travel_datefrom" class="control-label"> Travel Start Date: </label>
+                                            <input class="multisteps-form__input form-control" id="travel_datefrom"
+                                                   name="travel_datefrom" type="date" onfocusout="EstimateDate()"
+                                                    {% if old_detail_form.startDate != None %}
+                                                   value="{{ old_detail_form.startDate|date:"Y-m-d" }}"{% endif %}/>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4 mt-4 mt-sm-0">
+                                            <label for="travel_dateto" class="control-label"> Travel End Date: </label>
+                                            <input class="multisteps-form__input form-control" onfocusout="EstimateDate()"
+                                                   id="travel_dateto" name="travel_dateto" type="date"
+                                                    {% if old_detail_form.endDate != None %}
+                                                   value="{{ old_detail_form.endDate|date:"Y-m-d" }}"{% endif %} />
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <label for="estimated_period" class="control-label"> Estimated
+                                                Period: </label>
+                                            <!--we are also going to have to calculate this after the page loads-->
+                                            <input class="multisteps-form__input form-control" id="estimated_period"
+                                                   name="estimated_period"
+                                                   placeholder=" Calculated estimated period"
+                                                    {% if old_detail_form.estimatedDuration != None %}
+                                                   value="{{ old_detail_form.estimatedDuration }}"{% endif %} readonly/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+
+
+                                        <div class="col-12 col-sm-4">
+                                            <label for="transportation" class="control-label"> Transportation </label>
+
+                                            <!-- If form is uneditable, make it an input field. Use Javascript to make it readonly. Use Javascript to make it a select thing -->
+                                            {% if form_is_being_shown_to_approver %}
+                                                <input class="multisteps-form__input form-control"
+                                                       id="transportation_input" name="transportation_type"
+                                                       {% if old_detail_form.transportation != None %}value="{{ old_detail_form.transportation }}" {% endif %}>
+                                                <select class="multisteps-form__input form-control" id="transportation"
+                                                        name="transportation_type" {% if form_is_being_shown_to_approver %}
+                                                        disabled=""{% endif %}>
+                                                    <option value="Flight"
+                                                            {% if old_detail_form.transportation == 'Flight' %}selected="selected"{% endif %}>
+                                                        Flight
+                                                    </option>
+                                                    <option value="Train"
+                                                            {% if old_detail_form.transportation == 'Train' %}selected="selected"{% endif %}>
+                                                        Train
+                                                    </option>
+                                                    <option value="Rental Car"
+                                                            {% if old_detail_form.transportation == 'Rental Car' %}selected="selected"{% endif %}>
+                                                        Rental Car
+                                                    </option>
+                                                </select>
+                                            {% else %}
+
+
+                                                <select class="multisteps-form__input form-control" id="transportation"
+                                                        name="transportation_type" {% if form_is_being_shown_to_approver %}
+                                                        disabled=""{% endif %}>
+                                                    <option value="Flight"
+                                                            {% if old_detail_form.transportation == 'Flight' %}selected="selected"{% endif %}>
+                                                        Flight
+                                                    </option>
+                                                    <option value="Train"
+                                                            {% if old_detail_form.transportation == 'Train' %}selected="selected"{% endif %}>
+                                                        Train
+                                                    </option>
+                                                    <option value="Rental Car"
+                                                            {% if old_detail_form.transportation == 'Rental Car' %}selected="selected"{% endif %}>
+                                                        Rental Car
+                                                    </option>
+                                                </select>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <label for="accommodation" class="control-label"> Accommodation </label>
+
+                                            {% if form_is_being_shown_to_approver %}
+                                                <input class="multisteps-form__input form-control"
+                                                       id="accommodation_input" name="accommodation_type"
+                                                       value="{{ old_detail_form.accommodation }}">
+                                            {% endif %}
+
+                                            <select class="multisteps-form__input form-control" id="accommodation"
+                                                    name="accommodation_type" {% if form_is_being_shown_to_approver %}
+                                                    disabled="" hidden="" {% endif %}>
+                                                <option value="Hotel"
+                                                        {% if old_detail_form.accommodation == 'Hotel' %}selected="selected"{% endif %}>
+                                                    Hotel
+                                                </option>
+                                                <option value="Dormitory"
+                                                        {% if old_detail_form.accommodation == 'Dormitory' %}selected="selected"{% endif %}>
+                                                    Domitory
+                                                </option>
+                                            </select>
+
+                                        </div>
+                                        <div class="col-12 col-sm-4">
+                                            <label for="country_currency" class="control-label">Currency : </label>
+                                            <input maxlength="50" class="multisteps-form__input form-control" id="country_currency" name="country_currency" {% if old_detail_form.currency != None %} value="{{ old_detail_form.currency }}"{% else %} value="USD"{% endif %}/>
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+
+                                        <div class="col-12 col-sm-4 autocomplete">
+                                            <label for="departure_country" class="control-label"> Departure Country: </label>
+                                            <input class="multisteps-form__input form-control autocomplete" maxlength="20"
+                                                   id="departure_country"
+                                                   placeholder="Country" name="departure_country"
+                                                    {% if old_detail_form.departureCountry != None and old_detail_form.departureCountry != "" %}
+                                                   value="{{ old_detail_form.departureCountry }}" {% else %}
+                                                   value="{{ users_building.locCountry }}"{% endif %}>
+
+                                        </div>
+                                        <div class="col-12 col-sm-4">
+                                            <label for="factory_code" class="control-label"> Factory Code
+                                                : </label>
+
+                                            {% if form_is_being_shown_to_approver %}
+                                                <input class="multisteps-form__input form-control" name="factory_code"
+                                                       id="factory_code_input"
+                                                        {% for code in factory_codes %}
+                                                            {% if code.locationName == old_detail_form.departureFactoryCode %}
+                                                       value="{{ code.locState }} {{ code.locationName }}"
+                                                            {% endif %}
+                                                        {% endfor %}>
+                                            {% endif %}
+
+                                            <select class="multisteps-form__input form-control" name="factory_code"
+                                                    id="factory_code"
+                                                    {% if form_is_being_shown_to_approver %}disabled=""
+                                                    hidden="" {% endif %}>
+                                                {% for code in factory_codes %}
+                                                    <option value="{{ code.locationName }}"
+                                                            {% if old_detail_form.departureFactoryCode == None %}
+                                                                {% if code.locationName == users_building.locationName %}
+                                                            selected="selected"
+                                                                {% endif %}
+                                                            {% else %}
+                                                                {% if code.locationName == old_detail_form.departureFactoryCode %}
+                                                            selected="selected"
+                                                                {% endif %}
+                                                            {% endif %}>{{ code.locState }} {{ code.locationName }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+
+                                        <div class="col-12 col-sm-4">
+                                            <label for="country2" class="control-label">City :</label>
+                                            <input class="multisteps-form__input form-control" id="departure_state" maxlength="50"
+                                                   name="departure_state" {% if old_detail_form.departurePreferred != None %}
+                                                   value="{{ old_detail_form.departurePreferred }}" {% endif %}>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+                                        <div class="col-12 col-sm-4">
+                                            <label for="country2" class="control-label"> Destination Country :</label>
+                                            <input class="multisteps-form__input form-control " id="country2" maxlength="25"
+                                                   name="country2" {% if old_detail_form.destinationCountry != None %}
+                                                   value="{{ old_detail_form.destinationCountry }}" {% endif %}>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <label for="state2" class="control-label">State/Province :</label>
+                                            <input class="multisteps-form__input form-control " name="state2" id="state2" maxlength="50"
+                                                    {% if old_detail_form.destinationProvince != None %}
+                                                   value="{{ old_detail_form.destinationProvince }}" {% endif %}>
+                                        </div>
+                                        <div class="col-12 col-sm-4">
+                                            <label for="destination_city" class="control-label">City: </label>
+                                            <input class="multisteps-form__input form-control " id="destination_city" maxlength="40"
+                                                   {% if old_detail_form.destinationCity != None %}value="{{ old_detail_form.destinationCity }}" {% endif %}name="destination_city"
+                                                   placeholder=" What city are you arriving at?"/>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+                                <!-- The table starts here-->
+
+
+
+                                <div class="form-row mt-4" data-animation="scaleIn">
+
+
+                                    <div class="col-12 col-sm-12" id="dynamic_section">
+                                        <h3 class="multisteps-form__title">Travel Itinerary</h3>
+
+                                        <table class="table" id="travel_information">
+                                            <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>DATE</th>
+                                                <th>VISIT COMPANY</th>
+                                                <th>DEPARTMENT</th>
+                                                <th>CONTACT</th>
+                                                <th>PRECISE WORK ITEM OR OBJECTIVE</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="tableadd">
+                                            {% if there_are_multiple_old_company_forms %}
+                                                {% for row in old_company_forms %}
+                                                    {% if row.modifiedField != True %}
+                                                        <tr>
+                                                            <td colspan="1"><input type="checkbox" id="row_checkbox"
+                                                                                   title="{{ row.visitID }}"
+                                                                                   name="row_checkbox"></td>
+                                                            <td colspan="1"><input type="date" width="48" onfocusout="validate_visit_dates()"
+                                                                                   class="form-control col-lg-12"
+                                                                                   title="{{ row.visitID }}"
+                                                                                   name='visit_date'
+                                                                                   id="visit_date_id_{{ row.visitID }}"
+                                                                    {% if row.date != None %}
+                                                                                   value="{{ row.date|date:"Y-m-d" }}" {% endif %}>
+                                                            </td>
+                                                            <td><input  class="form-control"
+                                                                        title="{{ row.visitID }}" name='visit_company'
+                                                                        id="visit_company_id_{{ row.visitID }}"
+                                                                        placeholder="Company"
+                                                                        maxlength="50"
+                                                                    {% if row.visitCompany != None %}
+                                                                        value="{{ row.visitCompany }}" {% endif %}></td>
+                                                            <td><input  class="form-control"
+                                                                        title="{{ row.visitID }}" name='visit_department'
+                                                                        id="visit_department_id_{{ row.visitID }}"
+                                                                        maxlength="50"
+                                                                        placeholder="Department"
+                                                                    {% if row.department != None %}
+                                                                        value="{{ row.department }}" {% endif %}></td>
+                                                            <td><input  class="form-control"
+                                                                        title="{{ row.visitID }}" name="company_contact"
+                                                                        maxlength="60"
+                                                                        id="company_contact_id_{{ row.visitID }}"
+                                                                        placeholder="Contact"
+                                                                    {% if row.contact != None %}
+                                                                        value="{{ row.contact }}" {% endif %}></td>
+                                                            <td><textarea class="form-control" rows="5"
+                                                                          title="{{ row.visitID }}" cols="25"
+                                                                          maxlength="50"
+                                                                          id="visit_objective_id_{{ row.visitID }}"
+                                                                          name="visit_objective"
+                                                                          placeholder="Kindly state objective">{%if row.preciseObjective != None%}{{row.preciseObjective}}{%endif%}</textarea></td>
+                                                            <td><input  hidden="hidden" readonly="readonly"
+                                                                    {% if row.visitID != None %}
+                                                                        value="{{ row.visitID }}" {% endif %}
+                                                                        name="visit_id"></td>
+                                                        </tr>
+                                                    {% else %}
+                                                        <tr>
+                                                            <td colspan="1"><input type="checkbox" id="row_checkbox"
+                                                                                   title="{{ row.visitID }}"
+                                                                                   name="row_checkbox"></td>
+                                                            <td colspan="1"><b><input style="background: lightgreen;"
+                                                                                      type="date" width="48" onfocusout="validate_visit_dates()"
+                                                                                      class="form-control col-lg-12"
+                                                                                      title="{{ row.visitID }}"
+                                                                                      name='visit_date'
+                                                                                      id="visit_date_id_{{ row.visitID }}"
+                                                                    {% if row.date != None %}
+                                                                                      value="{{ row.date|date:"Y-m-d" }}" {% endif %}></b>
+                                                            </td>
+                                                            <td><b><input style="background: lightgreen;"
+                                                                          class="form-control" maxlength="50" title="{{ row.visitID }}"
+                                                                          name='visit_company'
+                                                                          id="visit_company_id_{{ row.visitID }}"
+                                                                          placeholder="Company"
+                                                                    {% if row.visitCompany != None %}
+                                                                          value="{{ row.visitCompany }}" {% endif %}></b>
+                                                            </td>
+                                                            <td><b><input style="background: lightgreen;"
+                                                                          class="form-control" maxlength="50" title="{{ row.visitID }}"
+                                                                          name='visit_department'
+                                                                          id="visit_department_id_{{ row.visitID }}"
+                                                                          placeholder="Department"
+                                                                    {% if row.department != None %}
+                                                                          value="{{ row.department }}" {% endif %}></b>
+                                                            </td>
+                                                            <td><b><input style="background: lightgreen;"
+                                                                          class="form-control " maxlength="60" title="{{ row.visitID }}"
+                                                                          name="company_contact"
+                                                                          id="company_contact_id_{{ row.visitID }}"
+                                                                          placeholder="Contact"
+                                                                    {% if row.contact != None %}
+                                                                          value="{{ row.contact }}" {% endif %}></b>
+                                                            </td>
+                                                            <td><b><textarea style="background: lightgreen;"
+                                                                             class="form-control " maxlength="50" rows="5"
+                                                                             title="{{ row.visitID }}" cols="25"
+                                                                             id="visit_objective_id_{{ row.visitID }}"
+                                                                             name="visit_objective"
+                                                                             placeholder="Kindly state objective">{% if row.preciseObjective != None %}
+                                                                {{ row.preciseObjective }}{% endif %}</textarea></b>
+                                                            </td>
+                                                            <td><b><input style="background: lightgreen;"
+                                                                          hidden="hidden" readonly="readonly"
+                                                                    {% if row.visitID != None %}
+                                                                          value="{{ row.visitID }}" {% endif %}
+                                                                          name="visit_id"></b></td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="1"><input type="checkbox" id="row_checkbox2"
+                                                                           name="row_checkbox"></td>
+                                                    <td colspan="1"><input type="date" width="48"
+                                                                           class="form-control col-lg-12"
+                                                                           name='visit_date' id="visit_date2" onfocusout="validate_visit_dates()"></td>
+                                                    <td><input  class="form-control " maxlength="50" name='visit_company'
+                                                                id="visit_company2" placeholder="Company"></td>
+                                                    <td><input  class="form-control " maxlength="50" name='visit_department'
+                                                                id="visit_department2" placeholder="Department"></td>
+                                                    <td><input  class="form-control " maxlength="60" name="company_contact"
+                                                                id="company_contact2" placeholder="Contact"></td>
+                                                    <td><textarea class="form-control " maxlength="50" rows="5" cols="25"
+                                                                  id="visit_objective2" name="visit_objective"
+                                                                  placeholder="Kindly state objective"></textarea>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            </tbody>
+
+                                        </table>
+
+                                        <div class="form-row mt-4" data-animation="scaleIn">
+                                            <div class="col-12 col-sm-2">
+                                                <a class="btn btn-outline-danger" id='removing' onclick="deleteRow('tableadd')"
+                                                   {% if form_is_being_shown_to_approver or approving_modifications %}hidden{% endif %}>Delete
+                                                    Row</a>
+                                            </div>
+                                            <div class="col-12 col-sm-2">
+                                                <a class="btn btn-outline-success" id="adding"
+                                                   {% if form_is_being_shown_to_approver or approving_modifications %}hidden{% endif %}>Add
+                                                    Row</a>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="button-row d-flex mt-4 col-12">
+                                                <button class="btn btn-danger js-btn-prev" type="button" title="Prev">
+                                                    Prev
+                                                </button>
+                                                <button class="btn btn-primary ml-auto js-btn-next" type="button"
+                                                        title="Next">Next
+                                                </button>
+                                            </div>
+                                            <div class="button-row d-flex mt-4 col-12" name="save_button_div">
+                                                <input class="btn btn-outline-info btn-lg btn-block" type="submit"
+                                                       name="submit_button" value="Save and Return to Home"
+                                                       title="Save and Return to Home" onclick="document.getElementById('submit_button').value='Save and Return to Home'"
+                                                        {% if form_is_being_shown_to_approver %} hidden {% endif %}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!--Expense form panel-->
+                            <div class="multisteps-form__panel shadow p-4 rounded bg-white" data-animation="scaleIn">
+                                {% if form_is_declined %}
+                                    {% if old_emp_form.employee.pk == request.session.id %}
+                                        <a href="{% url 'travel_application' %}"><input name="declined_form_button"
+                                                                                        class="btn btn-outline-primary  float-md-left "
+                                                                                        value="Restart with a new Form"
+                                                                                        readonly></a>
+                                        <input onclick="work_from_declined_form()" name="declined_form_button"
+                                               class="btn btn-outline-primary  float-right"
+                                               value="Create new Form Based off this one" readonly>
+                                    {% else %}
+                                        <b><h2 style="color:darkred">THIS FORM HAS BEEN DECLINED</h2></b>
+                                    {% endif %}
+                                    <br><br><br>
+                                {% endif %}
+
+                                <h3 class="multisteps-form__title">Expense</h3>
+                                <div class="multisteps-form__content">
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+                                        <div class="col-12 col-sm-6">
+                                            <label for="airway_ticket" class="control-label"> Airway Ticket (Total):</label>
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">$</span>
+                                                <input class="multisteps-form__input form-control price numberinput txt " maxlength="8"
+                                                       id="airway_ticket" name="airway_ticket"
+                                                       oninput="totalValue()"
+                                                        {% if old_expense_form.airwayTicket != None %}
+                                                       value="{{ old_expense_form.airwayTicket }}" {% else %}
+                                                       value="0"{% endif %}/>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-sm-6 mt-4 mt-sm-0">
+                                            <label for="explaination_airwayticket" class="control-label "> Explanation
+                                                :</label>
+
+
+                                            <textarea class="multisteps-form__input form-control price" maxlength="1000"
+                                                      id="explaination_airwayticket" name="explaination_airwayticket">{% if old_expense_form.airwayTicketExp != None %}{{old_expense_form.airwayTicketExp}}{% endif %}</textarea>
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+
+                                        <div class="col-12 col-sm-6">
+                                            <label for="allowance col-sm-2" class="control-label"> Accommodation (Total):</label>
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">$</span>
+                                                <input class="multisteps-form__input form-control price numberinput txt"
+                                                       maxlength="8"
+                                                       id="expense_accommodation" name="accommodation"
+                                                       oninput="totalValue()"
+                                                        {% if old_expense_form.accommodation != None %}
+                                                       value="{{ old_expense_form.accommodation }}" {% else %}
+                                                       value="0"{% endif %}/>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-6 mt-4 mt-sm-0">
+                                            <label for="explaination_accommodation" class="control-label"> Explanation
+                                                :</label>
+                                            <div class="input-group-prepend">
+                                                <input data-toggle="modal" data-target="#hotel_options" class="btn-outline-primary form-control" value="Hotel Options" readonly>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+                                        <div class="col-12 col-sm-6">
+                                            <label for="transportation" class="control-label"> Transportation (Total):</label>
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">$</span>
+                                                <input class="multisteps-form__input form-control price numberinput"
+                                                       id="expense_transportation" name="transportation" maxlength="8" oninput="totalValue()"
+                                                        {% if old_expense_form.transportation != None %}
+                                                       value="{{ old_expense_form.transportation }}" {% else %}
+                                                       value="0"{% endif %}/>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-sm-6">
+                                            <label for="explanation_transportation" class="control-label"> Explanation
+                                                :</label>
+                                            <textarea class="multisteps-form__input form-control"
+                                                      id="explanation_transportation"
+                                                      maxlength="1000"
+                                                      name="explaination_transportation"
+                                                      placeholder=" Enterprise Rental Code: XZ44F30">{% if old_expense_form.transportationExp != None %}{{old_expense_form.transportationExp}}{% endif %}</textarea>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+
+                                        <div class="col-12 col-sm-6">
+                                            <label for="allowance col-sm-2" class="control-label"> Per Diem/Allowance
+                                                Per Diem :</label>
+                                            <div class="input-group-prepend">
+
+                                                <span class="input-group-text" id="basic-addon1">$</span>
+                                                {% if form_is_being_shown_to_approver == False %}
+                                                    <select id="allowance" name="allowance" oninput="totalValue();" class="multisteps-form__input form-control price numberinput">
+                                                        <option id="Not-going-to-any-of-the-places-listed" value="0" {% if old_expense_form.allowanceExp == 'Not going to any of the places listed' %} selected {% endif %}>Select Per Diem</option>
+                                                        <option id="Going-to-USA" value="40" {% if old_expense_form.allowanceExp == 'Going to USA' %} selected {% endif %}>USA Per Diem ($40/Day)</option>
+                                                        <option id="Going-to-China" value="20" {% if old_expense_form.allowanceExp == 'Going to China' %} selected {% endif %}>China Per Diem ($20/Day)</option>
+                                                        <option id="Going-to-Mexico" value="40" {% if old_expense_form.allowanceExp == 'Going to Mexico' %} selected {% endif %}>Mexico Per Diem ($40/Day)</option>
+                                                        <option id="Going-to-Canada" value="40" {% if old_expense_form.allowanceExp == 'Going to Canada' %} selected {% endif %}>Canada Per Diem ($40/Day)</option>
+                                                        <option id="Going-to-Brazil" value="30" {% if old_expense_form.allowanceExp == 'Going to Brazil' %} selected {% endif %}>Brazil Per Diem ($30/Day)</option>
+                                                        <option id="Going-to-Czech-Republic-(EU)" value="30" {% if old_expense_form.allowanceExp == 'Going to Czech Republic (EU)' %} selected {% endif %}>Czech Republic (EU) Per Diem ($30/Day)</option>
+                                                        <option id="Going-to-Japan" value="40" {% if old_expense_form.allowanceExp == 'Going to Japan' %} selected {% endif %}>Japan Per Diem ($40/Day)</option>
+                                                        <option id="Going-to-Singapore" value="40" {% if old_expense_form.allowanceExp == 'Going to Singapore' %} selected {% endif %}>Singapore Per Diem ($40/Day)</option>
+                                                        <option id="Going-to-Korea" value="40" {% if old_expense_form.allowanceExp == 'Going to Korea' %} selected {% endif %}>Korea Per Diem ($40/Day)</option>
+                                                    </select>
+                                                {% else %}
+                                                    <div id="allowance_input" class="input-group-prepend">
+                                                        <input id="allowance_input_field" name="allowance" class="multisteps-form__input form-control price numberinput" readonly
+                                                                {% if old_expense_form.allowanceExp == 'Going to USA' %} value="USA Per Diem ($40/Day)"{% endif %}
+                                                                {% if old_expense_form.allowanceExp == 'Going to China' %} value="China Per Diem ($20/Day)" {% endif %}
+                                                                {% if old_expense_form.allowanceExp == 'Going to Mexico' %} value="Mexico Per Diem ($40/Day)" {% endif %}
+                                                                {% if old_expense_form.allowanceExp == 'Going to Canada' %} value="Canada Per Diem ($40/Day)" {% endif %}
+                                                                {% if old_expense_form.allowanceExp == 'Going to Brazil' %} value="Brazil Per Diem ($30/Day)" {% endif %}
+                                                                {% if old_expense_form.allowanceExp == 'Going to Czech Republic (EU)' %} value="Czech Republic (EU) Per Diem ($30/Day)" {% endif %}
+                                                                {% if old_expense_form.allowanceExp == 'Going to Japan' %} value="Japan Per Diem ($40/Day)" {% endif %}
+                                                                {% if old_expense_form.allowanceExp == 'Going to Singapore' %} value="Singapore Per Diem ($40/Day)" {% endif %}
+                                                                {% if old_expense_form.allowanceExp == 'Going to Korea' %} value="Korea Per Diem ($40/Day)" {% endif %}>
+                                                    </div>
+                                                    <div id="allowance_select" hidden>
+                                                        <select id="allowance" name="allowance" oninput="totalValue();" class="multisteps-form__input form-control price numberinput">
+                                                            <option id="Not-going-to-any-of-the-places-listed" value="0" {% if old_expense_form.allowanceExp == 'Not going to any of the places listed' %} selected {% endif %}>Select Per Diem</option>
+                                                            <option id="Going-to-USA" value="40" {% if old_expense_form.allowanceExp == 'Going to USA' %} selected {% endif %}>USA Per Diem ($40/Day)</option>
+                                                            <option id="Going-to-China" value="20" {% if old_expense_form.allowanceExp == 'Going to China' %} selected {% endif %}>China Per Diem ($20/Day)</option>
+                                                            <option id="Going-to-Mexico" value="40" {% if old_expense_form.allowanceExp == 'Going to Mexico' %} selected {% endif %}>Mexico Per Diem ($40/Day)</option>
+                                                            <option id="Going-to-Canada" value="40" {% if old_expense_form.allowanceExp == 'Going to Canada' %} selected {% endif %}>Canada Per Diem ($40/Day)</option>
+                                                            <option id="Going-to-Brazil" value="30" {% if old_expense_form.allowanceExp == 'Going to Brazil' %} selected {% endif %}>Brazil Per Diem ($30/Day)</option>
+                                                            <option id="Going-to-Czech-Republic-(EU)" value="30" {% if old_expense_form.allowanceExp == 'Going to Czech Republic (EU)' %} selected {% endif %}>Czech Republic (EU) Per Diem ($30/Day)</option>
+                                                            <option id="Going-to-Japan" value="40" {% if old_expense_form.allowanceExp == 'Going to Japan' %} selected {% endif %}>Japan Per Diem ($40/Day)</option>
+                                                            <option id="Going-to-Singapore" value="40" {% if old_expense_form.allowanceExp == 'Going to Singapore' %} selected {% endif %}>Singapore Per Diem ($40/Day)</option>
+                                                            <option id="Going-to-Korea" value="40" {% if old_expense_form.allowanceExp == 'Going to Korea' %} selected {% endif %}>Korea Per Diem ($40/Day)</option>
+                                                        </select>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-6 mt-4 mt-sm-0">
+                                            <label for="explanation_allowance" class="control-label"> Explanation
+                                                :</label>
+                                            <input class="multisteps-form__input form-control price"
+                                                   id="explanation_allowance" name="explanation_allowance"
+                                                    {% if old_expense_form.allowanceExp != None %}
+                                                   value="{{ old_expense_form.allowanceExp }}" {% endif %} readonly/>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+
+                                        <div class="col-12 col-sm-6">
+                                            <label for="public_relationship" class="control-label"> Public Relationship Expense:
+                                            </label>
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">$</span>
+                                                <input class="multisteps-form__input form-control price numberinput" maxlength="8"
+                                                       id="public_relationship" oninput="totalValue()" name="public_relationship"
+                                                        {% if old_expense_form.publicRelationship != None %}
+                                                       value="{{ old_expense_form.publicRelationship }}" {% else %}
+                                                       value="0"{% endif %}/>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-6 mt-4 mt-sm-0">
+                                            <label for="explanation_publicrelationship" class="control-label"> Explanation
+                                                :</label>
+                                            <textarea class="multisteps-form__input form-control price"
+                                                      id="explanation_publicrelationship" name="explanation_publicrelationship" maxlength="1000">{% if old_expense_form.publicRelationshipExp != None %}{{old_expense_form.publicRelationshipExp}}{% endif %}</textarea>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+                                        <div class="col-12 col-sm-6">
+                                            <label for="other_expense" class="control-label"> Other Expense:</label>
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">$</span>
+                                                <input class="multisteps-form__input form-control price numberinput " maxlength="8"
+                                                       id="other_expense" oninput="totalValue()" name="other_expense"
+                                                        {% if old_expense_form.other != None %}
+                                                       value="{{ old_expense_form.other }}" {% else %}
+                                                       value="0"{% endif %}/>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-sm-6 mt-4 mt-sm-0">
+                                            <label for="explaination_otherexpense" class="control-label"> Explanation
+                                                :</label>
+                                            <textarea class="multisteps-form__input form-control"
+                                                      id="explaination_otherexpense" name="explaination_otherexpense" maxlength="1000">{% if old_expense_form.otherExp != None %}{{old_expense_form.otherExp}}{% endif %}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+                                        <div class="col-12 col-sm-12">
+                                            <label for="total_expense" class="control-label"> Total Expenses:</label>
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="basic-addon1">$</span>
+                                                <input class="multisteps-form__input form-control price numberinput "
+                                                       id="total_expense" name="total"  readonly
+                                                />
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+
+                                    <!--Advance Table starts Here-->
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+
+                                        <label for="travel_advance_button" class="control-label" hidden="hidden"></label>
+
+                                        <input class="collapsible btn btn-outline-primary" type="button" id="travel_advance_button"
+                                               name="travel_advance_button" onclick="changeButtonValue()"
+                                               data-toggle="collapse" href="#travel_advance_fields" role="button" aria-expanded="false" aria-controls="travel_advance_fields">
+
+                                        {% if user_is_creator == False and request.session.department != 'Supporting - Accounting' %}
+                                            <div id="max_advance_exp">
+                                                Max amount for advance is calculated based on allowance, public relationship expense, and relationship expense.
+                                                Travel advance amount is to help you pay for these expenses.<br><br>
+                                            </div>
+                                            <div class="col-12 col-sm-3 mt-4 mt-sm-0">
+                                                <label for="advance_amount" class="control-label"> Advance
+                                                    Amount:
+                                                    <div id="max_amount"><i>Max: $</i></div>
+                                                </label>
+                                                <input
+                                                        class="multisteps-form__input form-control numberinput"
+                                                        id="advance_amount" name="advance_amount"
+                                                        {% if old_advance_form.advAmount != None %}value="{{ old_advance_form.advAmount }}"{% endif %}>
+                                            </div>
+                                        {% endif %}
+                                        <input type="hidden" id="travel_advance_apply" name="travel_advance_apply" {% if old_advance_form.advAmount != None and old_advance_form.advAmount != 0 %} value="true" {% else %} value="false" {% endif %}>
+
+                                        <div class="travel_advance col-sm-12 collapse" id="travel_advance_fields">
+                                            <h4 id="travel_advance_title" class="">Travel Advance</h4>
+                                            {% if vendor == None %}
+                                                <div style="color:darkred" class="control-label">
+                                                    There is no vendor code attached to this account.
+                                                    If you want to apply for travel advance, you will have to
+                                                    go to K2 and apply for a vendor code first.
+                                                </div>{% endif %}
+                                            <!--Fix the id here, remove readonly,oninput compare the amount-->
+                                            <div class="form-row mt-4" data-animation="scaleIn">
+
+                                                {% if user_is_creator or request.session.department == 'Supporting - Accounting' %}
+                                                    <div id="max_advance_exp">
+                                                        Max amount for advance is calculated based on allowance, public relationship expense, and relationship expense.
+                                                        Travel advance amount is to help you pay for these expenses.<br><br>
+                                                    </div>
+                                                    <div class="col-12 col-sm-3 mt-4 mt-sm-0">
+                                                        <label for="advance_amount" class="control-label"> Advance
+                                                            Amount:
+                                                            <div id="max_amount"><i>Max: $</i></div>
+                                                        </label>
+                                                        <input
+                                                                class="multisteps-form__input form-control numberinput"
+                                                                id="advance_amount" name="advance_amount"
+                                                                {% if old_advance_form.advAmount != None %}value="{{ old_advance_form.advAmount }}"{% endif %}>
+                                                    </div>
+                                                {% endif %}
+
+                                                <div class="col-12 col-sm-3 mt-4 mt-sm-0">
+                                                    <label for="advanceprofit_center" class="control-label">{% if request.session.department == 'Supporting - Accounting' %}
+                                                        Profit
+                                                        Center : {% endif %}</label><br><br>
+                                                    <input class="multisteps-form__input form-control"
+                                                           id="advanceprofit_center" name="advanceprofit_center"
+
+                                                            {% if old_advance_form.profitCenter != None %}
+                                                           value="{{ old_advance_form.profitCenter }}"
+                                                            {% else %}
+                                                                {% for dept in departments %}
+                                                                    {% if dept.costCenterName == user_dept %}
+                                                           value="{{ dept.profitCenterCode }}"
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                            {% if request.session.department != 'Supporting - Accounting' %}
+                                                           readonly hidden
+                                                            {% endif %}/>
+                                                </div>
+
+                                                <div class="col-12 col-sm-3 mt-4 mt-sm-0">
+                                                    <label for="gl_account" class="control-label">{% if request.session.department == 'Supporting - Accounting' %} GL: {% endif %}</label><br><br>
+                                                    <input class="multisteps-form__input form-control" id="gl_account"
+                                                           name="gl_account" maxlength="50"
+                                                            {% if old_advance_form.glAccount != None %}
+                                                           value="{{ old_advance_form.glAccount }}" {% else %}value="{{ gl_account.glCode }}"{% endif %}
+                                                            {% if request.session.department != 'Supporting - Accounting' %}
+                                                           readonly hidden{% endif %}/>
+                                                </div>
+                                                <div class="col-12 col-sm-3 mt-4 mt-sm-0">
+
+                                                    <label for="gl_description" class="control-label">{% if request.session.department == 'Supporting - Accounting' %}Description
+                                                        :{% endif %}</label><br><br>
+                                                    <input class="multisteps-form__input form-control"
+                                                           id="gl_description" name="gl_description" maxlength="50"
+                                                            {% if old_advance_form.glDescription != None %}
+                                                           value="{{ old_advance_form.glDescription }}" {% else %}value="{{ gl_account.glDescription }}"{% endif %}
+                                                            {% if request.session.department != 'Supporting - Accounting' %}
+                                                           readonly hidden{% endif %}>
+
+                                                </div>
+                                            </div>
+                                            <div class="form-row mt-4" data-animation="scaleIn">
+
+                                                <div class="col-12 col-sm-3">
+                                                    <label for="cost_center" class="control-label">{% if request.session.department == 'Supporting - Accounting' %} Cost Center
+                                                        : {% endif %}</label>
+                                                    <input class="multisteps-form__input form-control" id="cost_center"
+                                                           name="cost_center"
+                                                            {% if old_advance_form.costCenterCode != None %}
+                                                           value="{{ old_advance_form.costCenterCode }}"
+                                                            {% else %}
+                                                           value="{{ user_dept_code }}"
+                                                            {% endif %}
+                                                            {% if request.session.department != 'Supporting - Accounting' %}
+                                                           readonly hidden{% endif %}/>
+                                                </div>
+
+
+
+                                                <div class="col-12 col-sm-3 mt-4 mt-sm-0">
+                                                    <label for="reference_document" class="control-label">{% if request.session.department == 'Supporting - Accounting' %} Reference
+                                                        Document : {% endif %}</label>
+                                                    <textarea style="resize: none" rows="2" class="multisteps-form__input form-control" maxlength="50"
+                                                              id="reference_document" name="reference_document"
+                                                              type="textarea"
+                                                              {% if request.session.department != 'Supporting - Accounting' %}readonly hidden{% endif %}>{% if old_advance_form.refDocument != None %}{{old_advance_form.refDocument}}{% else %}{{today | date:"mdy"}}-TA{% endif %}</textarea>
+                                                </div>
+                                                <div class="col-12 col-sm-3 mt-4 mt-sm-0">
+                                                    <label for="head_text" class="control-label">{% if request.session.department == 'Supporting - Accounting' %} Head Text : {% endif %}</label>
+                                                    <textarea style="resize: none" rows="2" class="multisteps-form__input form-control" id="head_text" maxlength="50"
+                                                              name="head_text" type="textarea"
+                                                            {% if request.session.department != 'Supporting - Accounting' %}
+                                                              readonly hidden{% endif %}>{% if old_advance_form.headText != None %}{{old_advance_form.headText}}{% endif %}</textarea>
+                                                </div>
+
+                                                <div class="col-12 col-sm-3 mt-4 mt-sm-0">
+                                                    <label for="head_text" class="control-label">{% if request.session.department == 'Supporting - Accounting' %} Vendor Code :{% endif %} </label>
+                                                    <textarea style="resize: none" rows="2" class="multisteps-form__input form-control" id="vendor_code" maxlength="15"
+                                                              name="vendor_code" type="textarea"
+                                                            {% if request.session.department != 'Supporting - Accounting' %}
+                                                              readonly hidden{% endif %}>{% if old_advance_form.vendorCode != None %}{{old_advance_form.vendorCode}}{% else %}{% if vendor != None %}{{vendor.vendorCode}}{% endif %}{% endif %}</textarea>
+                                                </div>
+
+
+                                            </div>
+
+                                            <div class="form-row mt-4" data-animation="scaleIn">
+
+
+                                                <div class="col-12 col-sm-3">
+                                                    <label for="assignment" class="control-label">{% if request.session.department == 'Supporting - Accounting' %} Assignment :{% endif %} </label>
+                                                    <textarea style="resize: none" rows="2" class="multisteps-form__input form-control"
+                                                              id="assignment" name="assignment" type="textarea" maxlength="100"
+                                                            {% if request.session.department != 'Supporting - Accounting' %}
+                                                              readonly hidden{% endif %}>{% if old_advance_form.assignment != None %}{{old_advance_form.assignment}}{% else %}{{vendor.vendorCode}},{{user_dept_code}}{% endif %}</textarea>
+                                                </div>
+
+                                                <input hidden id="vendor_code" value="{{ vendor.vendorCode }}">
+
+
+                                                <div class="col-12 col-sm-3 mt-4 mt-sm-0">
+                                                    <label for="text" class="control-label">{% if request.session.department == 'Supporting - Accounting' %} Text : {% endif %}</label>
+                                                    <textarea style="resize: none" rows="2" class="multisteps-form__input form-control" id="text"
+                                                              name="text" type="textarea" maxlength="25"
+                                                            {% if request.session.department != 'Supporting - Accounting' %}
+                                                              readonly hidden{% endif %}>{% if old_advance_form.text != None %}{{old_advance_form.text}}{% endif %}</textarea>
+                                                </div>
+
+                                                {#                                                <div class="col-12 col-sm-3 mt-4 mt-sm-0">#}
+                                                {#                                                    <label for="invoice_number" class="control-label"> Invoice Number#}
+                                                {#                                                        : </label>#}
+                                                {#                                                    <textarea class="multisteps-form__input form-control numberinput" maxlength="8"#}
+                                                {#                                                              id="invoice_number" name="invoice_number" type="textarea"#}
+                                                {#                                                            {% if request.session.department != 'Supporting - Accounting' %}#}
+                                                {#                                                              readonly {% endif %}>{% if old_advance_form.invoiceNumber != None %}{{old_advance_form.invoiceNumber}}{% endif %}</textarea></div>#}
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!--Expense Table ends Here-->
+
+
+                                <!--Expense buttons begins here-->
+                                <div class="row">
+                                    <div class="button-row d-flex mt-4 col-12">
+                                        <button class="btn btn-danger js-btn-prev" type="button" title="Prev">Prev
+                                        </button>
+                                        <button class="btn btn-primary ml-auto js-btn-next" type="button" title="Next">
+                                            Next
+                                        </button>
+                                    </div>
+                                    <div class="button-row d-flex mt-4 col-12" name="save_button_div">
+                                        <input class="btn btn-outline-info btn-lg btn-block" type="submit"
+                                               name="submit_button" value="Save and Return to Home" title="Save" onclick="document.getElementById('submit_button').value='Save and Return to Home'"
+                                                {% if form_is_being_shown_to_approver %} hidden {% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!--travel policy form panel-->
+                            <div class="multisteps-form__panel shadow p-4 rounded bg-white" data-animation="scaleIn">
+                                {% if form_is_declined %}
+                                    {% if old_emp_form.employee.pk == request.session.id %}
+                                        <a href="{% url 'travel_application' %}"><input name="declined_form_button"
+                                                                                        class="btn btn-outline-primary  float-md-left "
+                                                                                        value="Restart with a new Form"
+                                                                                        readonly></a>
+                                        <input onclick="work_from_declined_form()" name="declined_form_button"
+                                               class="btn btn-outline-primary  float-right"
+                                               value="Create new Form Based off this one" readonly>
+                                    {% else %}
+                                        <b><h2 style="color:darkred">THIS FORM HAS BEEN DECLINED</h2></b>
+                                    {% endif %}
+                                    <br><br><br>
+                                {% endif %}
+                                <h3 class="multisteps-form__title">Travel Policy</h3>
+                                <div class="multisteps-form__content">
+                                    <!-- Button trigger modal -->
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+                                        <embed src="{% static 'travel/files/(Update)Travel and Business Expense Policy (updated 2018-10-15).pdf' %}#toolbar=0&navpanes=0&scrollbar=0."
+                                               type="application/pdf" width="100%" height="800px"/>
+                                    </div>
+                                    <br>
+                                    <div id="policy_options">
+                                        {% if form_is_being_shown_to_approver == False %}
+                                            <!--Form Space-->
+                                            <div style="color:darkred" class="control-label" id="vendor_message">
+                                            </div>
+
+                                            <input id="check" class="" name="checkbox" type="checkbox" onclick="notifypolicy()" >
+                                            <label for="check" class="control-label">I have read and Understand the
+                                                Foxconn Travel Policy.</label>
+
+                                            <div class="button-row d-flex mt-4">
+                                                <button class="btn btn-danger js-btn-prev" type="button" title="Prev">
+                                                    Prev
+                                                </button>
+
+                                                <input type="submit" name="submit_button"
+                                                       class="btn btn-secondary ml-auto" id="btncheck" value="Send"
+                                                       onclick="return SendButtonValidationFunction('Send');"/>
+                                            </div>
+
+
+
+                                        {% else %}
+                                            <div class="button-row d-flex mt-4">
+                                                <button class="btn btn-danger js-btn-prev" type="button" title="Prev">Prev
+                                                </button>
+                                                <button class="btn btn-primary ml-auto js-btn-next" type="button" title="Next">
+                                                    Next
+                                                </button>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            {% if form_is_being_shown_to_approver%}
+                                <div class="multisteps-form__panel shadow p-4 rounded bg-white" data-animation="scaleIn"
+                                     id="approve_section">
+                                {% if form_is_declined %}
+                                    <b><h2 style="color:darkred">THIS FORM HAS BEEN DECLINED</h2></b>
+                                {% endif %}
+
+                                <h3 class="multisteps-form__title">{% if user_is_creator and approving_modifications == False %}Form Status{% else %}Approve{% endif %}</h3>
+                                {% if user_is_creator == False or approving_modifications %}
+                                    <div class="multisteps-form__content">
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+                                        <div class="col-6 col-sm-6">
+                                            <label for="approver" class="control-label"> Approver : </label>
+                                            <input class="multisteps-form__input form-control" id="approver"
+                                                   name="approver"  placeholder="Approver Name"
+                                                   value="{{ approver_name }}" readonly/>
+                                        </div>
+
+                                        <div class="col-6 col-sm-6">
+                                            <label for="date_approver" class="control-label"> Date : </label>
+                                            <input class="multisteps-form__input form-control" id="date_approver"
+                                                   name="date_approver" {% if users_stage.date != None %}
+                                                   value='{{ users_stage.date }}'{% else %}
+                                                   value="{{ today }}" {% endif %} readonly/>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-row mt-4" data-animation="scaleIn">
+                                        <div class="col-12 col-sm-12">
+                                            <label for="comment" class="control-label"> Comment : </label>
+                                            <textarea class="multisteps-form__input form-control" maxlength="255" id="comment"
+                                                      name="comment"  {% if form_is_being_approved == False %}
+                                                      readonly {% endif %}>{% if users_stage.comments != None %}{{users_stage.comments}}{% endif %}</textarea>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                            {% if form_is_being_shown_to_approver or form_is_declined %}
+
+                                <div class="form-row mt-4" data-animation="scaleIn">
+                                    <div class="col-md-12">
+                                        <table id="paf_table" class="table table-striped table-hover responsive"
+                                               width="100%">
+                                            <thead>
+                                            <th>Approver Name</th>
+                                            <th>Approver's Action</th>
+                                            <th>Date</th>
+                                            <th>Comment</th>
+
+                                            </thead>
+                                            <tbody>
+                                            {% for stage in all_forms_stages %}
+                                                <tr>
+                                                    <td>
+                                                        <em>{{ stage.approverID }}</em>
+                                                    </td>
+                                                    <td>
+                                                        <em>{{ stage.actionTaken }}</em>
+                                                    </td>
+                                                    <td>
+                                                        <em>
+                                                            {{ stage.date|date:"N d, Y " }}{{ stage.date|time:"H:i" }}</em>
+                                                    </td>
+                                                    <td>
+                                                        <em>{{ stage.comments }}</em>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if form_is_being_shown_to_approver and old_emp_form.isDeclined == False %}
+                                {% if approving_modifications %}
+                                    <div class="row">
+                                        <div class="button-row d-flex mt-4 col-12">
+
+                                            <input class="btn btn-danger js-btn-prev" type="submit"
+                                                   name="submit_button" title="Prev"
+                                                   value="Decline Modifications" onclick="document.getElementById('submit_button').value='Decline Modifications'">
+
+                                            <input class="btn btn-success ml-auto js-btn-next"
+                                                   name="submit_button" type="submit"
+                                                   title="Next" value="Approve Modifications" onclick="document.getElementById('submit_button').value='Approve Modifications'">
+
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {% if form_is_being_approved == True and approving_modifications == False %}
+                                    {% if request.session.department == 'Supporting - General Service' and users_stage.actionTaken == '?' %}
+
+                                        <input class="btn btn-success ml-auto js-btn-next" name="submit_button" onclick="document.getElementById('submit_button').value='Acknowlege'"
+                                               type="submit"
+                                               title="Next" value="Acknowlege">
+                                    {% else %}
+                                        <div class="row">
+                                            <div class="button-row d-flex mt-4 col-12">
+                                                <input class="btn btn-danger js-btn-prev" type="submit"
+                                                       name="submit_button" title="Prev" value="Decline" onclick="document.getElementById('submit_button').value='Decline'">
+
+                                                <input class="btn btn-success ml-auto js-btn-next"
+                                                       name="submit_button" type="submit"
+                                                       title="Next"
+                                                        {% if request.session.department == 'Supporting - Accounting' %}
+                                                       value="Submit and Approve" onclick="document.getElementById('submit_button').value='Submit and Approve'"{% else %}
+                                                       value="Approve" onclick="document.getElementById('submit_button').value='Approve'"{% endif %}>
+
+                                                <div id="allow_modify" class="btn btn-success ml-auto ">
+                                                    <input class="btn btn-success ml-auto " id="modify_button"
+                                                           name="modify_button" type="button"
+                                                           title="Next" value="Modify"
+                                                           onclick="modify_button_clicked()">
+                                                </div>
+
+                                                <div id="send_modify_hidden" class="btn btn-success ml-auto "
+                                                     hidden></div>
+
+                                                <input class="btn btn-success ml-auto " id="ask_approval_button"
+                                                       name="ask_approval_button" type="button"
+                                                       title="Next" value="Edit Approver List"
+                                                       onclick="show_approver_form()">
+
+                                            </div>
+                                        </div>
+
+                                        <!--<label class="ask_user_for_approval">Ask Another User For Approval
+                                          <input type="checkbox" onchange="">
+                                          <span class="checkmark"></span>
+                                        </label>-->
+
+                                        <div class="add_approver_form" id="add_approver_form">
+                                        <div class="form-row mt-4">
+                                            <div class="col-12 col-sm-6">
+                                                <label for="add_approver_action" id="add_approver_action_label">Action:</label><br>
+                                                <select name="add_approver_action" id="add_approver_action" onchange="change_approver_list_type()">
+                                                    <option value="Add to approval list">Add new co-signers</option>
+                                                    <option value="Replace me in approval list">Replace me in approval
+                                                        list
+                                                    </option>
+                                                </select>
+                                                <br><br>
+                                            </div>
+
+                                            <div class="col-12 col-sm-6">
+                                                <label for="add_approvers_options" id="approvers_options_label">New Approver(s): <br><i>Hint: use shift or ctrl(windows)/command(mac) to select multiple people</i></label><br>
+                                                <select name="add_approvers_options" id="add_approvers_options" multiple>
+                                                    {% for employee in employees_for_add_new_approver %}
+                                                        <option value="{{ employee.pk }}">{{ employee.firstName }}
+                                                            {% if employee.middleName != None and employee.middleName != '' %}
+                                                                {{ employee.middleName }} {% endif %}{{ employee.lastName }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <br>
+                                            </div>
+                                        </div>
+
+                                        <input class="btn btn-success ml-auto js-btn-next" name="submit_button"
+                                               id="approval_button" type="submit"
+                                               title="Next" value="Change Approver List" onclick="document.getElementById('submit_button').value='Change Approver List'">
+                                    {% endif %}
+                                </div>
+
+                                    </div>
+                                    </div>
+                                    </div>
+                                {% endif %}
+
+                                <!---form Space-->
+
+                            {% else %}
+                                {% if old_emp_form.isCompleted %}
+                                    <div class="multisteps-form__panel shadow p-4 rounded bg-white"
+                                         data-animation="scaleIn">
+                                        You cannot approve this form.<br>
+                                        <button class="btn btn-danger js-btn-prev" type="button" title="Prev">Prev
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    <div class="multisteps-form__panel shadow p-4 rounded bg-white"
+                                         data-animation="scaleIn">
+                                        Form is waiting to be submitted.<br>
+                                        <button class="btn btn-danger js-btn-prev" type="button" title="Prev">Prev
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                    {% if user_is_creator == false and form_is_declined and form_is_being_shown_to_approver %}
+                        <div class="multisteps-form__panel shadow p-4 rounded bg-white"
+                             data-animation="scaleIn">
+                            Form has been declined.<br>
+                            <button class="btn btn-danger js-btn-prev" type="button" title="Prev">Prev
+                            </button>
+                        </div>
+                    {% endif %}
+
+
+                    <!--This will get information from modified fields to pass to the javascript-->
+                    {% for field in modified_fields %}
+                        <input class="modified_field" value="{{ field.fieldID }}" name="{{ field.fieldData }}"
+                               title="{{ field.visitID.visitID }}" readonly hidden>
+                    {% endfor %}
+                    <input hidden id="current_date" value="{{ current_date|date:"Y-m-d" }}" type="date"> <!-- right now it  is not getting this field when editing declined form -->
+
+                </div>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{#<div aria-live="polite" aria-atomic="true"   class="d-flex justify-content-center align-items-center" style="min-height: 200px;">#}
+{##}
+{#  <!-- Then put toasts within -->#}
+{#  <div class="toast" role="alert" id="myToast" data-delay="15000"  aria-live="assertive" aria-atomic="true" style="position: absolute; top: 80rem; right: 40rem; color: #953b39">#}
+{#    <div class="toast-header">#}
+{#      <img src="Hi" class="rounded mr-2" alt="">#}
+{#      <strong class="mr-auto">Policy Alert!!!</strong>#}
+{#      <small>now</small>#}
+{#      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">#}
+{#        <span aria-hidden="true">&times;</span>#}
+{#      </button>#}
+{#    </div>#}
+{#    <div class="toast-body">#}
+{#      Within 30 days after return to home office, employee must submit their travel expense report with actual,#}
+{#        original receipts (except per diems) to substantiate all travel expenses.#}
+{#    </div>#}
+{#  </div>#}
+{#</div>#}
+
+
+
+
+<!-- Modal -->
+<div class="modal fade bd-example-modal-lg" id="hotel_options" tabindex="-1" role="dialog"
+     aria-labelledby="hotel_options" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="max-width: 1250px!important;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container py-4">
+                    <div class="row">
+                        <div class="col-md-12 my-4 mx-auto">
+                            <h2 class="text-center display-4">Available Hotel Options</h2>
+
+                            <hr>
+                            <div class="row no-gutters my-4">
+                                <div class="col-md-3 pr-2">
+                                    <div class="list-group text-center my-3">
+                                        <div class="list-group-item text-white bg-dark">
+                                            <h4 class="text-center my-1">Days Inn</h4>
+                                        </div>
+                                        <div class="list-group-item text-uppercase font-weight-bold">
+                                            Single Queen ($59.99)
+                                        </div>
+                                        <div class="list-group-item text-uppercase font-weight-bold">
+                                            Double Queen ($69.99)
+                                        </div>
+
+                                        <div class="list-group-item text-uppercase font-weight-bold">
+                                            Complimentary Breakfast buffet;
+                                        </div>
+                                        <a href="#" class="list-group-item">
+                                            13340 Hospitality Ct, Sturtevant, WI 53177
+                                        </a>
+                                        <a href="tel:+12628846840" class="list-group-item">
+                                            Need Reservation for discount  (262)-(884)-6840
+
+                                        </a>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3 pr-2">
+                                    <div class="list-group text-center bg-alt">
+                                        <div href="#" class="list-group-item text-white bg-dark">
+                                            <h4 class="text-center my-1">Country Inn <br></h4>
+                                        </div>
+                                        <div class="list-group-item text-uppercase font-weight-bold">
+                                            King Size Bed ($85.00)
+                                        </div>
+                                        <div class="list-group-item text-uppercase font-weight-bold">
+                                            2 Queen Size Bed ($85.00)
+                                        </div>
+                                        <div class="list-group-item text-uppercase font-weight-bold">
+                                            Complimentary Breakfast buffet
+                                        </div>
+                                        <a href="#" class="list-group-item">
+                                            13339 Hospitality Ct, Sturtevant, WI 53177
+                                        </a>
+                                        <a href="#" class="list-group-item">
+                                            Elizabeth Burgett
+                                        </a>
+                                        <a href="mailto:eburgett@jacaruso.com" class="list-group-item">
+                                            Email: eburgett@jacaruso.com
+                                        </a>
+                                        <a href="tel:+12525031128" class="list-group-item">
+                                            Call : (252)-(503)-(1128)
+                                        </a>
+
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-3">
+                                    <div class="list-group text-center bg-alt">
+                                        <div href="#" class="list-group-item text-white bg-dark">
+                                            <h4 class="text-center my-1">My Place<br></h4>
+                                        </div>
+                                        <div class="list-group-item text-uppercase font-weight-bold">
+                                            Single Queen Bed ($60.00)
+                                        </div>
+                                        <div class="list-group-item text-uppercase font-weight-bold">
+                                            Double Queen Bed ($65.00)
+                                        </div>
+                                        <div class="list-group-item text-uppercase font-weight-bold">
+                                            All rooms have full kitchens
+                                        </div>
+                                        <div class="list-group-item">
+                                            $4.49 + Tax for a breakfast sandwich or buritto, a side and beverage
+                                        </div>
+                                        <a href="#" class="list-group-item">
+                                            Robert Brown
+                                        </a>
+                                        <a href="mailto:mtpleasant@myplacehotels.com" class="list-group-item">
+                                            Email: mtpleasant@myplacehotels
+                                        </a>
+                                        <a href="tel:+12628840489" class="list-group-item">
+                                            Call: (262)-(884)-(0489)
+                                        </a>
+
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3 pl-2">
+                                    <div class="list-group text-center my-3">
+                                        <div href="#" class="list-group-item text-white bg-dark">
+                                            <h4 class="text-center my-1">Holiday Inn</h4>
+                                        </div>
+                                        <div class="list-group-item text-uppercase font-weight-bold">
+                                            King/2 Queens ($90.00)
+                                        </div>
+                                        <div class="list-group-item text-uppercase font-weight-bold">
+                                            Complimentary Breakfast Buffet
+                                        </div>
+                                        <a href="#" class="list-group-item">
+                                            Need Reservation Call or Email Lisa Frechette for Discount
+                                        </a>
+                                        <a href="mailto:racinesales@ipdhospitality.com" class="list-group-item">
+                                            Email: racinesales@ipdhospitality
+                                        </a>
+                                        <a href="tel: 12623210015" class="list-group-item">
+                                            Call: (262)-(321)-(0015) Ext.502
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+            <!-- helps me connect to dept to BU in the javascript --->
+            {% for dept in departments %}
+
+                <input hidden readonly id="business_unit_of-{{ dept.costCenterCode }}" value="{{ dept.businessUnit }}">
+
+            {% endfor %}
+
+            <!-- tells me if the user has a vendor code or not --->
+            <input readonly hidden id="user_vendor_code" value="{{ vendor }}">
+        </div>
+    </div>
+</div>
+
+{#<textarea id="chat-inputs"></textarea>#}
+<!-- jquery ajax -->
+{#<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>#}
+<!--this links to the local javascript-->
+<script src="{% static 'travel/js/script.js' %}"></script>
+<!--this javascript calls the bootstrap library javascript-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<!-- JqueryUI JS -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- Toastr notification -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<!--Moments Js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment-with-locales.min.js"></script>
+<!--Emoji Js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.js"></script>
+<script src="{% static 'travel/js/ta_scripts.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+<script src="{% static 'travel/js/ta_validation.js' %}"></script>
+<script type="text/javascript" src="{% static 'travel/js/ta_and_tr_shared.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+<script>
+    totalValue();
+    {% if user_is_creator or request.session.department == 'Supporting - Accounting' %}
+        try{
+            setButtonValue(document.getElementById('travel_advance_apply').value);
+        }
+        catch (e) {
+            console.log(e.toString());
+        }
+    {% else %}
+        document.getElementById("travel_advance_fields").style.display = "none";
+    {% endif %}
+    document.getElementById('add_approver_form').hidden = true;
+    document.getElementById('ask_approval_button').value = 'Edit Approver List';
+</script>
+
+<script>
+    $(document).ready(function(){
+        $(".show-toast").click(function(){
+            $("#myToast").toast('show');
+        });
+    });
+
+    {# Toaster Notification #}
+    $(function() {
+        toastr.options = {
+            "positionClass": "toast-bottom-right",
+            "timeOut": 10000,
+            "preventDuplicates": true,
+            "newestOnTop": true,
+        };
+
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    });
+
+    $(document).ready(function () {
+        $(".numberinput").forceNumeric();
+    });
+
+    // forceNumeric() plug-in implementation Author:Josh
+    jQuery.fn.forceNumeric = function () {
+        return this.each(function () {
+            $(this).keydown(function (e) {
+                var key = e.which || e.keyCode;
+
+                if (!e.shiftKey && !e.altKey && !e.ctrlKey &&
+                    // numbers
+                    key >= 48 && key <= 57 ||
+                    // Numeric keypad
+                    key >= 96 && key <= 105 ||
+                    // comma, period and minus, . on keypad
+                    key == 190 || key == 188 || key == 109 || key == 110 ||
+                    // Backspace and Tab and Enter
+                    key == 8 || key == 9 || key == 13 ||
+                    // Home and End
+                    key == 35 || key == 36 ||
+                    // left and right arrows
+                    key == 37 || key == 39 ||
+                    // Del and Ins
+                    key == 46 || key == 45)
+                    return true;
+
+                return false;
+            });
+        });
+    };
+</script>
+
+
+{% if form_is_being_approved %}
+
+    <!-- This script will make it so an approver can modify a travel form when they click the modify button-->
+    <script>
+        let elementList = new Map();
+
+        function activeElements() {
+
+            let x = document.activeElement.id;
+            //console.log(x);
+            let input = document.getElementById(x).value;
+            //console.log(input);
+            elementList.set(x, input);
+
+
+            elementList.forEach(function (value, key) {
+                console.log(key + ' = ' + value)
+            })
+        }
+
+        function modify_button_clicked() {
+            //Array to hold elements that approver will be able to modify when they click modify:
+            var readOnlyElements = ["company", "business_group", "project", "travel_type", "cost_description_input", "travel_datefrom",
+                "travel_dateto", "departure_country", "factory_code", "country2", "state2",
+                "destination_city", "accommodation", "adding", "removing", "allowance", "expense_accommodation",
+                "airway_ticket", "explaination_airwayticket",
+                "other_expense", "explaination_otherexpense", "expense_transportation",
+                "explanation_transportation", "public_relationship", "explanation_publicrelationship",
+                {% if request.session.department != 'Supporting - Accounting' %}"advance_amount",{% endif %} "departure_state", "country_currency"];
+
+            document.getElementById("allow_modify").innerHTML = '';
+            document.getElementById("allow_modify").hidden = true;
+            document.getElementById("send_modify_hidden").hidden = false;
+            document.getElementById("adding").hidden = false;
+            document.getElementById("removing").hidden = false;
+            document.getElementById("send_modify_hidden").innerHTML = '<input class="btn btn-success ml-auto " name="submit_button" type="submit" title="Next" value="Send Modified" onclick="return SendButtonValidationFunction(\'Send Modified\');">';
+
+            //document.getElementById("test").addEventListener("click", activeElements);
+
+            readOnlyElements.forEach(make_not_read_only);
+
+            function make_not_read_only(value, index, array) {
+                //console.log("Read Only Element: " + value.toString());
+                document.getElementById(value).readOnly = false;
+            }
+
+            //Add ids for dynamic section 2
+            var checkBoxes = document.getElementsByName("row_checkbox");
+            var visitDates = document.getElementsByName("visit_date");
+            var visitCompanies = document.getElementsByName("visit_company");
+            var visitDepartments = document.getElementsByName("visit_department");
+            var companyContacts = document.getElementsByName("company_contact");
+            var visitObjectives = document.getElementsByName("visit_objective");
+
+
+            for (let item of checkBoxes) {
+                item.readOnly = false;
+            }
+            for (let item of visitDates) {
+                item.readOnly = false;
+            }
+            for (let item of visitCompanies) {
+                item.readOnly = false;
+            }
+            for (let item of visitDepartments) {
+                item.readOnly = false;
+            }
+            for (let item of companyContacts) {
+                item.readOnly = false;
+            }
+            for (let item of visitObjectives) {
+                item.readOnly = false;
+            }
+
+            //Apply for travel advance button:
+            document.getElementById("travel_advance_button").disabled = true;
+
+            //Inputs based on select boxes:
+            document.getElementById("travel_type_input").disabled = true;
+            document.getElementById("travel_type_input").hidden = true;
+
+            //document.getElementById("cost_description_input").disabled = true;
+            document.getElementById("cost_description_input").hidden = true;
+
+            document.getElementById("transportation_input").disabled = true;
+            document.getElementById("transportation_input").hidden = true;
+
+            document.getElementById("factory_code_input").disabled = true;
+            document.getElementById("factory_code_input").hidden = true;
+
+            document.getElementById("accommodation_input").disabled = true;
+            document.getElementById("accommodation_input").hidden = true;
+
+            document.getElementById("allowance_input").disabled = true;
+            document.getElementById("allowance_input").hidden = true;
+
+
+            //Select boxes:
+            document.getElementById("travel_type").disabled = false;
+            document.getElementById("travel_type").hidden = false;
+
+            document.getElementById("cost_select_button").disabled = false;
+            document.getElementById("cost_select_button").hidden = false;
+
+            document.getElementById("transportation").disabled = false;
+            document.getElementById("transportation").hidden = false;
+            document.getElementById("transportation").readonly = false;
+
+            document.getElementById("factory_code").disabled = false;
+            document.getElementById("factory_code").hidden = false;
+
+            document.getElementById("accommodation").disabled = false;
+            document.getElementById("accommodation").hidden = false;
+
+            document.getElementById("allowance_select").disabled= false;
+            document.getElementById("allowance_select").hidden= false;
+        }
+    </script>
+{% endif %}
+
+
+<!-- This Javascript by Corrina will make fields readonly for approver until they click the modify button -->
+{% if form_is_being_shown_to_approver %}
+    <script>
+        //Array to hold elements that approver will be able to modify when they click modify:
+        var readOnlyElements = ["company", "business_group", "project", "travel_type_input", "cost_description_input", "travel_datefrom",
+            "travel_dateto", "transportation_input", "departure_country", "factory_code_input", "country2", "state2",
+            "destination_city", "accommodation_input", "adding", "removing",
+            "airway_ticket", "explaination_airwayticket",
+            "other_expense", "explaination_otherexpense", "expense_transportation",
+            "explanation_transportation", "public_relationship", "explanation_publicrelationship",
+            {% if request.session.department != 'Supporting - Accounting' %}"advance_amount",{% endif %}  "expense_accommodation", "departure_state", "country_currency"];
+
+        //document.getElementById('company').disabled = true; //must use element by id
+
+        readOnlyElements.forEach(make_read_only);
+
+        function make_read_only(value, index, array) {
+            //console.log("Value: " + value);
+            document.getElementById(value).setAttribute('readonly', true);
+        }
+
+        //Add ids for dynamic section 2
+        var checkBoxes = document.getElementsByName("row_checkbox");
+        var visitDates = document.getElementsByName("visit_date");
+        var visitCompanies = document.getElementsByName("visit_company");
+        var visitDepartments = document.getElementsByName("visit_department");
+        var companyContacts = document.getElementsByName("company_contact");
+        var visitObjectives = document.getElementsByName("visit_objective");
+
+
+        for (let item of checkBoxes) {
+            item.setAttribute('readonly', true);
+        }
+        for (let item of visitDates) {
+            item.setAttribute('readonly', true);
+        }
+        for (let item of visitCompanies) {
+            item.setAttribute('readonly', true);
+        }
+        for (let item of visitDepartments) {
+            item.setAttribute('readonly', true);
+        }
+        for (let item of companyContacts) {
+            item.setAttribute('readonly', true);
+        }
+        for (let item of visitObjectives) {
+            item.setAttribute('readonly', true);
+        }
+
+        //Apply for travel advance button:
+        document.getElementById("travel_advance_button").hidden = true;
+        document.getElementById("travel_advance_title").hidden = false;
+        //document.getElementById("travel_advance_fields").style.display = "block";
+
+        //Inputs based on select boxes:
+        document.getElementById("travel_type_input").disabled = false;
+        document.getElementById("travel_type_input").hidden = false;
+
+        document.getElementById("cost_description_input").disabled = false;
+        document.getElementById("cost_description_input").hidden = false;
+
+        document.getElementById("transportation_input").disabled = false;
+        document.getElementById("transportation_input").hidden = false;
+
+        document.getElementById("factory_code_input").disabled = false;
+        document.getElementById("factory_code_input").hidden = false;
+
+        document.getElementById("accommodation_input").disabled = false;
+        document.getElementById("accommodation_input").hidden = false;
+
+        //Select boxes:
+
+        document.getElementById("travel_type").disabled = true;
+        document.getElementById("travel_type").hidden = true;
+
+        //document.getElementById("cost_select_button").disabled = true;
+        document.getElementById("cost_select_button").hidden = true;
+
+        document.getElementById("transportation").disabled = true;
+        document.getElementById("transportation").hidden = true;
+
+        document.getElementById("factory_code").disabled = true;
+        document.getElementById("factory_code").hidden = true;
+
+        document.getElementById("accommodation").disabled = true;
+        document.getElementById("accommodation").hidden = true;
+    </script>
+{% endif %}
+
+
+<!-- This will make fields that have been edited by approver to replace the normal fields and it will make the background green-->
+{% if approving_modifications %}
+
+    <script>
+
+        var modified_fields = document.getElementsByClassName("modified_field");
+        //console.log("Modified Fields: " + modified_fields);
+
+        row_fields = ["visit_date", "visit_company", "visit_department", "company_contact", "visit_objective"];
+
+        for (let item of modified_fields) {
+            // 0) Figure out how to use visitID from item.title to update dynamic forms.
+            // This will only work if a row is edited, but not if a row is created
+            // Will have to create a new row for each new row that has no visit id.
+            //console.log("if item.title !=='' && item.title !== 'None'{");
+            if (item.title !== "" && item.title !== "None") {
+                //need to get field by name==item.value and title==item.title
+                //console.log("\nupdated_field = document.getElementsByName(item.value);");
+                var updated_field = document.getElementsByName(item.value);
+                //console.log("for (let i of updated_field){");
+                for (let i of updated_field) {
+                    //console.log("if(i.title === item.title){");
+                    //console.log("i title: " + i.title + "\t item title: " + item.title);
+                    if (i.title === item.title) {
+                        //console.log("i.style.backgroundColor = \"lightgreen\";");
+                        i.style.backgroundColor = "lightgreen";
+                        //console.log("i.style.font.bold();");
+                        i.style.font.bold();
+                        //console.log("i.value = item.name;");
+                        i.value = item.name;
+                        //console.log("\n\nItem name: " + i.name);
+                        //console.log("Item value: " + i.value);
+                    }
+                }
+            } else {
+                // 1) Find element where item.value === field.name
+                updated_field = document.getElementsByName(item.value);
+
+                // 2) set form.style.background to green
+                updated_field[0].style.backgroundColor = "lightgreen";
+                updated_field[0].style.font.bold();
+
+                // 3) Set field.value = item.name
+                updated_field[0].value = item.name;
+            }
+
+            //console.log("Modified Field:" + item.value);
+        }
+    </script>
+{% endif %}
+
+{# Zaawar's Section Start #}
+<script>
+    {# Toastr Notification #}
+    $(function () {
+        toastr.options = {
+            "positionClass": "toast-bottom-right",
+            "timeOut": 5000,
+            "preventDuplicates": true,
+            "newestOnTop": true,
+        };
+
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    })
+
+
+</script>
+
+{% if show_chat %}
+    <script>
+        const url = '{% url 'chat_api' %}';
+        const form_id = '{{ form_id }}';
+        const user_id = '{{ request.session.user_id }}';
+        const form_type = 'TA';
+        const csrf_token = '{{ csrf_token }}';
+        const chat_approver_url = '{%  url 'get_form_approver_api' %}'
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.11.0/underscore-min.js" type='text/javascript'></script>
+    <script src="http://podio.github.io/jquery-mentions-input/lib/jquery.elastic.js" type='text/javascript'></script>
+    <script src='http://podio.github.io/jquery-mentions-input/jquery.mentionsInput.js' type='text/javascript'></script>
+    <script src="{% static 'office_app/js/chat.js' %}"></script>
+{% endif %}
+
+<script>
+
+    function autocompleteCurrency(inp, arr) {
+        var currentFocusCurrency;
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value;
+            closeAllLists();
+            if (!val) {
+                return false;
+            }
+            currentFocusCurrency = -1;
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+            this.parentNode.appendChild(a);
+            for (i = 0; i < arr.length; i++) {
+                if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                    b = document.createElement("DIV");
+                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].substr(val.length);
+                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                    b.addEventListener("click", function (e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                }
+            }
+        });
+
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+                currentFocusCurrency++;
+                addActive(x);
+            } else if (e.keyCode == 38) {
+                currentFocusCurrency--;
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                e.preventDefault();
+                if (currentFocusCurrency > -1) {
+                    if (x) x[currentFocusCurrency].click();
+                }
+            }
+        });
+
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocusCurrency >= x.length) currentFocusCurrency = 0;
+            if (currentFocusCurrency < 0) currentFocusCurrency = (x.length - 1);
+            x[currentFocusCurrency].classList.add("autocomplete-active");
+        }
+
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+
+        function closeAllLists(elmnt) {
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+
+
+    /*An array containing all the country names in the world:*/
+    var currency =
+        [
+            "United Arab Emirates dirham - AED" ,
+            " Afghan afghani - AFN",
+            "Albanian lek - ALL",
+            "Armenian dram - AMD",
+            "Netherlands Antillean guilder - ANG",
+            "Angolan kwanza - AOA",
+            "Argentine peso - ARS",
+            "Australian dollar - AUD",
+            "Aruban florin AWG",
+            "Azerbaijani manat AZN",
+            "Bosnia and Herzegovina convertible mark - BAM",
+            "Barbados dollar - BBD",
+            "Bangladeshi taka - BDT",
+            "Bulgarian lev - BGN",
+            "Bahraini dinar - BHD",
+            "Burundian franc - BIF",
+            "Bermudian dollar - BMD",
+            "Brunei dollar - BND",
+            "Boliviano - BOB",
+            "Brazilian real - BRL",
+            "Bahamian dollar - BSD",
+            "Bhutanese ngultrum - BTN",
+            "Botswana pula - BWP",
+            "New Belarusian ruble - BYN",
+            "Belarusian ruble - BYR",
+            "Belize dollar - BZD",
+            "Canadian dollar - CAD",
+            "Congolese franc - CDF",
+            "Swiss franc - CHF",
+            "Unidad de Fomento - CLF",
+            "Chilean peso - CLP",
+            "Renminbi|Chinese yuan - CNY",
+            "Colombian peso - COP",
+            "Costa Rican colon - CRC",
+            "Cuban convertible peso - CUC",
+            "Cuban peso - CUP",
+            "Cape Verde escudo - CVE",
+            "Czech koruna - CZK",
+            "Djiboutian franc - DJF",
+            "Danish krone - DKK",
+            "Dominican peso - DOP",
+            "Algerian dinar - DZD",
+            "Egyptian pound - EGP",
+            "Eritrean nakfa - ERN",
+            "Ethiopian birr - ETB",
+            "Euro - EUR",
+            "Fiji dollar - FJD",
+            "Falkland Islands pound - FKP",
+            "Pound sterling - GBP",
+            "Georgian lari - GEL",
+            "Ghanaian cedi - GHS",
+            "Gibraltar pound - GIP",
+            "Gambian dalasi - GMD",
+            "Guinean franc - GNF",
+            "Guatemalan quetzal - GTQ",
+            "Guyanese dollar - GYD",
+            "Hong Kong dollar - HKD",
+            "Honduran lempira - HNL",
+            "Croatian kuna - HRK",
+            "Haitian gourde - HTG",
+            "Hungarian forint - HUF",
+            "Indonesian rupiah - IDR",
+            "Israeli new shekel - ILS",
+            "Indian rupee - INR",
+            "Iraqi dinar - IQD",
+            "Iranian rial - IRR",
+            "Icelandic króna - ISK",
+            "Jamaican dollar - JMD",
+            "Jordanian dinar - JOD",
+            "Japanese yen -JPY",
+            "Kenyan shilling - KES",
+            "Kyrgyzstani som - KGS",
+            "Cambodian riel - KHR",
+            "Comoro franc - KMF",
+            "North Korean won KPW",
+            "South Korean won - KRW",
+            "Kuwaiti dinar - KWD",
+            "Cayman Islands dollar - KYD",
+            "Kazakhstani tenge - KZT",
+            "Lao kip - LAK",
+            "Lebanese pound - LBP",
+            "Sri Lankan rupee - LKR",
+            "Liberian dollar - LRD",
+            "Lesotho loti - LSL",
+            "Libyan dinar - LYD",
+            "Moroccan dirham - MAD",
+            "Moldovan leu - MDL",
+            "Malagasy ariary - MGA",
+            "Macedonian denar - MKD",
+            "Myanmar kyat - MMK",
+            "Mongolian tögrög - MNT",
+            "Macanese pataca - MOP",
+            "Mauritanian ouguiya - MRO",
+            "Mauritian rupee - MUR",
+            "Maldivian rufiyaa - MVR",
+            "Malawian kwacha - MWK",
+            "Mexican peso - MXN",
+            "Mexican Unidad de Inversion - MXV",
+            "Malaysian ringgit - MYR",
+            "Mozambican metical - MZN",
+            "Namibian dollar NAD",
+            "Nigerian naira - NGN",
+            "Nicaraguan córdoba - NIO",
+            "Norwegian krone - NOK",
+            "Nepalese rupee - NPR",
+            "New Zealand dollar - NZD",
+            "Omani rial - OMR",
+            "Panamanian balboa - PAB",
+            "Peruvian Sol - PEN",
+            "Papua New Guinean kina - PGK",
+            "Philippine peso - PHP",
+            "Pakistani rupee - PKR",
+            "Polish złoty - PLN",
+            "Paraguayan guaraní - PYG",
+            "Qatari riyal - QAR",
+            "Romanian leu - RON",
+            "Serbian dinar - RSD",
+            " Russian ruble - RUB",
+            "Rwandan franc - RWF",
+            "Saudi riyal - SAR",
+            "Solomon Islands dollar - SBD",
+            "Seychelles rupee - SCR",
+            "Sudanese pound - SDG",
+            "Swedish krona - SEK",
+            "Singapore dollar SGD",
+            "Saint Helena pound - SHP",
+            "Sierra Leonean leone - SLL",
+            "Somali shilling - SOS",
+            "Surinamese dollar SRD",
+            "South Sudanese pound - SSP",
+            "São Tomé and Príncipe dobra - STD",
+            "Salvadoran colón - SVC",
+            "Syrian pound - SYP",
+            "Swazi lilangeni - SZL",
+            "Thai baht -bTHB",
+            "Tajikistani somoni - TJS",
+            "Turkmenistani manat - TMT",
+            "Tunisian dinar - TND",
+            "Tongan paʻanga - TOP",
+            "Turkish lira - TRY",
+            "Trinidad and Tobago dollar - TTD",
+            "New Taiwan dollar - TWD",
+            " Tanzanian shilling - TZS",
+            "Ukrainian hryvnia - UAH",
+            "Ugandan shilling - UGX",
+            "United States dollar - USD",
+            "Uruguay Peso en Unidades Indexadas - UYI",
+            "Uruguayan peso - UYU",
+            "Uzbekistan som - UZS",
+            "Venezuelan bolívar - VEF",
+            "Vietnamese đồng - VND",
+            "Vanuatu vatu - VUV",
+            "Samoan tala - WST",
+            "Central African CFA franc - XAF",
+            "East Caribbean dollar - XCD",
+            "West African CFA franc - XOF",
+            "franc XPF - CFP",
+            "Yemeni rial - YER",
+            "South African rand - ZAR",
+            "Zambian kwacha - ZMW",
+            "Zimbabwean dollar - ZWL",
+        ];
+
+    /*initiate the autocomplete function*/
+    autocomplete(document.getElementById("country_currency"), currency);
+    autocomplete(document.getElementById("country_currency"), currency);
+
+</script>
+<script type="text/javascript">
+    <!--
+    function toggle_visibility(id) {
+        var e = document.getElementById(id);
+        if(e.style.display === 'block')
+            e.style.display = 'none';
+        else
+            e.style.display = 'block';
+    }
+    //-->
+
+    //toastr notification for policy
+
+    function notifypolicy(){
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "7000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "show",
+            "hideMethod": "hide",
+            "positionClass": "toast-bottom-full-width"
+        };
+        toastr.warning('Within 30days after return to Home-Office,  employee  must  submit  their  travel  expense  report  with actual,  original  receipts  (except  per  diems)  to  substantiate  all  travel expenses');
+    }
+
+    {# Toaster Notification #}
+    $(function() {
+        toastr.options = {
+            "positionClass": "toast-bottom-right",
+            "timeOut": 10000,
+            "preventDuplicates": true,
+            "newestOnTop": true,
+        };
+
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    });
+
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,26 @@
+//Common
+
+@import 'common/extend.scss';
+@import 'common/fonts.scss';
+@import 'common/minxi.scss';
+@import 'common/variables.scss';
+@import 'common/global.scss';
+
+//layout
+@import 'layouts/main.scss';
+
+// Responsive
+@import 'layouts/responsive.scss';
+
+@import 'common/extend';
+@import 'common/fonts';
+@import 'common/minxi';
+@import 'common/variables';
+@import 'common/global';
+
+//layout
+@import 'layouts/main';
+
+// Responsive
+@import 'layouts/responsive';
+

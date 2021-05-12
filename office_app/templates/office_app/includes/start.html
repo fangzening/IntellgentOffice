@@ -1,0 +1,246 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="description" content="SmartOffice">
+    <meta name="author" content="Josua Ataansuyi">
+
+    <link rel="stylesheet" href="{% static 'office_app/css/dashboard/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'office_app/css/dashboard/style.css' %}">
+    <link rel="stylesheet" href="{% static 'office_app/css/dashboard/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'office_app/css/bootstrap-notifications.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'office_app/css/jquery.magicsearch.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@9.17.0/dist/sweetalert2.css'>
+    <link rel="stylesheet" href="{% static 'purchase/css/style2.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.css" />
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap4.min.css">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    <style>
+        {# Message box width #}
+        .modal-dialog {
+            max-width: 580px;
+        }
+    </style>
+    <title>{{ title }} | Smart Office - Foxconn</title>
+</head>
+
+<body id="page-top">
+
+<nav role="navigation" class="navbar navbar-expand-lg {{ navBg }} navbar-togglable fixed-top" id="{{ navId }}">
+    <!-- S.O LAZY NAVIGATION. -->
+    <div id="menuToggle">
+        <!-- checkbox is used as click receiver. -->
+        <input onclick="openNav()"  type="checkbox" />
+
+        <!-- spans to act as a hamburger. -->
+        <span></span>
+        <span></span>
+        <span></span>
+
+        <ul id="menu">
+            {% if allowed_view %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle js-scroll-trigger" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url 'smart_office_dashboard' %}#smartofficeapplications" >
+                        Smart HR
+                    </a>
+
+                    <ul class = "dropdown-menu lazy_section" >
+                        <li> <a class="dropdown-item trigger right-caret"  href="{% url 'checklist_create' %}"> Create New Checklist </a>
+                        </li>
+                        <li> <a class="dropdown-item" href="{% url 'checklist_list' %}"> List all CheckList </a>
+
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+            {% if allowed_view %}
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle js-scroll-trigger" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url 'smart_office_dashboard' %}#smartofficeapplications" >
+                        Travel Forms
+                    </a>
+                    <ul class = "dropdown-menu">
+                        <li> <a class="dropdown-item trigger right-caret" href="{% url 'travel_application' %}"> Create Travel Application</a> </li>
+                        <li> <a class="dropdown-item" href="{% url 'submitted_forms' %}"> View My Travel Application </a></li>
+                        <li> <a class="dropdown-item" href="{% url 'my_travel_rem' %}"> View My Travel Reimbursement </a> </li>
+                        <li> <a class="dropdown-item" href="{% url 'travel_list' %}"> Approve Travel Application </a>
+                        <li> <a class="dropdown-item" href="{% url 'travel_rem_list' %}"> Approve Travel Reimbursement </a> </li>
+                        <li> <a class="dropdown-item" href="{% url 'user_manual' %}"> Help (Travel User Guide) </a>
+                    </ul>
+                </li>
+            {% endif %}
+            {% if allowed_view %}
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle js-scroll-trigger" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url 'smart_office_dashboard' %}#smartofficeapplications" >
+                        Purchase Requisition Form (PR Form)
+                    </a>
+                    <ul class = "dropdown-menu">
+                        <li> <a class="dropdown-item" href="{% url 'purchase_request' pk="new" %}"> Create New Purchase Request </a>
+                        </li>
+                        <li> <a class="dropdown-item" href="{% url 'submitted_purchase' %}"> View My Purchase Requests </a>
+
+                        </li>
+                        <li> <a class="dropdown-item" href="{% url 'purchase_to_approve' %}"> Approve Purchase Request </a> </li>
+                        <li> <a class="dropdown-item" href="{% url 'all_purchase_form' %}"> View All Purchase Request </a>
+                    </ul>
+                </li>
+            {% endif %}
+            {% if allowed_view %}
+
+                {#            <li class="nav-item dropdown">#}
+                {#                    <a class="nav-link dropdown-toggle js-scroll-trigger" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url 'smart_office_dashboard' %}#smartofficeapplications" >#}
+                {#                        Expense Form#}
+                {#                    </a>#}
+                {#                    <ul class = "dropdown-menu">#}
+                {#                        <li> <a class="dropdown-item" href="../expense_create"> Create Expense </a>#}
+                {#                        </li>#}
+                {#                        <li> <a class="dropdown-item" href=""> Approve Expense Application </a>#}
+                {##}
+                {#                        </li>#}
+                {#                        <li> <a class="dropdown-item" href="#"> View My Expense Application</a> </li>#}
+                {#                    </ul>#}
+                {#           </li>#}
+
+                {#            <li class="nav-item dropdown">#}
+                {#                    <a class="nav-link dropdown-toggle js-scroll-trigger" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url 'smart_office_dashboard' %}#smartofficeapplications" >#}
+                {#                        Goods Received GR- Form#}
+                {#                    </a>#}
+                {##}
+                {#           </li>#}
+
+                {##}
+                {#            <li class="nav-item dropdown">#}
+                {#                    <a class="nav-link dropdown-toggle js-scroll-trigger" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url 'smart_office_dashboard' %}#smartofficeapplications" >#}
+                {#                        MRO Invoice#}
+                {#                    </a>#}
+                {#                    <ul class = "dropdown-menu">#}
+                {#                        <li> <a class="dropdown-item trigger right-caret" href="#"> View MRO Invoice</a>#}
+                {#                        </li>#}
+                {##}
+                {#                    </ul>#}
+                {#           </li>#}
+
+            {% endif %}
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle js-scroll-trigger" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url 'smart_office_dashboard' %}#smartofficeapplications" >
+                    FII Visitor's Form
+                </a>
+                <ul class = "dropdown-menu">
+                    <li> <a class="dropdown-item trigger right-caret" href="{% url 'visitor_create' %}"> Create New Visitor's Form  </a>
+                    </li>
+                    <li> <a class="dropdown-item" href="{% url 'visitor_myforms' %}"> View My Visitor's Form  </a>
+
+                    </li>
+                    <li> <a class="dropdown-item" href="{% url 'visitor_approveforms' %}"> Approve Visitor's Form</a> </li>
+
+                </ul>
+            </li>
+
+
+
+        </ul>
+    </div>
+    <div class="container">
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon-bar">
+                    <i class="fa fa-bars"></i>
+                </span>
+        </button>
+
+        <a class="navbar-brand js-scroll-trigger mr-lg-5" href="{% url 'smart_office_dashboard' %}#page-top">
+            <h2>Smart Office</h2>
+        </a>
+
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <!-- Links -->
+            <ul class="navbar-nav pb-2">
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="{% url 'smart_office_dashboard' %}#page-top">
+                        Home
+                    </a>
+
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="{% url 'smart_office_dashboard' %}#smartofficeapplications">
+                        Applications
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="{% url 'smart_office_dashboard' %}#about">
+                        About Smart Office
+                    </a>
+                </li>
+                {#                <li class="nav-item">#}
+                {#                    <a class="nav-link js-scroll-trigger" onclick="hideshow('password_change')" href="#password_change">#}
+                {#                        Request Password Change#}
+                {#                    </a>#}
+                {#                </li>#}
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="{% url 'smart_office_dashboard' %}contact_us/">
+                        Contact Us
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class='fas fa-user mr-2'></i>{{ request.session.full_name }}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        {% if request.user.is_superuser %} <a class="dropdown-item " href="{% url 'admin_dashboard' %}">Admin Panel</a> {% endif %}
+                        <a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="dropdown notification-dropdown">
+            <a id="dLabel" role="button" data-toggle="dropdown" class="dropdown-a">
+                <i class="fas fa-envelope" style="font-size: x-large"></i>
+                <span id='message-unread' class='badge badge-notify'></span>
+            </a>
+            <ul id="dropdown-menu" class="dropdown-menu notification-menu notifications" role="menu" aria-labelledby="dLabel">
+                <div class="notification-heading ">
+                    <span class="menu-title pl-3">Messages</span>
+                    <span class="menu-title float-right pr-3" style="cursor: pointer" id="send_message"><i class="fas fa-paper-plane"></i></span>
+                </div>
+                <hr class="divider">
+                <div class="notifications-wrapper" id="messages_wrapper">
+                    <div class='notification-alert'><i class='fas fa-spinner fa-spin'></i></div>
+                </div>
+                <hr class="divider">
+                <div class="notification-footer">
+                    <span class="menu-title" style="cursor: pointer" onclick="window.location.href='{% url 'messages' %}'">Show All <i class="fas fa-arrow-alt-circle-right"></i></span>
+                </div>
+            </ul>
+        </div>
+
+        <div class="dropdown notification-dropdown">
+            <a id="dLabel" role="button" data-toggle="dropdown" class="dropdown-a">
+                <i class="fas fa-bell" style="font-size: x-large"></i>
+                <span id='notify-unread' class='badge badge-notify'></span>
+            </a>
+            <ul id="dropdown-menu" class="dropdown-menu notification-menu notifications" role="menu" aria-labelledby="dLabel">
+                <div class="notification-heading">
+                    <span class="menu-title">Notifications</span>
+                </div>
+                <hr class="divider">
+                <div class="notifications-wrapper" id="notifications_wrapper">
+                    <div class='notification-alert'><i class='fas fa-spinner fa-spin'></i></div>
+                </div>
+                <hr class="divider">
+                <div class="notification-footer">
+                    <span class="menu-title" onclick="window.location.href='{% url 'notifications' %}'" style="cursor: pointer">Show All <i class="fas fa-arrow-alt-circle-right"></i></span>
+                </div>
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+  <link rel="shortcut icon" href="#" type="image/x-icon">
+  <meta name="author" content="Josh">
+<link rel="stylesheet" href="{% static 'office_app/css/dashboard/bootstrap.min.css' %}">
+  <title>Expense - Home</title>
+  <link rel="stylesheet" href="{% static 'dashboard_exp/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'dashboard_exp/bootstrap/css/bootstrap-grid.min.css' %}">
+  <link rel="stylesheet" href="{% static 'dashboard_exp/bootstrap/css/bootstrap-reboot.min.css' %}">
+  <link rel="stylesheet" href="{% static 'dashboard_exp/dropdown/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'dashboard_exp/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'dashboard_exp/css/main.css' %}">
+
+  <script src="https://use.fontawesome.com/4411d45cd2.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+</head>
+
+<body>
+  <section class="menu sectional_expense" id=" expense_section">
+
+
+
+    <nav class="navbar navbar-expand beta-menu navbar-dropdown align-items-center navbar-fixed-top navbar-toggleable-sm bg-color transparent">
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+      </button>
+
+
+
+      <div class="menu-logo">
+        <div class="navbar-brand" style="color:white">
+          Welcome {{user.fullname }}
+
+        </div>
+      </div>
+
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-buttons exp-btn">
+          <a class="btn btn-sm btn-primary font_size_4 " href="{% url 'smart_office_dashboard' %}">
+
+            Smart Office
+          </a>
+        </div>
+        <div class="navbar-buttons exp-btn">
+          <a class="btn btn-sm btn-primary font_size_4" href="{% url 'logout' %}">
+            Log Out
+          </a>
+        </div>
+
+      </div>
+      </div>
+    </nav>
+  </section>
+
+  <section class="whole_page whole_page_fullscreen whole_page_fullscreen_bg" id="#">
+
+
+
+    <div class="expense_overlay" style="opacity: 0.5; background-color: rgb(35, 35, 35);">
+
+    </div>
+
+    <div class="container">
+      <div class="exp_container">
+        <div class="col-md-12 align-center">
+          <h1 class="exp_tittle pb-3 txt-white txt-bold exp_fonts display-1">
+            EXPENSE   FORM
+          </h1>
+          <p class="exp_txt pb-3 txt-white exp_fonts display-5">
+            A part of Smart Office for easy application on your Expense
+          </p>
+          <div class="exp-btn py-2">
+            <a class="btn btn-md btn-primary font_size_4"  href="../expense_create">Create Expense</a>
+            <a class="btn btn-md btn-primary font_size_4"  href="../ExpenseToApprove">Approve Expense Application</a>
+            <a class="btn btn-md btn-primary font_size_4" href="../History">View My Expense Application</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    <div class="footer">
+      <p>&#169; Foxconn IT Software Department - Team Unicorn</p>
+    </div>
+  </section>
+    <script src="{% static 'office_app/js/dashboard/jquery.min.js' %}"></script>
+
+    <script src="{% static 'dashboard_exp/js/jquery.min.js' %}"></script>
+    <script src="{% static 'dashboard_exp/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'dashboard_exp/dropdown/js/navbar-dropdown.js' %}"></script>
+<script>
+function openTab(evt, typename) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(typename).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+

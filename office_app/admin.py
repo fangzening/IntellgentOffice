@@ -1,0 +1,26 @@
+from django.contrib import admin
+from .models import *
+
+# Register your models here.
+admin.site.register(Account)
+admin.site.register(Employee)
+admin.site.register(BusinessGroup)
+admin.site.register(Building)
+admin.site.register(CostCenter)
+admin.site.register(EmployeeDepartment)
+admin.site.register(Role)
+admin.site.register(BusinessUnit)
+# admin.site.register(BUCostManager)
+admin.site.register(Permissions)
+admin.site.register(UserPermissions)
+admin.site.register(Notification)
+admin.site.register(Messages)
+admin.site.register(GLAccount)
+admin.site.register(LegalEntity)
+admin.site.register(Combination)
+admin.site.register(ProcessType)
+admin.site.register(ProcessStages)
+admin.site.register(ProcessApprover)
+admin.site.register(ApproverCondition)
+admin.site.register(Vendors)
+admin.site.register(EmployeeVendors)

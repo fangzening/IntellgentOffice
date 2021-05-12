@@ -1,0 +1,3 @@
+Authors ordered by first contribution
+A list of current team members is available at http://jqueryui.com/about
+Zening Fang <fzening@gmail.com>

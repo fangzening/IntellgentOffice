@@ -1,0 +1,188 @@
+{% load static %}
+{% include 'office_app/includes/start.html' %}
+<!-- Applications================================================== -->
+<section class="section bg-light" id="smartofficeapplications">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="card w-100">
+                <div class="card-header">
+                    <span id="table_title">Received Messages</span>
+                    <button class="btn btn-primary btn-sm float-right ml-2" style="cursor: pointer" onclick="open_send_message()" >New Message</button>
+                    <button class="btn btn-secondary btn-sm float-right" style="cursor: pointer" id="view_button" >View Sent Messages</button>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th id="col_title">From</th>
+                            <th>Message</th>
+{#                            <th>Status</th>#}
+{#                            <th>Actions</th>#}
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% include 'office_app/includes/body_footer.html' %}
+{# Custom Js scritps will go here #}
+<script>
+    let dataTable;
+    $(document).ready(function() {
+
+        let view_btn = $('#view_button').click(function () {
+            let sa =  swal.fire({
+                    text: 'Working..',
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+            });
+
+            if ($(view_btn).text() === "View Sent Messages") {
+                dataTable.ajax.url("/messages_api/?view=sent_messages").load();
+                $('#table_title').text("Sent Messages");
+                dataTable.ajax.reload(function () {
+                    $(view_btn).text("View Received Messages");
+                    $('#col_title').text("To");
+                    sa.close();
+                }, true);
+            } else {
+                dataTable.ajax.url("/messages_api/").load();
+                 $('#table_title').text("Received Messages");
+                dataTable.ajax.reload(function () {
+                    $(view_btn).text("View Sent Messages");
+                    $('#col_title').text("From");
+                    sa.close();
+                }, false);
+
+            }
+        });
+
+        $('#dataTable thead tr').clone(true).appendTo( '#dataTable thead' );
+        $('#dataTable thead tr:eq(1) th:nth-last-child(1)').text("");
+        $('#dataTable thead tr:eq(1) th:not(:nth-last-child(1))').each( function (i) {
+            var title = $(this).text();
+            $(this).html( '<input class="form-control-sm" type="text" placeholder="Filter '+title+'" />' );
+
+            $('input', this).on( 'keyup change', function () {
+                if (dataTable.column(i).search() !== this.value)
+                    dataTable.column(i).search( this.value ).draw();
+            });
+        });
+
+        dataTable = $('#dataTable').DataTable({
+            ajax: {
+                url: "{% url 'messages_api' %}",
+                dataSrc: 'messages',
+                error: function (err) {
+                    if (!err.statusText === 'abort')
+                        swal.fire({
+                            text: "Error getting data. Please contact IT Administrator",
+                            icon: "error"
+                        });
+                }
+            },
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                    type: 'none',
+                    target: ''
+                }
+            },
+            order: [0, 'desc'],
+            orderCellsTop: true,
+            columns: [
+                {
+                    "render": function (data, type, row) {
+                        return moment(row.date).format("YYYY-MM-DD hh:mm A")
+                    }
+                },
+                { data: 'sender_name' },
+                { data: 'message' },
+                {#{#}
+                {#    "render": function (data, type, row) {#}
+                {#        if (row.is_unread) {#}
+                {#            return "Unread";#}
+                {#        }#}
+                {#        else#}
+                {#            return "Read";#}
+                {#    }#}
+                //{#},#}
+                {#{#}
+                {#    "render": function (data, type, row) {#}
+                {#        return '<i class="fas fa-minus-circle text-danger" style="cursor:pointer;" onclick="delete_message('+row.id+')"></i>'#}
+                {#    }#}
+                //{#},#}
+            ],
+            columnDefs: [{
+                "createdCell": function (td) {
+                    $(td).css('font-size', '14px')
+                },
+                "defaultContent": "",
+                "targets": '_all',
+            }],
+
+            createdRow: function( row, data, dataIndex){
+                if( data.is_unread && $('#table_title').text() === "Received Messages") {
+                    $(row).css('background-color', 'rgba(255, 0, 0, 0.10)');
+                }
+            },
+        });
+
+        $('#dataTable tbody').on( 'mouseover', 'td:not(:nth-last-child(1))', function () {
+            $(this).css('cursor', 'pointer')
+        });
+
+        $('#dataTable tbody').on('click', 'td:not(:nth-last-child(1))', function () {
+            let row = dataTable.row(this).data();
+            if ($('#table_title').text() === "Received Messages")
+                open_message(row.id, row.sender_name, row.message, row.is_unread, row.sender_id);
+            else
+                open_message(row.id, row.sender_name, row.message, false, row.sender_id);
+        });
+
+        setInterval(function () { dataTable.ajax.reload(null, false) }, 10000)
+    });
+
+    {#function delete_message(message_id) {#}
+    {#    Swal.fire({#}
+    {#        text: "Are you sure you want to delete?",#}
+    {#        icon: 'warning',#}
+    {#        showCancelButton: true,#}
+    {#        confirmButtonText: 'Yes'#}
+    {#    }).then((result) => {#}
+    {#        if (result.value) {#}
+    {#            $.ajax({#}
+    {#                url: "{% url 'messages_api' %}?" + $.param({message_id: message_id}),#}
+    {#                type: "DELETE",#}
+    {#                beforeSend: function(xhr) {#}
+    {#                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');#}
+    {#                    Swal.fire({#}
+    {#                        text: 'Working...',#}
+    {#                        icon: 'info',#}
+    {#                        showCancelButton: false,#}
+    {#                        showConfirmButton: false,#}
+    {#                    });#}
+    {#                },#}
+    {#                success: function (response) {#}
+    {#                    Swal.fire({#}
+    {#                        text: response,#}
+    {#                        icon: 'success'#}
+    {#                    });#}
+    {#                    $('#dataTable').DataTable().ajax.reload(null, false);#}
+    {#                },#}
+    {#                error: function (err) {#}
+    {#                    Swal.fire({#}
+    {#                        text: err.responseText,#}
+    {#                        icon: 'error'#}
+    {#                    })#}
+    {#                }#}
+    {#            })#}
+    {#        }#}
+    {#    });#}
+    //{#}#}
+</script>
+{% include 'office_app/includes/end.html' %}

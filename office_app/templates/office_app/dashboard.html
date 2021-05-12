@@ -1,0 +1,434 @@
+{% load static %}
+{% include 'office_app/includes/start.html' %}
+<section class="section section-top section-full">
+
+    <div class="bg-cover" style="background-image: url('{% static 'office_app/img/dashboard/fii_wi.jpg' %}');"></div>
+    <div class="bg-overlay"></div>
+
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-md-10 col-lg-7 ">
+                <div class="banner-content">
+
+                    <p class="text-white text-uppercase text-center text-xs">
+                        <span>Foxconn</span>
+                    </p>
+
+
+                    <h1 class="text-white text-center mb-4 display-4 font-weight-bold">
+                        SMART OFFICE <br>
+                    </h1>
+
+
+                    <p class="lead text-white text-center mb-5">
+                        Making Smarter Lives Possible By Connecting The Dots.
+                    </p>
+
+                    <p class="text-center mb-0" >
+                        <a href="#smartofficeapplications"  class="btn btn-custom btn-primary ">
+                            Start Here
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Applications================================================== -->
+<section class="section bg-light" id="smartofficeapplications">
+    <div class="container">
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8 col-lg-7 text-center">
+
+
+                <h2 class="lg-title mb-2">
+                    Smart Office Applications
+                </h2>
+                <p class="mb-5">
+                    Your major day to day applications embedded in one.
+                </p>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            {% if allowed_view %}
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-5">
+                <a href="{% url 'smart_hr_home' %}">
+                    <div class="application-block">
+                        <img src="{% static 'office_app/img/dashboard/smarthr.png' %}" alt="HR">
+                        <div class="application-content">
+                            <h4>Smart HR</h4>
+                            <span class="link-app">Foxconn Human Resource</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            {% if allowed_view %}
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-5">
+                <a href="{% url 'travel_home' %}">
+                    <div class="application-block">
+
+                        <img src="{% static 'office_app/img/dashboard/travel.png' %}" alt="travel">
+
+                        <div class="application-content">
+                            <h4>Travel Forms</h4>
+                            <span class="link-app"> Foxconn Travel Application</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            {% if allowed_view %}
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-5">
+                <a href="{% url 'purchase_dashboard' %}">
+                    <div class="application-block">
+                        <img src="{% static 'office_app/img/dashboard/prform.png' %}" alt="PR Form">
+
+                        <div class="application-content">
+                            <h4>Purchase Requisition Form (PR Form)</h4>
+                            <span class="link-app">Foxconn PR-Form</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            {% if allowed_view %}
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-5">
+                <a href="{% url 'dashboard' %}">
+                    <div class="application-block">
+                        <img src="{% static 'office_app/img/dashboard/Expense.png' %}" alt="Exp Form">
+
+                        <div class="application-content">
+                            <h4>Expense Form </h4>
+                            <span class="link-app">Foxconn Expense Form</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            {% if allowed_view %}
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-5">
+                <a href="{% url 'gr_dashboard' %}">
+                    <div class="application-block">
+                        <img src="{% static 'office_app/img/dashboard/gr_form.gif' %}"  alt="GR Form">
+
+                        <div class="application-content">
+                            <h4>Goods Received (GR) Form </h4>
+                            <span class="link-app">Foxconn GR Form</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            {% if allowed_view %}
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-5">
+                <a href="{% url 'search_invoice' %}">
+                    <div class="application-block">
+                        <img src="{% static 'office_app/img/dashboard/mro_invoice.jpg' %}"  alt="Invoice Form">
+
+                        <div class="application-content">
+                            <h4>MRO Invoice Form </h4>
+                            <span class="link-app">Foxconn Invoice Form</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-5">
+                <a href="{% url 'visitor_create' %}">
+                    <div class="application-block">
+                        <img src="{% static 'visitor/img/fii-copy.png' %}" alt="Fii Visitor's Application">
+
+                        <div class="application-content">
+                            <h4>Fii Visitor's Application </h4>
+                            <span class="link-app">Fii Visitor's Application</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- About Smart Office ================================================== -->
+<section class="section" id="about">
+    <div class="container">
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8 col-lg-6 text-center">
+
+
+                <h2 class="lg-title mb-2">
+                    About Smart Office
+                </h2>
+
+
+                <p class="mb-5 ">
+                    A Platform Designed To  Automate and Manage Day your Day activites.
+                </p>
+
+            </div>
+        </div>
+
+
+        <div class="row justy-content-center">
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center aboutsmo-block">
+                    <div class="feature-icon-block mb-4">
+                        <i class="fa fa-laptop"></i>
+
+                    </div>
+                    <h4 class="mb-3 ">Modern Design and Program</h4>
+                    <p>Our Development team has carefully studied your requirments and designed this electronic office based on your needs crafting it with modern design and programs.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center aboutsmo-block">
+                    <div class="feature-icon-block mb-4">
+                        <i class="fa fa-building"></i>
+                    </div>
+                    <h4 class="mb-3">Office Automation</h4>
+                    <p>As a fast-growing company, managing resources and  paperless work environment become very important. Per our survey, multiple department expressed their will to have a system that would help manage daily activities and automate process.  </p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center aboutsmo-block">
+                    <div class="feature-icon-block mb-4">
+                        <i class="fa fa-clock"></i>
+                    </div>
+                    <h4 class="mb-3">Precise Office Automation</h4>
+                    <p>Office Automation (OA), is a key part of a modern company. A good OA reduces labor work and prevents human error. Smart office as the first OA that is being developed internally. It will serve as a critical tool that boosts the production rate. </p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center aboutsmo-block">
+                    <div class="feature-icon-block mb-4">
+                        <i class="fa fa-life-ring"></i>
+                    </div>
+                    <h4 class="mb-3">Vast Support</h4>
+                    <p>Providing a round the clock support powered by the Fii-Supporting IT – Team Unicorn, as a software development group.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+<!-- ABOUT   ================================================== -->
+<section class="section" id="about">
+    <div class="container">
+        <div class="row ">
+            <div class="col-lg-6">
+                <div class="image_about">
+                    <img src="{% static 'office_app/img/dashboard/fii_wi.jpg' %}" alt="" class="img-fluid">
+                </div>
+            </div>
+
+            <div class="col-lg-6 ">
+                <div class="about_writeup">
+                    <h2 class="5pts">
+                        About the Applications.
+                    </h2>
+                    <p>This Online office is designed and updated based on departmental requests. Here are the list of applications we have at the moment.</p>
+
+
+                    <ul class="list-unstyled application_list ">
+                        <li>Smart HR</li>
+                        <li>Travel Application</li>
+                        <li>Travel Reimbursement</li>
+                        <li>Purchase Requisition Form</li>
+                    </ul>
+
+                    <p>This list will be updated with further applications upon requests</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Capabilities ================================================== -->
+{#<section class="section" id="about">#}
+{##}
+{#    <div class="container">#}
+{#        <div class="row justify-content-center mb-4">#}
+{#            <div class="col-md-8 col-lg-9 text-center">#}
+{##}
+{##}
+{#                <h2 class="lg-title mb-4">#}
+{#                    My Capabilities (Smart-Office)#}
+{#                </h2>#}
+{##}
+{#                A Summary Of What I Can Do#}
+{#                <p class="mb-5">#}
+{#                    Smart Office will have multiple Modules (Applications) managing resources and gradually creating a paperless work environment.#}
+{#                </p>#}
+{##}
+{#            </div>#}
+{#        </div>#}
+{##}
+{##}
+{##}
+{#        <div class="row">#}
+{#            <div class="col-lg-4 col-sm-6 col-md-6 mb-4 ">#}
+{#                <div class="service-block d-flex">#}
+{#                    <div class="service-icon ">#}
+{#                        <i class="fa fa-users"></i>#}
+{#                    </div>#}
+{#                    <div class="smart_capabilities ">#}
+{#                        <h4><span>SMART</span> HR</h4>#}
+{#                        <p>The Smart HR currently consists of the following:#}
+{#                        <li>Create new hire checklist.</li>#}
+{#                        <li>Assign checklist’s task to individuals.</li>#}
+{#                        <li>Submit response to the new hire checklist (by assignee).</li>#}
+{#                        </p>#}
+{##}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col-lg-4 col-sm-6 col-md-6 mb-4">#}
+{#                <div class="service-block d-flex">#}
+{#                    <div class="service-icon">#}
+{#                        <i class="fa fa-globe"></i>#}
+{#                    </div>#}
+{#                    <div class="smart_capabilities">#}
+{#                        <h4><span>Travel</span> Application</h4>#}
+{#                        <p>This is an Application designed to ease employee application for travel.</p>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col-lg-4 col-sm-6 col-md-6 mb-4">#}
+{#                <div class="service-block d-flex">#}
+{#                    <div class="service-icon">#}
+{#                        <i class="fa fa-money"></i>#}
+{#                    </div>#}
+{#                    <div class="smart_capabilities">#}
+{#                        <h4><span>Travel</span> Reimbursement</h4>#}
+{#                        <p>This is an application designed to ease reimbursement for employees after approved for an application to travel</p>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="col-lg-4 col-sm-6 col-md-6 mb-4">#}
+{#                <div class="service-block d-flex">#}
+{#                    <div class="service-icon">#}
+{#                        <i class="fa fa-credit-card-alt "></i>#}
+{#                    </div>#}
+{#                    <div class="smart_capabilities">#}
+{#                        <h4>Purchase <span> Requisition</span> </h4>#}
+{#                        <p>You can now request for a requsition easily with a Smart, user friendly  Application.</p>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col-lg-4 col-sm-6 col-md-6 mb-4">#}
+{#                <div class="service-block d-flex">#}
+{#                    <div class="service-icon">#}
+{#                        <i class="fa fa-bell"></i>#}
+{#                    </div>#}
+{#                    <div class="smart_capabilities">#}
+{#                        <h4>Automated <span>Alert System</span></h4>#}
+{#                        <p>With Smart Office being automated, each user gets an automated alert system based on their respective actions.</p>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="col-lg-4 col-sm-6 col-md-6 mb-4">#}
+{#                <div class="service-block d-flex">#}
+{#                    <div class="service-icon">#}
+{#                        <i class="fa fa-life-ring "></i>#}
+{#                    </div>#}
+{#                    <div class="smart_capabilities">#}
+{#                        <h4>Vast <span> Support </span></h4>#}
+{#                        <p>Team Unicorn, a dedicated team of software engineer will be working with you to provide smart support to the Smart Office System.</p>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</section>#}
+
+
+
+
+
+
+
+
+<!-- Request Password Change================================================== -->
+{#<section class="section">#}
+{#    <div class="container" id="password_change" style="display:none;">#}
+{#        <div class="row justify-content-center mb-4">#}
+{#            <div class="col-md-8 col-lg-8 text-center">#}
+{##}
+{##}
+{#                <h2 class="lg-title mb-2">#}
+{#                    Request Password Change#}
+{#                </h2>#}
+{##}
+{##}
+{#                <p class="mb-5">#}
+{#                    Hello! We understand you need a password reset. Kindly confirm your login below.#}
+{#                </p>#}
+{##}
+{#            </div>#}
+{#        </div>#}
+{##}
+{##}
+{##}
+{#        <div class="row justify-content-center">#}
+{#            <div class="col-lg-8">#}
+{#                <form action="" method="post" id="request_password" class="password_change">#}
+{#                    {% csrf_token %}#}
+{#                    <div class="row">#}
+{#                        <div class="col-lg-12">#}
+{#                            <div class="form-group">#}
+{#                                <label for="employee_email">Enter your Email *: </label>#}
+{#                                <input type="text" name="employee_email" id="employee_name" class="form-control" placeholder="Enter your Email">#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-12">#}
+{#                            <div class="form-group">#}
+{#                                <label for="old_password">Your Current Password *: </label>#}
+{#                                <input type="password" name="old_password" id="old_password" class="form-control" placeholder="Enter Current Password *" required="required">#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="row">#}
+{#                        <div class="col-lg-12">#}
+{#                            <div class="form-group">#}
+{#                                <label for="new_password">New Password *: </label>#}
+{#                                <input type="password" name="new_password" id="new_password" class="form-control" placeholder="Enter New Password *" required="required">#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-12">#}
+{#                            <div class="form-group">#}
+{#                                <label for="confirm_password">Confirm Password *: </label>#}
+{#                                <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Confirm Password *" required="required">#}
+{#                            </div>#}
+<!-- Password Change -->
+{#                            <div class="col-lg-12">#}
+{#                                <div class="submit text-center">#}
+{#                                    <input name="submit" type="submit" class="btn btn-custom btn-primary btn-lg" value="Submit Request">#}
+{#                                    <p class="pt-3">* You would receive a notification about your request</p>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </form>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</section>#}
+{% include 'office_app/includes/body_footer.html' %}
+{# Custom Js scritps will go here #}
+{% include 'office_app/includes/end.html' %}

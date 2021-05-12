@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Purchase Requisition Dashboard - Smart Office | Foxconn</title>
+    <meta content="" name="description">
+    <meta content="author" name="Josua Ataansuyi">
+
+
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+
+    <link href="{% static 'pr_dashboard/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'pr_dashboard/vendor/icofont/icofont.min.css'%}" rel="stylesheet">
+    <link href="{% static 'pr_dashboard/vendor/boxicons/css/boxicons.min.css'%}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+
+    <link href="{% static 'pr_dashboard/css/style.css'%}" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+
+<button type="button" class="mobile-nav-toggle d-xl-none"><i class="icofont-navigation-menu"></i></button>
+
+
+<header id="header">
+    <div class="d-flex flex-column">
+
+        <div class="profile">
+            <img src="{% static 'pr_dashboard/img/pr_logo.png'%}" alt="" class="img-fluid rounded-circle">
+            <p class="text-light text-center pt-3">Welcome, {{ request.session.full_name }}</p>
+{#                    <div class="pr_link mt-3 text-center">#}
+{#                      <a href="{% url 'smart_office_dashboard' %}" data-toggle="tooltip" data-placement="left" title="Smart Office" ><i class="bx bx-home"></i></a>#}
+{#                      <a href="{% url 'purchase_request' pk="new" %}" data-toggle="tooltip" data-placement="left" title="Purchase Request" ><i class="bx bx-book"></i></a>#}
+{#                      <a href="{% url 'submitted_purchase' %}" data-toggle="tooltip" data-placement="left" title="View Your Request"><i class="bx bx-book-reader"></i></a>#}
+{#                      <a href="{% url 'purchase_to_approve' %}" data-toggle="tooltip" data-placement="left" title="Approve Purchase Request"><i class="bx bx-check-circle"></i></a>#}
+{#                      <a href="{% url 'logout' %}" data-toggle="tooltip" data-placement="left" title="Log Out" ><i class="bx bx-user"></i></a>#}
+{#                    </div>#}
+        </div>
+
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="{% url 'smart_office_dashboard' %}"><i class="bx bx-home"></i> <span>Smart Office</span></a></li>
+                <li><a href="{% url 'purchase_request' pk="new" %}"><i class="bx bx-book"></i> <span>Create New Purchase Request</span></a></li>
+                <li><a href="{% url 'submitted_purchase' %}"><i class="bx bx-book-reader"></i> <span>View My Purchase Requests</span></a></li>
+                <li><a href="{% url 'purchase_to_approve' %}"><i class="bx bx-check-circle"></i> Approve Purchase Request</a></li>
+                {% if is_buyer %}
+                <li><a href="{% url 'all_purchase_form' %}"><i class="bx bx-check-circle"></i> View All Purchase Request</a>
+                {% endif %}
+                <li><a href="{% url 'logout' %}"><i class="bx bx-user text-danger"></i> Log Out</a></li>
+
+            </ul>
+        </nav>
+        <button type="button" class="mobile-nav-toggle d-xl-none"><i class="icofont-navigation-menu"></i></button>
+
+    </div>
+</header>
+
+<section id="pr_image" class="d-flex flex-column justify-content-center align-items-center">
+    <div class="pr_image-container" data-aos="fade-in">
+        <h1>Purchase Requisition</h1>
+        <p>Welcome to  <span class="typed" data-typed-items="Foxconn Requistion made easy, a part of Smart Office, a seemless application , Foxconn Smart Office"></span></p>
+    </div>
+</section>
+
+<footer id="footer">
+    <div class="container">
+        <div class="pr_footer">
+            &copy; Copyright <strong><span>Foxconn <br>(Team Unicorn)</span></strong>
+        </div>
+    </div>
+    </div>
+</footer>
+
+
+
+
+<script src="{% static 'pr_dashboard/vendor/jquery/jquery.min.js'%}"></script>
+<script src="{% static 'pr_dashboard/vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+<script src="{% static 'pr_dashboard/vendor/jquery.easing/jquery.easing.min.js'%}"></script>
+<script src="{% static 'pr_dashboard/vendor/waypoints/jquery.waypoints.min.js'%}"></script>
+<script src="{% static 'pr_dashboard/vendor/counterup/counterup.min.js'%}"></script>
+<script src="{% static 'pr_dashboard/vendor/isotope-layout/isotope.pkgd.min.js'%}"></script>
+<script src="{% static 'pr_dashboard/vendor/owl.carousel/owl.carousel.min.js'%}"></script>
+<script src="{% static 'pr_dashboard/vendor/typed.js/typed.min.js'%}"></script>
+<script src="{% static 'pr_dashboard/vendor/aos/aos.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+
+
+<script src="{% static 'pr_dashboard/js/main.js'%}"></script>
+
+<script>
+$(function() {
+    toastr.options = {
+        "positionClass": "toast-bottom-right",
+        "timeOut": 10000,
+        "preventDuplicates": true,
+        "newestOnTop": true,
+    };
+
+    {% for message in messages %}
+        toastr.{{ message.tags }}("{{ message }}");
+    {% endfor %}
+});
+</script>
+
+</body>
+
+</html>

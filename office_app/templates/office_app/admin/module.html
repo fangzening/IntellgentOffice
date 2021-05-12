@@ -1,0 +1,95 @@
+
+{% include 'office_app/admin/includes/start.html' %}
+<main>
+    <div class="container-fluid">
+        <h2 class="mt-4">Module</h2>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item" onclick="$('#collapseGeneral').show();"><a href="#">General</a></li>
+            <li class="breadcrumb-item active">Module</li>
+        </ol>
+        <div class="card mb-4">
+            <div class="card-header"><i class="fas fa-table mr-1"></i>List of Module</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>Module Name</th>
+                            <th>Module Code</th>
+                            <th>View Permissions</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% include 'office_app/admin/includes/body_footer.html' %}
+<!-- custom javascript function will go here -->
+<!-- Written by Zaawar Ejaz -->
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            ajax: {
+                url: "{% url 'vendor_api' %}",
+                dataSrc: 'vendors',
+                error: function (err) {
+                    swal.fire({
+                        text: "Error getting data. Please contact IT Administrator",
+                        icon: "error"
+                    });
+                }
+            },
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                    type: 'none',
+                    target: ''
+                }
+            },
+            order: [0, 'asc'],
+            columns: [
+                { data: 'vendorName' },
+                { data: 'vendorCode' },
+                { data: 'companyCode' },
+            ]
+        });
+    });
+
+    $('#update_btn').click(function () {
+        $.ajax({
+            url: "{% url 'vendor_api' %}",
+            type: "PUT",
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                Swal.fire({
+                    text: 'Working...',
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                })
+            },
+            success: function (response) {
+                Swal.fire({
+                    text: response,
+                    icon: 'success'
+                });
+                $('#dataTable').DataTable().ajax.reload(null, false);
+            },
+            error: function (err, msg) {
+                Swal.fire({
+                    text: err.responseText,
+                    icon: 'error'
+                })
+            }
+        })
+    })
+
+</script>
+<!--------------------------------------------->
+
+{% include 'office_app/admin/includes/end.html' %}

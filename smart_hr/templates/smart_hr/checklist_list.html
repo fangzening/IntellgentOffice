@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Smart HR &mdash; Foxconn Smart HR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Foxconn Smart HR" />
+    <meta name="author" content="Josua Ataansuyi" />
+
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/animate.css' %}">
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/icomoon.css' %}">
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/bootstrap.css' %}">
+    <!-- Flexslider  -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/flexslider.css' %}">
+    <!-- Theme style  -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/style.css' %}">
+    <!-- Fonts Awesome-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet"/>
+    <!-- Datatable -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap4.min.css">
+    <!-- Toastr notification -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+
+    <!-- Modernizr JS -->
+    <script src="{% static 'smart_hr/js1/modernizr-2.6.2.min.js' %}"></script>
+    <!-- FOR IE9 below -->
+    <!--[if lt IE 9]>
+    <script src="{% static 'smart_hr/js/respond.min.js' %}"></script>
+    <![endif]-->
+</head>
+<style>
+    tr {
+        cursor: pointer;
+    }
+</style>
+<body>
+<div id="smart_hr_page">
+    <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"><i></i></a>
+    <aside id="fh5co-aside" role="complementary" class="border js-fullheight">
+        <h5 class="text-center">Welcome, {{ request.session.full_name }}</h5>
+        <h1 id="fh5co-logo"><a href="{% url 'smart_hr_home' %}">Smart HR (Foxconn)</a></h1>
+        <nav id="fh5co-main-menu" role="navigation">
+            <ul>
+                <li><a href="{% url 'smart_office_dashboard' %}">Smart Office</a></li>
+                {% if 'create_checklist' in request.session.user_perm  %}
+                    <li><a href="{% url 'checklist_create' %}">Create New Checklist</a></li>
+                {% endif %}
+                <li class="fh5co-active"><a href="{% url 'checklist_list' %}">List All Checklist</a></li>
+            </ul>
+        </nav>
+
+        <div class="fh5co-footer">
+            <p><small>&copy; {% now "Y" %} Foxconn IT Software Development </span> </small></p>
+        </div>
+    </aside>
+
+    <div id="fh5co-main">
+        <div class="fh5co-narrow-content animate-box" data-animate-effect="fadeInLeft">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>New Hire Checklist Listing</h2>
+                </div>
+                <div id="lastrefresh" class="col-md-12" align="right"></div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <table id="check_table" class="table table-striped table-hover" width="100%">
+                <thead>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Manager</th>
+                    <th>Hire Date</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="{% static 'smart_hr/js1/jquery.min.js' %}"></script>
+<!-- jQuery Easing -->
+<script src="{% static 'smart_hr/js1/jquery.easing.1.3.js' %}"></script>
+<!-- Bootstrap -->
+<script src="{% static 'smart_hr/js1/bootstrap.min.js' %}"></script>
+<!-- Waypoints -->
+<script src="{% static 'smart_hr/js1/jquery.waypoints.min.js' %}"></script>
+<!-- Flexslider -->
+<script src="{% static 'smart_hr/js1/jquery.flexslider-min.js' %}"></script>
+<!-- Google Map -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCefOgb1ZWqYtj7raVSmN4PL2WkTrc-KyA&sensor=false"></script>
+<script src="{% static 'smart_hr/js1/google_map.js' %}"></script>
+<!-- DataTable -->
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+<!-- Toastr notification -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<!-- Bootbox -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+<!-- MAIN JS -->
+<script src="{% static 'smart_hr/js1/main.js' %}"></script>
+
+<!-- Written by Zaawar Ejaz -->
+<script>
+    {# Datatable #}
+    $(function() {
+        let check_table = $('#check_table').DataTable({
+            ajax: {
+                url: "{% url 'checklist_json' %}",
+                error: function (xhr, error, code)
+                {
+                    bootbox.alert("Error getting data from the database.")
+                }
+            },
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                    type: 'none',
+                    target: ''
+                }
+            },
+            {#createdRow: function(row, data, dataIndex) {#}
+            {#    if(data['assigneeTasks'] == 0)#}
+            {#        $(row).css('background-color','#e6e6e6');#}
+            {#/},#}
+            order: [[ 0, "desc" ]],
+            columns: [
+                {
+                    "render": function (data, type, row) {
+                        if(row['middleName'])
+                            return row['firstName'] + " " + row['middleName'] + " " + row['lastName'];
+                        else
+                            return row['firstName'] + " " + row['lastName'];
+                    }
+                },
+                { "data": "position" },
+                { "data": "department" },
+                {
+                    "render": function (data, type, row) {
+                        return row['mfname'] + " " + row['mlname'];
+                    }
+                },
+                { "data": "doh" },
+                {
+                    "render": function (data, type, row) {
+                        $('body').tooltip({selector: '[data-toggle="tooltip"]'}); // Activate tooltip
+                        {% if 'view_all_checklist' in request.session.user_perm  %}
+                            if (row['totalTasksCompleted'] === row['totalTasks'])
+                                return "<i class='fas fa-check' style='color:mediumseagreen;' data-toggle='tooltip' title='All tasks are completed'><p hidden>All tasks are completed</p>";
+                            else if (row['assigneeTasks'] !== 0 && row['assigneeTasksCompleted'] !== row['assigneeTasks'])
+                                return "<i class='fas fa-exclamation' style='color:red;' data-toggle='tooltip' title='Please complete your tasks'><p hidden>Please complete your tasks</p>";
+                            else if (row['totalTasksCompleted'] !== row['totalTasks'])
+                                return "<i class='fas fa-times' style='color:darkorange;' data-toggle='tooltip' title='Not completed'><p hidden>Not completed</p>";
+                        {% else %}
+                            if (row['assigneeTasksCompleted'] === row['assigneeTasks'])
+                                return "<i class='fas fa-check' style='color:mediumseagreen;' data-toggle='tooltip' title='All tasks are completed'><p hidden>All tasks are completed</p>";
+                            else
+                                return "<i class='fas fa-exclamation' style='color:red;' data-toggle='tooltip' title='Please complete your tasks'><p hidden>Please complete your tasks</p>";
+                        {% endif %}
+                    }
+                }
+            ]
+        });
+
+        $('#check_table tbody').on('click', 'tr', function () {
+            let data = check_table.row(this).data();
+            window.location.href = "checklist_detail/" + data["associateID"];
+        });
+
+    });
+
+    {# Toastr Notification #}
+    $(function() {
+        toastr.options = {
+            "positionClass": "toast-bottom-right",
+            "timeOut": 5000,
+            "preventDuplicates": true,
+            "newestOnTop": true,
+        };
+
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    });
+
+</script>
+
+</body>
+</html>

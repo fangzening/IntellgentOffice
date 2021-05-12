@@ -1,0 +1,259 @@
+
+{% include 'office_app/admin/includes/start.html' %}
+<main>
+    <div class="container-fluid">
+        <h2 class="mt-4">Legal Entity</h2>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item" onclick="$('#collapseGeneral').show();"><a href="#">General</a></li>
+            <li class="breadcrumb-item active">Legal Entity</li>
+        </ol>
+        <div class="card mb-4">
+            <div class="card-header"><i class="fas fa-table mr-1"></i>List of Legal Entity</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>Legal Entity</th>
+                            <th>SAP Comp Code</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <form id="add_form">
+            <div class="card mb-4">
+                <div class="card-header"><i class="fas fa-plus-square mr-1"></i>Add Legal Entity</div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="legalentity">Legal Entity Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input class="form-control" type="text" name="legalentity" maxlength="50" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="sapcompcode">SAP Comp Code</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input class="form-control" type="text" name="sapcompcode" maxlength="50" required>
+                            </div>
+                        </div>
+                    </div>
+                    <p>
+                    <div class="form-row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" id="add_btn">Add Legal Entity</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+{% include 'office_app/admin/includes/body_footer.html' %}
+<!-- custom javascript function will go here -->
+<!-- Written by Zaawar Ejaz -->
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            ajax: {
+                url: "{% url 'legalentity_api' %}",
+                dataSrc: 'legalentities',
+                error: function (err) {
+                    swal.fire({
+                        text: "Error getting data. Please contact IT Administrator",
+                        icon: "error"
+                    });
+                }
+            },
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                    type: 'none',
+                    target: ''
+                }
+            },
+            order: [0, 'asc'],
+            columns: [
+                { data: 'entityName' },
+                { data: 'sapCompCode' },
+                {
+                    "render": function (data, type, row) {
+                        return "<i class='fas fa-edit text-secondary mr-2' title='Edit' onclick='edit_legalentity(\"" + row.entityName + "\")' style='cursor: pointer'></i>" +
+                                "<i class='fas fa-minus-circle fa-1x text-danger mr-2' title='Delete' onclick='delete_legalentity(\"" + row.entityName + "\")' style='cursor: pointer'></i>";
+
+                    }
+                }
+            ]
+        });
+    });
+
+    function edit_legalentity(legalentity) {
+        $.ajax({
+            url: "{% url 'legalentity_api' %}",
+            type: "GET",
+            beforeSend: function (xhr) {
+                Swal.fire({
+                    text: "Working...",
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                });
+            },
+            success: function (response) {
+                let sapcompcode = "";
+
+                $.each(response['legalentities'], function( index, entity ) {
+                    if(entity.entityName === legalentity) {
+                        sapcompcode = entity.sapCompCode;
+                        return false;
+                    }
+                });
+                var html = '<hr><input type=hidden name="legalentity" value="' + legalentity + '">' +
+                    '<div class="form-inline mb-2">' +
+                    '<label class="form-label col-md-4">Legal Entity Name</label>' +
+                    '<input class="form-control col-md-8" maxlength="64" value="' + legalentity + '" disabled>' +
+                    '</div>' +
+                    '<div class="form-inline mb-2">' +
+                    '<label class="form-label col-md-4">SAP Comp Code</label>' +
+                    '<input class="form-control col-md-8" maxlength="8" name="sapcompcode" value="' + sapcompcode + '" required>' +
+                    '</div>';
+
+                Swal.fire({
+                    title: 'Edit Legal Entity',
+                    html: '<form id="edit_form">' + html + '</form>',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: "Submit",
+                    focusConfirm: false,
+                    preConfirm: () => {
+                        let form = $('#edit_form');
+                        validate_and_collect_form_data(form, 'PUT')
+                    }
+                });
+                $('.edit-toggle').bootstrapToggle();
+            },
+            error: function (err) {
+                Swal.fire({
+                    text: err.responseText,
+                    icon: 'error'
+                })
+            }
+        });
+    }
+
+    function delete_legalentity(legalentity) {
+        Swal.fire({
+            text: "Are you sure you want to delete?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.value) {
+                Swal.fire({
+                    text: 'Working...',
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                });
+                $.ajax({
+                    url: "{% url 'legalentity_api' %}?" + $.param({legalentity: legalentity}),
+                    type: "DELETE",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    },
+                    success: function (response) {
+                        Swal.fire({
+                            text: response,
+                            icon: 'success'
+                        });
+                        $('#dataTable').DataTable().ajax.reload(null, false);
+                    },
+                    error: function (err) {
+                        Swal.fire({
+                            text: err.responseText,
+                            icon: 'error'
+                        })
+                    }
+                });
+            }
+        });
+    }
+
+    function add_legalentity(data, request_type) {
+        $.ajax({
+            url: "{% url 'legalentity_api' %}?" + $.param({data: JSON.stringify(data)}),
+            type: request_type,
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                data: JSON.stringify(data)
+            },
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                Swal.fire({
+                    text: 'Working...',
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                })
+            },
+            success: function (response) {
+                Swal.fire({
+                    text: response,
+                    icon: 'success'
+                });
+                $('#dataTable').DataTable().ajax.reload(null, false);
+            },
+            error: function (err, msg) {
+                Swal.fire({
+                    text: err.responseText,
+                    icon: 'error'
+                })
+            }
+        })
+    }
+
+    function validate_and_collect_form_data(form, request_type) {
+        if ( validateForm(form) ) {
+            var data = {};
+            form.find(':input').each(function(){
+                if ( $(this).is(':checkbox') )
+                    data[$(this).prop('name')] = $(this).prop('checked');
+                else
+                    data[$(this).prop('name')] = $(this).val();
+            });
+            add_legalentity(data, request_type);
+        }
+    }
+
+    $('#add_btn').click(function () {
+        let form = $('#add_form');
+        validate_and_collect_form_data(form, 'POST')
+    });
+
+</script>
+<!--------------------------------------------->
+
+{% include 'office_app/admin/includes/end.html' %}

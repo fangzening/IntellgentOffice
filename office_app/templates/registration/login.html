@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+	<title>Smart Office Login </title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--=============================CSS Links==================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'office_app/registration/css/bootstrap.min.css' %}">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'office_app/registration/fonts/font-awesome-4.7.0/css/font-awesome.min.css'%}">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'office_app/registration/fonts/Linearicons-Free-v1.0.0/icon-font.min.css'%}">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'office_app/registration/css/util.css'%}">
+	<link rel="stylesheet" type="text/css" href="{% static 'office_app/registration/css/main.css'%}">
+<!--===============================================================================================-->
+</head>
+<body>
+
+	<div class="main_login">
+		<div class="login_space" style="background-image: url({% static 'office_app/registration/images/log_in.jpg'%});">
+			<div class="smart_login">
+				<span class="smart_login_title p-b-41">
+					Smart Office
+				</span>
+                <span class="smart_login_subtitle p-b-21">
+					 Login
+				</span>
+				<form class="login_form validation p-b-33 p-t-5" method="post" onsubmit="return convert_username()">
+                    {% csrf_token %}
+                    <div style="color: aliceblue">
+                    {{ form.non_field_errors }}
+                      {{ form.source.errors }}
+                      {{ form.source }}
+                    </div>
+					<div class="input_smart_login validate-input" data-validate = "Kindly Input a Valid Username">
+                        {{ form.username.errors }}
+                        {{ form.username }}
+                        <input type="email" name="username_show" class="user_input has-val" placeholder="User Name" maxlength="128" required="" id="id_username_show">
+						<!--<input class="user_input" type="text" name="username" placeholder="User Name">-->
+						<span class="focus-user_input" data-placeholder="&#xe82a;"></span>
+					</div>
+
+					<div class="input_smart_login validate-input" data-validate="Invalid Password">
+                        {{ form.password.errors }}
+                        {{ form.password }}
+						<!---<input class="user_input" type="password" name="pass" placeholder="Password">-->
+						<span class="focus-user_input" data-placeholder="&#xe80f;"></span>
+					</div>
+
+					<div class="submit_btn m-t-32">
+						<button type="submit" class="submit_style">
+							Login
+						</button>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+<!--=======================Scripts========================================================================-->
+	<script src="{% static 'office_app/registration/jquery/jquery-3.2.1.min.js'%}"></script>
+	<script src="{% static 'office_app/registration/js/popper.js'%}"></script>
+	<script src="{% static 'office_app/registration/js/bootstrap.min.js'%}"></script>
+	<script src="{% static 'office_app/registration/js/main.js'%}"></script>
+
+</body>
+</html>

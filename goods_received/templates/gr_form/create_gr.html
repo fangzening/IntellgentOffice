@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Foxconn - Goods Received - GR Form</title>
+
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/12.1.2/css/intlTelInput.css'>
+    <link rel='stylesheet' href='https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css'>
+    <link rel='stylesheet'
+          href='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.css"/>
+    <link rel="stylesheet" href="{% static 'office_app/css/chat.css' %}">
+    <!-- font icon -->
+    <link href="{% static 'purchase/css/elegant-icons-style.css' %}" rel="stylesheet"/>
+    <!-- Custom styles -->
+    <link href="{% static 'purchase/css/style2.css' %}" rel="stylesheet">
+    <link href="{% static 'purchase/css/style-responsive.css' %}" rel="stylesheet"/>
+
+</head>
+
+<body class="gr_form">
+
+
+<!-- Multi step form -->
+<section class="multi_step_form">
+    <form id="msform" name="msform" method="POST">
+        {% csrf_token %}
+        <!-- Tittle -->
+        <div class="tittle">
+            <h1>Foxconn Goods Received - GR Form</h1>
+
+        </div>
+        <!--menu bar-->
+        <nav class="navbar navbar-expand-lg navbar-light  bg-light rounded nav nav-tabs">
+            <a class="ml-5 h7">Welcome, {{ request.session.full_name }} !</a>
+
+            <div class="collapse navbar-collapse justify-content-end " id="navbarNavDropdown">
+                <ul class="nav nav-pills nav-fill" style="float: right">
+
+                    <li class="nav-item">
+                        <a href="{% url 'smart_office_dashboard' %}" class="nav-link">Smart Office</a>
+                    </li>
+
+                    <li class="nav-item mr-sm-2">
+                        <a href="{% url 'logout' %}" class="nav-link">Log Out</a>
+                    </li>
+
+
+                </ul>
+            </div>
+        </nav>
+
+        <!-- fieldsets -->
+        <fieldset>
+
+
+        </fieldset>
+
+
+        <!-- End Multi step form -->
+    </form>
+</section>
+<!-- JS Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/12.1.2/js/intlTelInput.js'></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"
+        integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn"
+        crossorigin="anonymous"></script>
+<!--Moments Js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment-with-locales.min.js"></script>
+<!--Emoji Js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.js"></script>
+
+<!-- custom javascripts -->
+<script src="{% static 'gr_form/js/corrinas_GR_javascript.js' %}"></script>
+<script src="{% static 'gr_form/js/script.js' %}"></script>
+
+
+<script>
+    var plant_code_options = "{% for code in plant_codes %}<option value='{{ code }}'>{{ code }}</option>{% endfor %}";
+
+    //while(1===1){
+    Swal.fire({
+        title: 'Please Input PO Number and Plant Code.',
+        width: 800,
+        icon: 'info',
+        padding: '3em',
+        background: '#fff url{% static "office_app/img/dashboard/fii_wi.jpg" %}',
+        backdrop: ` rgba(34, 49, 63, 1)
+
+                    center
+                    no-repeat
+                    `,
+        showCancelButton: true,
+        confirmButtonText: 'Create GR',
+        //footer: '<a href="#">Create New GR</a>',
+        showLoaderOnConfirm: true,
+        allowOutsideClick: false,
+
+        html: '<form id="lookup_form" method="POST"><label class="form-label col-md-3 mt-3">PO Number</label><input class="form-control" name="po_number" type="text"><br>' +
+            '<label class="form-label col-md-3 mt-3">Plant Code</label><select class="form-control" name="plant_code" type="text">' + plant_code_options + '</select><br></form>'
+    }).then((result) => {
+//vvv If they clicked 'Search' vvv
+        if (result.value)
+        {
+            return submit();
+// vvv If they clicked 'Cancel' vvv
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire({
+                title: 'Heading back to Smart Office',
+                width: 800,
+                icon: 'error',
+                padding: '3em',
+                background: '#fff url{% static "office_app/img/dashboard/fii_wi.jpg" %}',
+                backdrop: ` rgba(34, 49, 63, 1)
+
+                                center
+                                no-repeat
+                                `,
+                showCancelButton: true,
+                confirmButtonText: 'Create GR;',
+                //footer: '<a href="#">Create New GR</a>',
+                showLoaderOnConfirm: true,
+                allowOutsideClick: false,
+                html: '<form id="lookup_form">{% csrf_token %}<label class="form-label col-md-3 mt-3">PO Number</label><input class="form-control" name="po_number" type="text"><br>' +
+                    '<label class="form-label col-md-3 mt-3">Plant Code</label><select class="form-control" name="plant_code" type="text">' + plant_code_options + '</select><br></form>'
+            });
+            window.location.href = "../../";
+
+        }
+    });
+
+
+    var frm = $('#lookup_form');
+    frm.submit(function () {
+       return submit();
+    });
+</script>
+
+<script>
+    function submit(){
+            var form = document.getElementById('lookup_form');
+            var formData = new FormData(form);
+            $.ajax({
+                data: formData,
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                cache: false,
+                contentType: false,
+                processData: false,
+                html: true,
+                beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    },
+                success: function (data) {
+                    console.log(data);
+                    console.log("It worked!");
+                    if (data['result'] === 'found') {
+                        Swal.fire({
+                            title: 'Form Found!',
+                            width: 800,
+                            icon: 'success',
+                            padding: '3em',
+                            background: '#fff url{% static "office_app/img/dashboard/fii_wi.jpg" %}',
+                            backdrop: ` rgba(34, 49, 63, 1)
+
+                                        center
+                                        no-repeat
+                                        `,
+                            showCancelButton: false,
+                            confirmButtonText: 'Go to Form',
+                            //footer: '<a href="#">Create New GR</a>',
+                            showLoaderOnConfirm: true,
+                            allowOutsideClick: false,
+                        }).then((result) => {
+                            window.location.href = data['dir_to_form'];
+                        });
+                    } else if (data['result'] === 'SAP found') {
+                        Swal.fire({
+                            title: 'Form Found, but the purchase request was not made with Smart Office. There will be some fields that you will have to fill-out maunally.',
+                            width: 800,
+                            icon: 'warning',
+                            padding: '3em',
+                            background: '#fff url{% static "office_app/img/dashboard/fii_wi.jpg" %}',
+                            backdrop: ` rgba(34, 49, 63, 1)
+
+                                        center
+                                        no-repeat
+                                        `,
+                            showCancelButton: false,
+                            confirmButtonText: 'Go to Form',
+                            //footer: '<a href="#">Create New GR</a>',
+                            showLoaderOnConfirm: true,
+                            allowOutsideClick: false,
+                        }).then((result) => {
+                            window.location.href = data['dir_to_form'];
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Form Not Found! Please try again.',
+                            width: 800,
+                            icon: 'error',
+                            padding: '3em',
+                            background: '#fff url{% static "office_app/img/dashboard/fii_wi.jpg" %}',
+                            backdrop: ` rgba(34, 49, 63, 1)
+
+                                        center
+                                        no-repeat
+                                        `,
+                            showCancelButton: false,
+                            confirmButtonText: 'Ok',
+                            //footer: '<a href="#">Create New GR</a>',
+                            showLoaderOnConfirm: true,
+                            allowOutsideClick: false,
+                        }).then((result) => {
+                            window.location.href = "";
+                        });
+                    }
+                },
+                // If there was a ajax error do this
+                error: function (data) {
+                    console.log("Something went wrong!");
+                    swal.fire({
+                        title: "Something went wrong!",
+                        text: "Error completing creation! Please contact IT.",
+                        icon: "warning",
+                        buttons: {
+                            cancel: "Ok"
+                        }
+                    }).then((result) => {
+                        window.location.href = "";
+                    });
+                    console.log(data);
+                }
+            });
+            return false;
+    }
+
+</script>
+{##}
+{#<script>#}
+{#    // Disable search by enter button#}
+{#    $('lookup_form').bind("keypress", function(e) {#}
+{#      if (e.keyCode === 13) {#}
+{#        e.preventDefault();#}
+{#        return false;#}
+{#      }#}
+{#    });#}
+{#</script>#}
+
+{#<script>#}
+{#    $(document).ready(function () {#}
+{#        $(".numberinput").forceNumeric();#}
+{#    });#}
+{##}
+{#    // forceNumeric() plug-in implementation Author:Josh#}
+{#    jQuery.fn.forceNumeric = function () {#}
+{#        return this.each(function () {#}
+{#            $(this).keydown(function (e) {#}
+{#                var key = e.which || e.keyCode;#}
+{##}
+{#                if (!e.shiftKey && !e.altKey && !e.ctrlKey &&#}
+{#                    // numbers#}
+{#                    key >= 48 && key <= 57 ||#}
+{#                    // Numeric keypad#}
+{#                    key >= 96 && key <= 105 ||#}
+{#                    // comma, period and minus, . on keypad#}
+{#                    key == 190 || key == 188 || key == 109 || key == 110 ||#}
+{#                    // Backspace and Tab and Enter#}
+{#                    key == 8 || key == 9 || key == 13 ||#}
+{#                    // Home and End#}
+{#                    key == 35 || key == 36 ||#}
+{#                    // left and right arrows#}
+{#                    key == 37 || key == 39 ||#}
+{#                    // Del and Ins#}
+{#                    key == 46 || key == 45)#}
+{#                    return true;#}
+{##}
+{#                return false;#}
+{#            });#}
+{#        });#}
+{#    };#}
+{#</script>#}
+
+
+{#{% if True %}#}
+{#    <script>#}
+{#        const url = '{% url 'chat_api' %}';#}
+{#        const form_id = '{{ form_id }}';#}
+{#        const user_id = '{{ request.session.user_id }}';#}
+{#        const form_type = '{{ form_type }}';#}
+{#        const csrf_token = '{{ csrf_token }}';#}
+{#    </script>#}
+{#    <script src="{% static 'office_app/js/chat.js' %}"></script>#}
+{#{% endif %}#}
+
+</body>
+
+</html>

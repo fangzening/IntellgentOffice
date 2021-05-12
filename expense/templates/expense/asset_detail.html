@@ -1,0 +1,46 @@
+{#{% extends "expense/basepage.html" %}#}
+{#{% block content %}#}
+    {% load static %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>View Assets </title>
+
+<form method="post" id="update_asset_form" enctype="multipart/form-data" >
+ {% csrf_token %}
+<div id="view_asset_content" class="" >
+<div id="use_tax">
+    <input type="hidden" value="{{item.id}}">
+
+{% for item in item.item_asset.all %}
+    <label>GL account:</label>
+        <input type="text" value="{{ item.GL.glCode}}" readonly/>
+    <label>card type:</label>
+        {% if  item.card_Type == 'C' %}
+ <input type="text" value="credit" readonly/>
+        {% else %}
+         <input type="text" value="debit" readonly/>
+        {% endif %}
+    <label>quantity:</label>
+        <input  name="item_quantity" type="number" value="{{item.quantity}}" readonly>
+    <label>amount:</label><input  name="item_amount" type="number" value="{{item.amount}}" readonly>
+  <label>text:</label><input  name="item_text" type="text"  value ="{{item.text}}"readonly>
+    <label>assignment:</label><input  name="item_assignment" type="text" value="{{item.assignment}}" readonly>
+         <a href="../delete_asset/{{item.id}}" > <button type="button" name="delete_asset_button">delete</button></a>
+        <br>
+        {% endfor %}
+
+
+
+
+
+</div>
+
+
+</div>
+    {% for asset in item.item_asset.all%}
+    {% empty %}
+  <a href="../to_asset_create/{{item.id}}" > <button type="button" name="add_asset_button">Add Assets</button></a>
+
+    {% endfor %}
+</form>
+
+{#{% endblock %}#}

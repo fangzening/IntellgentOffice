@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+	{% load static %}
+<title>Login - Smart Office | Foxconn</title>
+
+<link href="{% static 'office_app/css/login css/login_beauty.css'%}" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+	<div class="body"></div>
+		<div class="fox"></div>
+		<div class="header">
+			<div>Smart<span>Office</span></div>
+		</div>
+		<br>
+		<div class="login">
+			<form method="post"> <!--changed form a bit so you can log in--->
+				{% csrf_token %}
+  				{{ form.as_p }}
+				<button type="submit"> Login </button>
+			</form>
+		</div>
+</body>
+</html>

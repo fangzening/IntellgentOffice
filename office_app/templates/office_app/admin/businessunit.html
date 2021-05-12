@@ -1,0 +1,380 @@
+
+{% include 'office_app/admin/includes/start.html' %}
+<main>
+    <div class="container-fluid">
+        <h2 class="mt-4">Business Unit</h2>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item" onclick="$('#collapseGeneral').show();"><a href="#">General</a></li>
+            <li class="breadcrumb-item active">Business Unit</li>
+        </ol>
+        <div class="card mb-4">
+            <div class="card-header"><i class="fas fa-table mr-1"></i>List of Business Unit</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>Business Unit</th>
+                            <th>Business Group</th>
+{#                            <th>Plant Code</th>#}
+                            <th>BU Buyer</th>
+                            <th>Cost Manager</th>
+                            <th>Manager</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <form id="add_costcenter_form">
+            <div class="card mb-4">
+                <div class="card-header"><i class="fas fa-plus-square mr-1"></i>Add Business Unit</div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="buname">Business Unit Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input class="form-control" type="text" name="buname" maxlength="50" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="businessgroup">Business Group</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-control selectpicker" data-size="10" name="businessgroup" data-live-search="true" required>
+                                    <option value="" selected disabled></option>
+                                    {% for businessgroup in businessgroups %}
+                                        <option value="{{ businessgroup.name }}">{{ businessgroup.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="manager">Manager</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-control selectpicker" data-size="10" name="manager" data-live-search="true" required>
+                                    <option value="" selected disabled></option>
+                                    {% for employee in employees %}
+                                        <option value="{{ employee.associateID }}">{{ employee.full_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="costmanager">Cost Manager</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-control selectpicker" data-size="10" name="costmanager" data-live-search="true" required>
+                                    <option value="" selected disabled></option>
+                                    {% for employee in employees %}
+                                        <option value="{{ employee.associateID }}">{{ employee.full_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label" for="bubuyer">BU Buyer</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-control selectpicker required" data-size="10" name="bubuyer" data-live-search="true" required>
+                                    <option value="" selected disabled></option>
+                                    {% for employee in employees %}
+                                        <option value="{{ employee.associateID }}">{{ employee.full_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+{#                    <div class="form-row">#}
+{#                        <div class="col-md-3">#}
+{#                            <div class="form-group">#}
+{#                                <label class="form-label" for="plantcode">Plant Code</label>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="col-md-4">#}
+{#                            <div class="form-group">#}
+{#                                <input class="form-control" type="text" name="plantcode" maxlength="20" required>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+                    <p>
+                    <div class="form-row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" id="add_btn">Add Business Unit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+{% include 'office_app/admin/includes/body_footer.html' %}
+<!-- custom javascript function will go here -->
+<!-- Written by Zaawar Ejaz -->
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            ajax: {
+                url: "{% url 'businessunit_api' %}",
+                dataSrc: 'businessunits',
+                error: function (err) {
+                    swal.fire({
+                        text: "Error getting data. Please contact IT Administrator",
+                        icon: "error"
+                    });
+                }
+            },
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                    type: 'none',
+                    target: ''
+                }
+            },
+            order: [0, 'asc'],
+            columns: [
+                { data: 'businessUnit' },
+                { data: 'businessGroup' },
+                {#{ data: 'plantCode' },#}
+                { data: 'buBuyer' },
+                { data: 'costManager' },
+                { data: 'managedBy' },
+                {
+                    "render": function (data, type, row) {
+                        return "<i class='fas fa-edit text-secondary mr-2' title='Edit' onclick='edit_businessunit(\"" + row.businessUnit + "\")' style='cursor: pointer'></i>" +
+                                "<i class='fas fa-minus-circle fa-1x text-danger mr-2' title='Delete' onclick='delete_businessunit(\"" + row.businessUnit + "\")' style='cursor: pointer'></i>";
+
+                    }
+                }
+            ]
+        });
+    });
+
+    function edit_businessunit(businessunit) {
+        $.ajax({
+            url: "{% url 'businessunit_api' %}",
+            type: "GET",
+            beforeSend: function (xhr) {
+                Swal.fire({
+                    text: "Working...",
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                });
+            },
+            success: function (response) {
+                let [bg_options, cm_options, manager_options, plant_code, buyer_options] = "";
+
+                $.each(response['businessunits'], function( index, bu ) {
+                    if(bu.businessUnit === businessunit) {
+
+                        $.each(response['businessgroups'], function (index, bg) {
+                            let selected = "";
+                            if (bg.name === bu.businessGroup)
+                                selected = "selected";
+
+                            bg_options += '<option ' + selected + ' value="' + bg.name + '">' + bg.name + '</option>'
+                        });
+
+                        $.each(response['employees'], function (index, employee) {
+                            let [cm_selected, manager_selected, buyer_selected] = "";
+                            if (employee.name === bu.managedBy) manager_selected = "selected";
+                            if (employee.name === bu.costManager) cm_selected = "selected";
+                            if (employee.name === bu.buBuyer) buyer_selected = "selected";
+
+                            cm_options += '<option ' + cm_selected + ' value="' + employee.associate_id + '">' + employee.name + '</option>';
+                            manager_options += '<option ' + manager_selected + ' value="' + employee.associate_id + '">' + employee.name + '</option>';
+                            buyer_options += '<option ' + buyer_selected + ' value="' + employee.associate_id + '">' + employee.name + '</option>';
+                        });
+
+                        {#plant_code = bu.plantCode;#}
+
+                        return false;
+                    }
+                });
+                html =  '<hr><input type=hidden name="buname" value="' + businessunit + '">' +
+                    '<div class="form-inline mb-2">' +
+                        '<label class="form-label col-md-4">Business Unit</label>' +
+                        '<input class="form-control col-md-8" value="'+ businessunit +'" disabled>' +
+                    '</div>' +
+                    '<div class="form-inline mb-2">' +
+                        '<label class="form-label col-md-4">Business Group</label>' +
+                        '<select class="form-control col-md-8" name="businessgroup" required>' +
+                        bg_options +
+                        '</select>' +
+                    '</div>' +
+                    '<div class="form-inline mb-2">' +
+                        '<label class="form-label col-md-4">BU Buyer</label>' +
+                        '<select class="form-control col-md-8" name="bubuyer" required>' +
+                        buyer_options +
+                        '</select>' +
+                    '</div>' +
+                    '<div class="form-inline mb-2">' +
+                        '<label class="form-label col-md-4">Cost Manager</label>' +
+                        '<select class="form-control col-md-8" name="costmanager" required>' +
+                        cm_options +
+                        '</select>' +
+                    '</div>' +
+                    '<div class="form-inline mb-2">' +
+                        '<label class="form-label col-md-4">Manager</label>' +
+                        '<select class="form-control col-md-8" name="manager" required>' +
+                        manager_options +
+                        '</select>' +
+                    '</div>' ;
+                    {#'<div class="form-inline mb-2">' +#}
+                    {#    '<label class="form-label col-md-4">Plant Code</label>' +#}
+                    {#    '<input class="form-control col-md-8" name="plantcode" value="'+ plant_code +'" required/>' +#}
+                    {#'</div>';#}
+
+                Swal.fire({
+                    title: 'Edit Business Unit',
+                    html: '<form id="edit_form">' + html + '</form>',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: "Submit",
+                    focusConfirm: false,
+                    preConfirm: () => {
+                        let form = $('#edit_form');
+                        validate_and_collect_form_data(form, 'PUT')
+                    }
+                });
+                $('.edit-toggle').bootstrapToggle();
+            },
+            error: function (err) {
+                Swal.fire({
+                    text: err.responseText,
+                    icon: 'error'
+                })
+            }
+        });
+    }
+
+    function delete_businessunit(businessunit) {
+        Swal.fire({
+            text: "Are you sure you want to delete?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.value) {
+                Swal.fire({
+                    text: 'Working...',
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                });
+                $.ajax({
+                    url: "{% url 'businessunit_api' %}?" + $.param({businessunit: businessunit}),
+                    type: "DELETE",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    },
+                    success: function (response) {
+                        Swal.fire({
+                            text: response,
+                            icon: 'success'
+                        });
+                        $('#dataTable').DataTable().ajax.reload(null, false);
+                    },
+                    error: function (err) {
+                        Swal.fire({
+                            text: err.responseText,
+                            icon: 'error'
+                        })
+                    }
+                });
+            }
+        });
+    }
+
+    function add_businessunit(data, request_type) {
+        $.ajax({
+            url: "{% url 'businessunit_api' %}?" + $.param({data: JSON.stringify(data)}),
+            type: request_type,
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                data: JSON.stringify(data)
+            },
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                Swal.fire({
+                    text: 'Working...',
+                    icon: 'info',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
+                })
+            },
+            success: function (response) {
+                Swal.fire({
+                    text: response,
+                    icon: 'success'
+                });
+                $('#dataTable').DataTable().ajax.reload(null, false);
+            },
+            error: function (err, msg) {
+                Swal.fire({
+                    text: err.responseText,
+                    icon: 'error'
+                })
+            }
+        })
+    }
+
+    function validate_and_collect_form_data(form, request_type) {
+        if ( validateForm(form) ) {
+            var data = {};
+            form.find(':input').each(function(){
+                if ( $(this).is(':checkbox') )
+                    data[$(this).prop('name')] = $(this).prop('checked');
+                else
+                    data[$(this).prop('name')] = $(this).val();
+            });
+            add_businessunit(data, request_type);
+        }
+    }
+
+    $('#add_btn').click(function () {
+        let form = $('#add_costcenter_form');
+        validate_and_collect_form_data(form, 'POST')
+    });
+
+</script>
+<!--------------------------------------------->
+
+{% include 'office_app/admin/includes/end.html' %}

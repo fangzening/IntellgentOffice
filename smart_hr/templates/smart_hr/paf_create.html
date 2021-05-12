@@ -1,0 +1,551 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>PAF Generator &mdash; Foxconn Smart Office</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Foxconn PAF Generator" />
+    <meta name="author" content="Josua Ataansuyi" />
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/animate.css' %}">
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/icomoon.css' %}">
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/bootstrap.css' %}">
+    <!-- Flexslider  -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/flexslider.css' %}">
+    <!-- Theme style  -->
+    <link rel="stylesheet" href="{% static 'smart_hr/css/style.css' %}">
+    <!-- Fonts Awesome-->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <!-- Toastr notification -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+    <!-- Select 2 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/css/select2.min.css" rel="stylesheet" />
+    <!-- Jquery UI -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <style>
+        .ui-autocomplete {
+            max-height: 200px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            overflow-x: hidden;
+            /* add padding to account for vertical scrollbar */
+            padding-right: 20px;
+        }
+        .loading {
+            background: transparent url("{% static 'smart_hr/images/loading.gif' %}") center no-repeat;
+            background-size: 25px 25px;
+        }
+        .required {
+            color: indianred;
+        }
+    </style>
+
+</head>
+<body>
+<div id="smart_hr_page">
+    <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"><i></i></a>
+    <aside id="fh5co-aside" role="complementary" class="border js-fullheight">
+        <h5 class="text-center">Welcome, {{ request.session.full_name }}</h5>
+        <h1 id="fh5co-logo">PAF Generator (Foxconn)</h1>
+        <nav id="fh5co-main-menu" role="navigation">
+            <ul>
+                <li><a href="{% url 'smart_office_dashboard' %}">Smart Office</a></li>
+                <li class="fh5co-active"><a href="{% url 'paf_create' %}">Create New PAF</a></li>
+                <li><a href="{% url 'paf_list' %}">List ALL PAF</a></li>
+            </ul>
+        </nav>
+
+        <div class="fh5co-footer">
+            <p><small><span> © {% now "Y" %} Foxconn IT Software Development </span> </small></p>
+
+        </div>
+
+
+    </aside>
+
+    <div id="fh5co-main">
+        <div class="fh5co-narrow-content animate-box" data-animate-effect="fadeInLeft">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Personnel Action Form</h2>
+                </div>
+            </div>
+        </div>
+        <form id="form" method="post" action="" enctype="multipart/form-data">{% csrf_token %}
+            <div class="col-md-6">
+                <label for="personnel_actions" class="control-label col-lg-12">Personnel Actions <b class="required">*</b></label>
+                <div class="form-group">
+                    <select class="form-control" placeholder="Personnel Actions" id="personnel_actions" name="personnel_actions" required >
+                        <option disabled selected style="font-weight:bold; font-style: oblique" value="{{ None }}">Select Action...</option>
+                        <option {% if form.personnel_actions == "New Hire" %} selected="selected" {% elif PAF.actionType == "New Hire" %}selected="selected"{% endif %}>New Hire</option>
+                        <option {% if form.personnel_actions == "Transfer" %}selected="selected" {% elif PAF.actionType == "Transfer" %}selected="selected"{% endif %}>Transfer</option>
+                        <option {% if form.personnel_actions == "Salary Change" %}selected="selected" {% elif PAF.actionType == "Salary Change" %}selected="selected"{% endif %}>Salary Change</option>
+                        <option {% if form.personnel_actions == "Position/Department Change" %}selected="selected" {% elif PAF.actionType == "Position/Department Change" %}selected="selected"{% endif %}>Position/Department Change</option>
+                        <option {% if form.personnel_actions == "Termination" %}selected="selected" {% elif PAF.actionType == "Termination" %}selected="selected"{% endif %}>Termination</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="employment_status" class="control-label col-lg-6">Employment Status <b class="required">*</b></label>
+                <div class="form-group">
+                    <select class="form-control" placeholder="Employment Status" id="employment_type" name="employment_type" required>
+                        <option disabled selected style="font-weight:bold; font-style: oblique" value="{{ None }}">Select Status...</option>
+                        <option {% if form.employment_type == 'Exempt/Salaried' %}selected="selected" {% elif PAF.employmentType == 'Exempt/Salaried' %}selected="selected"{% endif %}>Exempt/Salaried </option>
+                        <option {% if form.employment_type == 'Non-Excempt/Hourly' %}selected="selected" {% elif PAF.employmentType == 'Non-Excempt/Hourly' %}selected="selected"{% endif %}>Non-Excempt/Hourly</option>
+                        <option {% if form.employment_type == 'Full-Time' %}selected="selected" {% elif PAF.employmentType == 'Full-Time' %}selected="selected"{% endif %}>Full-Time</option>
+                        <option {% if form.employment_type == 'Part-Time' %}selected="selected" {% elif PAF.employmentType == 'Part-Time' %}selected="selected"{% endif %}>Part-Time</option>
+                        <option {% if form.employment_type == 'Temporary' %}selected="selected" {% elif PAF.employmentType == 'Temporary' %}selected="selected"{% endif %}>Temporary</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="business_unit" class="control-label col-lg-6">Business Unit/Company Name <b class="required">*</b></label>
+                <div class="form-group">
+                    <input type="text" class="form-control business_unit" placeholder="Business Unit" name="business_unit" id="business_unit" value="{{ form.business_unit }}" required>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="department" class="control-label col-lg-6">Department <b class="required">*</b></label>
+                <div class="form-group">
+                    <input type="text" class="form-control department" placeholder="Department" id="department" name="department" value="{{ form.department }}" required>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <label for="employee_name" class="control-label col-lg-12">Employee Name <b class="required">*</b></label>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input maxlength="20" type="text" class="form-control" placeholder="Employee First Name" id="employee_fname" name="employee_fname"  value="{{ form.employee_fname }}" required >
+                </div>
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="form-group">
+                    <input maxlength="20" type="text" class="form-control" placeholder="Employee Middle Name (optional)" id="employee_mname" name="employee_mname" value="{{ form.employee_mname }}" >
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input maxlength="20" type="text" class="form-control" placeholder="Employee Last Name" id="employee_lname" name="employee_lname" value="{{ form.employee_lname }}" required>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="phone_number" class="control-label col-lg-6">Other Name</label>
+                <div class="form-group">
+                    <input maxlength="20" type="text" class="form-control" placeholder="Other Name (Optional)" id="employee_oname" name="employee_oname" value="{{ form.employee_oname }}" >
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="phone_number" class="control-label col-lg-6">Phone Number <b class="required">*</b></label>
+                <div class="form-group">
+                    <input maxlength="20" type="text" class="form-control" placeholder="Phone Number" id="phone_number" name="phone_number" value="{{ form.phone_number }}" required>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="email" class="control-label col-lg-6">E-mail Address <b class="required">*</b></label>
+                <div class="form-group">
+                    <input maxlength="50" type="email" class="form-control" placeholder="E-Mail Address" id="email" name="email" value="{{ form.email }}"  required>
+                </div>
+            </div>
+
+
+            <div class="col-md-6">
+                <label for="address" class="control-label col-lg-6">Address <b class="required">*</b></label>
+                <div class="form-group">
+                    <input maxlength="250" name="address" id="address" class="form-control" placeholder="Address" value="{{ form.address }}" required>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="position" class="control-label col-lg-6">Position <b class="required">*</b></label>
+                <div class="form-group">
+                    <input maxlength="50" type="text" class="form-control position" placeholder="Position" id="position" name="position" value="{{ form.position }}" required >
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="date_of_hire" class="control-label col-lg-6">Date Of Hire <b class="required">*</b></label>
+                <div class="form-group">
+                    <input type="date"  id="date_of_hire" name="date_of_hire" class="form-control" value="{{ form.date_of_hire }}" required >
+                </div>
+            </div>
+
+            <br>
+
+            <div class="fh5co-narrow-content animate-box" data-animate-effect="fadeInLeft">
+                <div class="col-md-12">
+                    <h2>Starting Salary/ Salary Adjustment / Position Changes</h2>
+                </div>
+            </div>
+            <div class="col-lg-12">
+
+                <table class="table" id="salary_table" class="col-lg-12">
+                    <thead>
+                    <tr>
+                        <th>      </th>
+                        <th>From ($)</th>
+                        <th>To ($)</th>
+                        <th>Change Code</th>
+                        <th>Change % </th>
+                        <th>Effective Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr id ="salary">
+                        <td>Salary</td>
+                        <td colspan="1"><input  maxlength="10" type="number" class="form-control" id="from_salary" name="from_salary" placeholder="$" {% if form.from_salary %} value="{{ form.from_salary }}" {% endif %} ></td>
+                        <td><input maxlength="10" type="number" class="form-control" id="to_salary" name="to_salary" placeholder="$" {% if form.to_salary %} value="{{ form.to_salary }}" {% endif %}></td>
+                        <td><input type="text" maxlength="1" class="form-control" placeholder="Code" id="change_code" name="change_code" {% if form.change_code %} value="{{ form.change_code }}" {% endif %}></td>
+                        <td><input maxlength="10" type="text" class="form-control" id="change" name="change" {% if form.change %} value="{{ form.change }}" {% endif %}></td>
+                        <td><input type="date" class="form-control" id="effective_date" name="effective_date" {% if form.effective_date %} value="{{ form.effective_date }}" {% endif %}></td>
+                    </tr>
+                    <tr id ="salary1">
+                        <td>Previous - 1 Salary</td>
+                        <td colspan="1"><input maxlength="10" type="number" class="form-control" id="from_salary1" name="from_salary1" placeholder="$" {% if form.from_salary1 %} value="{{ form.from_salary1 }}" {% endif %}></td>
+                        <td><input maxlength="10" type="number" class="form-control" id="to_salary1" name="to_salary1" placeholder="$" {% if form.to_salary1 %} value="{{ form.to_salary1 }}" {% endif %}></td>
+                        <td><input type="text" maxlength="1" class="form-control" placeholder="Code" id="change_code1" name="change_code1" {% if form.change_code1 %} value="{{ form.change_code1 }}" {% endif %}></td>
+                        <td><input maxlength="10" type="text" class="form-control" id="change1" name="change1" {% if form.change1 %} value="{{ form.change1 }}" {% endif %} ></td>
+                        <td><input type="date" class="form-control" id="effective_date1" name="effective_date1" {% if form.effective_date1 %} value="{{ form.effective_date1 }}" {% endif %} ></td>
+                    </tr>
+                    <tr id ="salary2">
+                        <td>Previous - 2 Salary</td>
+                        <td colspan="1"><input maxlength="10" type="number" class="form-control" id="from_salary2" name="from_salary2" placeholder="$" {% if form.from_salary2 %} value="{{ form.from_salary2 }}" {% endif %}></td>
+                        <td><input maxlength="10" type="number" class="form-control" id="to_salary2" name="to_salary2" placeholder="$" {% if form.to_salary2 %} value="{{ form.to_salary2 }}" {% endif %}></td>
+                        <td><input type="text" maxlength="1" class="form-control" placeholder="Code" id="change_code2" name="change_code2" {% if form.change_code2 %} value="{{ form.change_code2 }}" {% endif %}></td>
+                        <td><input maxlength="10" type="text" class="form-control" id="change2" name="change2" {% if form.change2 %} value="{{ form.change2 }}" {% endif %}></td>
+                        <td><input type="date" class="form-control" id="effective_date2" name="effective_date2" {% if form.effective_date2 %} value="{{ form.effective_date2 }}" {% endif %}></td>
+                    </tr>
+                    <tr id="position_to">
+                        <td>Position</td>
+                        <td colspan=""><input maxlength="50" type="text" class="form-control position" name="position_from"  id="position_from" placeholder="Position From" {% if form.position_from %} value="{{ form.position_from }}" {% elif PAF.position_from %} value="{{ PAF.position_from }}"{% endif %}></td>
+                        <td colspan=""><input maxlength="50" type="text" class="form-control position" name="position_to"  id="position_to" placeholder="Position To" {% if form.position_to %} value="{{ form.position_to }}" {% elif PAF.position_to %} value="{{ PAF.position_to }}"{% endif %}></td>
+                        <td><input type="text" maxlength="1" class="form-control" placeholder="Code" id="position_chcode" name="position_chcode" {% if form.position_chcode %} value="{{ form.position_chcode }}" {% endif %}></td>
+                        <td colspan=""></td>
+                        <td><input type="date" class="form-control position" id="position_effectivedate" name="position_effectivedate" {% if form.position_effectivedate %} value="{{ form.position_effectivedate }}" {% endif %}></td>
+                    </tr>
+                    <tr id="department">
+                        <td>Department</td>
+                        <td colspan="">
+                            <input type="text" class="form-control department" name="department_from" id="department_from" placeholder="Enter Department">
+                        </td>
+                        <td colspan="">
+                            <input type="text" class="form-control department" name="department_to" id="department_to" placeholder="Enter Department">
+                        </td>
+                        <td><input type="text" maxlength="1" class="form-control" placeholder="Code" id="department_chcode" name="department_chcode" {% if form.department_chcode %} value="{{ form.department_chcode }}" {% endif %}></td>
+                        <td colspan=""></td>
+                        <td><input type="date" class="form-control" id="department_effectivedate" name="department_effectivedate" {% if form.department_effectivedate %} value="{{ form.department_effectivedate }}" {% endif %}></td>
+                    </tr>
+                    <tr>
+                        <td>Report To</td>
+                        <td colspan="" >
+                            <input type="text" class="form-control approver" name ="reportsTo_from"  id="reportsTo_from" placeholder="Report To">
+                        </td>
+                        <td colspan="" >
+                            <input type="text" class="form-control approver" name ="reportsTo_to"  id="reportsTo_to" placeholder="Report To">
+                        </td>
+                        <td><input type="text" maxlength="1" class="form-control" placeholder="Code" id="reportsTo_chcode" name="reportsTo_chcode" {% if form.reportsTo_chcode %} value="{{ form.reportsTo_chcode }}" {% endif %}></td>
+                        <td colspan="">
+                        <td><input type="date" class="form-control" id="reportsTo_effectivedate" name="reportsTo_effectivedate" {% if form.reportsTo_effectivedate %} value="{{ form.reportsTo_effectivedate }}" {% endif %} ></td>
+                    </tr>
+
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td>
+                            <b>Change Code:</b>
+                        </td>
+                        <td colspan="8">
+                            N = New Hire | P = Promotion | D = Demotion | T = Transfer | R = Job Reclassification | A = Annual Review | O = Organisation | X = Termination | S = Special
+                        </td>
+
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="col-md-12">
+                <label for="comments" class="control-label col-lg-6">Comments</label>
+                <div class="form-group">
+                    <textarea maxlength="500" name="comments" id="comments" cols="30" rows="7" class="form-control" placeholder="Comments (If the code is Special, give reasons.)"> {% if form.comments %} {{ form.comments }} {% elif PAF.comments %} {{ PAF.comments }}{% endif %}</textarea>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="relocation_package" class="control-label col-lg-8">Relocation Package <em> (If yes, attach relocation details)</em></label>
+                <div class="form-group">
+                    <select class="form-control" id="relocation_package" name="relocation_package" required>
+                        <option disabled selected style="font-weight:bold" value="">Select</option>
+                        <option onclick="$('#amount').prop('required', true); $('#amount_div').show(); " value="yes" {% if form.relocation_package == "yes" %} selected {% endif %}>Yes</option>
+                        <option onclick="$('#amount').prop('required', false); $('#amount_div').hide(); " value="no" {% if form.relocation_package == "no" %} selected {% endif %}>No</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6" id="amount_div" hidden>
+                <label for="relocation_package" class="control-label col-lg-8">Package Amount</label>
+                <div class="form-group">
+                    <input class="form-control" id="amount" type="text" name="package_amount" value="{{ form.package_amount }}" >
+                </div>
+            </div>
+
+            <div class="fh5co-narrow-content animate-box" data-animate-effect="fadeInLeft">
+                <div class="col-md-12">
+                    <h2>Hiring Authorization</h2>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="approved1_name" class="control-label col-lg-8">Approver Name: (1st)</label>
+                <div class="form-group">
+                    <input maxlength="50" type="text" class="form-control" placeholder="" id="approved1_name" name="approved1_name" value="{{ request.session.full_name }}" readonly >
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="approved2_name" class="control-label col-lg-8">Approver Name: (2nd)</label>
+                <div class="form-group">
+                    <input maxlength="50" type="text" class="form-control approver" placeholder="" id="approved2_name" name="approved2_name" value="{{ form.approved2_name }}">
+                    <input type="hidden" placeholder="" id="approved2_id" name="approved2_id" value="{{ form.approved2_id }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="approved3_name" class="control-label col-lg-8">Approver Name: (3rd)</label>
+                <div class="form-group">
+                    <input maxlength="50" type="text" class="form-control approver" placeholder="" id="approved3_name" name="approved3_name" {% if form.approved3_name %} value="{{ form.approved3_name }}" {% endif %}>
+                    <input type="hidden" placeholder="" id="approved3_id" name="approved3_id" value="{{ form.approved3_id }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="approved4_name" class="control-label col-lg-8">Approver Name: (4th)</label>
+                <div class="form-group">
+                    <input maxlength="50" type="text" class="form-control approver" placeholder="" id="approved4_name" name="approved4_name" {% if form.approved4_name %} value="{{ form.approved4_name }}" {% endif %}>
+                    <input type="hidden" placeholder="" id="approved4_id" name="approved4_id" value="{{ form.approved4_id }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="approved5_name" class="control-label col-lg-8">Approver Name: (5th)</label>
+                <div class="form-group">
+                    <input maxlength="50" type="text" class="form-control approver" placeholder="" id="approved5_name" name="approved5_name" value="{{ form.approved5_name }}">
+                    <input type="hidden" placeholder="" id="approved5_id" name="approved5_id" value="{{ form.approved5_id }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="approved6_name" class="control-label col-lg-8">Acknowledger Name: <em>Human Resources</em> </label>
+                <div class="form-group">
+                    <input maxlength="50" type="text" class="form-control approver_hr" placeholder="" id="approved6_name" name="approved6_name" value="{{ form.approved6_name }}">
+                    <input type="hidden" placeholder="" id="approved6_id" name="approved6_id" value="{{ form.approved6_id }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary btn-md" id="submit" name='button' value="Submit">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="{% static 'smart_hr/js1/jquery.min.js' %}"></script>
+<!-- jQuery Easing -->
+<script src="{% static 'smart_hr/js1/jquery.easing.1.3.js' %}"></script>
+<!-- Bootstrap -->
+<script src="{% static 'smart_hr/js1/bootstrap.min.js' %}"></script>
+<!-- Waypoints -->
+<script src="{% static 'smart_hr/js1/jquery.waypoints.min.js' %}"></script>
+<!-- Flexslider -->
+<script src="{% static 'smart_hr/js1/jquery.flexslider-min.js' %}"></script>
+<!-- Google Map -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCefOgb1ZWqYtj7raVSmN4PL2WkTrc-KyA&sensor=false"></script>
+<script src="{% static 'smart_hr/js1/google_map.js' %}"></script>
+<!-- Toastr notification -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<!-- Select 2 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/js/select2.full.min.js"></script>
+<!-- MAIN JS -->
+<script src="{% static 'smart_hr/js1/main.js' %}"></script>
+<!-- JqueryUI JS -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- Modernizr JS -->
+<script src="{% static 'smart_hr/js1/modernizr-2.6.2.min.js' %}"></script>
+<!-- Bootbox -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+<!-- Jquery Cookie -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<!-- FOR IE9 below -->
+<!--[if lt IE 9]>
+<script src="{% static 'smart_hr/js/respond.min.js' %}"></script>
+<![endif]-->
+
+<!-- Written by Zaawar Ejaz -->
+<script>
+    {# Toaster Notification #}
+    $(function() {
+        toastr.options = {
+            "positionClass": "toast-bottom-right",
+            "timeOut": 10000,
+            "preventDuplicates": true,
+            "newestOnTop": true,
+        };
+
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    });
+
+    {#  Autocomplete #}
+
+      {#  Autocomplete #}
+    $.ui.autocomplete.prototype._renderItem = function (ul, item) {
+    var t = String(item.label).replace(
+            new RegExp(this.term, "gi"),
+            "<strong>$&</strong>");
+    return $("<li></li>")
+        .data("item.autocomplete", item)
+        .append("<div>" + t + "</div>")
+        .appendTo(ul);
+    };
+
+    $('.business_unit').autocomplete({
+        minLength: 0,
+        source: {{ units | safe }},
+        change: function(event,ui){
+            if(!ui.item) {
+                bootbox.alert({
+                    message: "You must select from the list.",
+                    closeButton: false,
+                    size: 'small'
+                });
+                $(this).val("");
+            }
+        }
+    });
+
+    $('.department').autocomplete({
+        minLength: 0,
+        source: {{ departments | safe }},
+        change: function(event,ui){
+            if(!ui.item) {
+                bootbox.alert({
+                    message: "You must select from the list.",
+                    closeButton: false,
+                    size: 'small'
+                });
+                $(this).val("");
+            }
+        }
+    });
+
+    $('.position').autocomplete({
+        minLength: 0,
+        source: {{ positions | safe }}
+    });
+
+    $('.approver').autocomplete({
+        minLength: 0,
+        source: {{ approvers | safe }},
+        change: function(event,ui){
+            if(!ui.item) {
+                bootbox.alert({
+                    message: "You must select from the list.",
+                    closeButton: false,
+                    size: 'small'
+                });
+                $(this).val("");
+            }
+        }
+    });
+
+    $('.approver_hr').autocomplete({
+        minLength: 0,
+        source: {{ hr | safe }},
+        change: function(event,ui){
+            if(!ui.item) {
+                bootbox.alert({
+                    message: "You must select from the list.",
+                    closeButton: false,
+                    size: 'small'
+                });
+                $(this).val("");
+            }
+        }
+    });
+
+    {# Salary Change Calculate #}
+    $('#from_salary, #to_salary').keyup(function(){
+        to = parseInt($("#to_salary").val());
+        from = parseInt($("#from_salary").val());
+        change = ((to - from) / from) * 100;
+        $("#change").val(change.toFixed(2));
+    });
+
+    $('#from_salary1, #to_salary1').keyup(function(){
+        to = parseInt($("#to_salary1").val());
+        from = parseInt($("#from_salary1").val());
+        change = ((to - from) / from) * 100;
+        $("#change1").val(change.toFixed(2));
+    });
+
+    $('#from_salary2, #to_salary2').keyup(function(){
+        to = parseInt($("#to_salary2").val());
+        from = parseInt($("#from_salary2").val());
+        change = ((to - from) / from) * 100;
+        $("#change2").val(change.toFixed(2));
+    });
+
+    $('.business_unit, .department, .position, .manager, .approver').keydown(function(){
+        $(this).addClass('loading')
+    }).keyup(function(){
+        $(this).removeClass('loading')
+    }).focusout(function () {
+        $(this).removeClass('loading')
+    });
+
+    {# Load box when form is submitted #}
+    $('#form').submit(function() {
+        var dialog = bootbox.dialog({
+            title: '<p><i class="fa fa-spin fa-spinner"></i> Generating PDF file, Please wait..</p>',
+            message: 'Do not close this page. The file will be available for download shortly.',
+            closeButton: false
+        });
+
+        dialog.init(function() {
+            var interval = setInterval(function() {
+                if ($.cookie("file_received") === "true") {
+                    dialog.find('.modal-content').html(
+                        '<div class="modal-body"><div class="bootbox-body">You file is ready to download !. You will also receive the email with attached PAF.</div></div>' +
+                        '<div class="modal-footer"><button type="button" class="btn btn-secondary btn-default btn-primary" id="create_paf_btn">Create PAF</button>' +
+                        '<button type="button" class="btn btn-secondary btn-default btn-primary" id="list_paf_btn">List PAFs</button></div>');
+                    $('#create_paf_btn').click(function () {
+                        window.location.href = "paf_create"
+                    });
+                    $('#list_paf_btn').click(function () {
+                        window.location.href = "paf_list"
+                    });
+                    $.cookie("file_received", "false", { path: '/' });
+                    clearInterval(interval);
+                }
+            }, 100);
+        });
+    });
+</script>
+</body>
+</html>

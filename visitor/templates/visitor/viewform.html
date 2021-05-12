@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Josua Ataansuyi">
+    <meta name="description" content="Foxconn FII USA Visitor Application Form">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="{% static 'visitor/css.css' %}">
+
+
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+
+
+    <title>FII USA Visitor Form</title>
+</head>
+
+<body>
+
+<div id="menu">
+    <div id="menu-bar" onclick="menuOnClick()">
+        <div id="bar1" class="bar"></div>
+        <div id="bar2" class="bar"></div>
+        <div id="bar3" class="bar"></div>
+    </div>
+    <nav class="nav" id="nav">
+        <ul>
+            <li><a href="{% url 'smart_office_dashboard' %}">Smart Office</a></li>
+            <li><a href="{% url 'visitor_create' %}">Create New Form</a></li>
+            <li><a href="{% url 'visitor_myforms' %}">View My Visitor Form</a></li>
+            <li><a href="{% url 'visitor_approveforms' %}">Approve a Visitor Form</a></li>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
+        </ul>
+    </nav>
+</div>
+
+<div class="menu-bg" id="menu-bg"></div>
+
+<h1 class="title rounded-pill"><img src="{% static 'visitor/img/fii.png' %}" alt="fii"> - USA Visitor Application Form </h1>
+
+<section class="visitor_app">
+    <p class="float-right pr-5">Welcome, {{ user }}</p>
+    <form id="visitor_form" class="visitor_form row surround" method="POST">
+        {% csrf_token %}
+        <div class="col-lg-12">
+            <p class="text-monospace">Personal Information</p>
+            <hr />
+        </div>
+        <div class="form-field col-lg-4 ">
+            <input id="applicant_name" name="applicant_name" value="{{ visitorform.employee.full_name }}" class="input-text js-input" type="text" placeholder="Employee Name" readonly required>
+            <label class="label" for="applicant_name">Applicant Name</label>
+        </div>
+
+        <div class="form-field col-lg-4">
+            <input class="input-text js-input" name="bu_name" id="bu_name" value="{{ visitorform.applyingBU.buName }}">
+            <label class="label" for="bu_name">Applying Business Unit</label>
+        </div>
+        <div class="form-field col-lg-4 ">
+            <input id="submission_date" name="submission_date" value="{{ visitorform.dateSubmitted }}" class="input-text js-input" type="text" required>
+            <label class="label" for="submission_date">Submission Date</label>
+        </div>
+        <div class="form-field col-lg-4 "></div>
+        <div class="form-field col-lg-4 ">
+            <input id="visit_date" name="visit_date" class="input-text js-input" type="text" value="{{ visitorform.visitDate.date }}" required>
+            <label class="label" for="visit_date">Visit Date</label>
+        </div>
+        <div class="col-lg-12">
+            <p class="text-monospace drop">Visitor Information</p>
+            <hr />
+        </div>
+
+
+        <div class="form-field col-lg-8 ">
+            <input id="company" name="company" value="{{ visitorform.company }}" class="input-text js-input" type="text" placeholder="Name of the company or Organization">
+            <label class="label" for="company">Company/ Organization</label>
+        </div>
+        <div class="form-field col-lg-2">
+            <input id="numberof_people" value="{{ visitorform.numberOfPeople }}" name="numberof_people" class="input-text js-input" type="number" placeholder="No. of people">
+            <label class="label" for="numberof_people">No of People</label>
+        </div>
+
+        <div class="form-field col-lg-2 ">
+            <input id="nda" name="nda" type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="YES" data-off="NO" {% if visitorform.nda %} checked {% endif %}>
+            <label class="label" for="nda">NDA </label>
+        </div>
+
+        <div class="form-field col-lg-12">
+            <input id="company_description" name="company_description" value="{{ visitorform.companyDescription }}" class="input-text js-input" type="text" placeholder="Please briefly describe">
+            <label class="label" for="company_description">Company/ Organization Description</label>
+        </div>
+
+
+        <div class="form-field col-lg-12">
+            <table id="visitor" class="table">
+
+                <thead class="thead-dark">
+
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Job Title</th>
+                    <th scope="col">Sex(M/F)</th>
+                    <th scope="col">Job Role</th>
+                    <th scope="col">Visiting History</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for detail in visitordetails %}
+                <tr>
+                    <td><input id="visitor_name_" name="visitor_name" value="{{ detail.visitorName }}" class="input-text js-input" type="text" placeholder="Visitor's Name"></td>
+                    <td><input id="job_title_" name="job_title" value="{{ detail.jobTitle }}" class="input-text js-input" type="text" placeholder="Job Title"></td>
+                    <td><input id="sex" name="sex" value="{{ detail.gender }}" class="input-text js-input" type="text" placeholder="M/F"></td>
+                    <td><input id="job_role_" name="job_role" value="{{ detail.jobRole }}" class="input-text js-input" type="text" placeholder="Job Role"></td>
+                    <td><input id="visiting_history_" name="visiting_history" value="{{ detail.visitingHistory }}" class="input-text js-input" type="text" placeholder="Y/N"></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="col-lg-12">
+            <p class="text-monospace drop">Visit Purpose</p>
+            <hr />
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="official_visit" name="visit_type" value="official_visit" class="input-text js-input" type="checkbox" {% if 'official_visit' in visitorform.visitType %} checked {% endif %}>
+            <label class="label" for="official_visit">Official Visit</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="business_visit" name="visit_type" value="business_visit" class="input-text js-input" type="checkbox" {% if 'business_visit' in visitorform.visitType %} checked {% endif %}>
+            <label class="label" for="business_visit">Business Visit</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="event_visit" name="visit_type" value="event_visit" class="input-text js-input" type="checkbox" {% if 'event_visit' in visitorform.visitType %} checked {% endif %}>
+            <label class="label" for="event_visit">Event Visit</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="social_visit" name="visit_type" value="social_visit" class="input-text js-input" type="checkbox" {% if 'social_visit' in visitorform.visitType %} checked {% endif %}>
+            <label class="label" for="company">Social Visit</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="other_visit" class="input-text js-input" type="checkbox">
+            <label class="label" for="company">Other Visit</label>
+        </div>
+
+        <div class="form-field col-lg-2">
+            <input id="other_visit_field" name="visit_type" class="input-text js-input" type="text" placeholder="Please Specify" value="{{ visitorform.visittype_to_array.4 }}" disabled>
+        </div>
+
+        <div class="col-lg-12 " id="objectives">
+            <div class="form-field col-lg-12 ">
+                <input id="objectives_1" name="objectives" class="input-text js-input" type="text" placeholder="1." value="{{ visitorform.objective_to_array.0 }}">
+                <label class="label" for="company">Objectives</label>
+            </div>
+            <div class="form-field col-lg-12">
+                <input id="objectives_2" name="objectives" class="input-text js-input" type="text" placeholder="2." value="{{ visitorform.objective_to_array.1 }}">
+            </div>
+            <div class="form-field col-lg-12">
+                <input id="objectives_3" name="objectives" class="input-text js-input" type="text" placeholder="3." value="{{ visitorform.objective_to_array.2 }}">
+            </div>
+
+        </div>
+        <div class="form-field col-lg-2  ">
+            <label class="label" for="">FII BU :</label>
+        </div>
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline">
+            <input id="l_5" name="fii-bu" value="L5" class="input-text js-input form-check-input" type="checkbox" {% if 'L5' in visitorform.fiiBU %} checked {% endif %}>
+            <label class="label form-check-label" for="official_visit">L5</label>
+        </div>
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline ">
+            <input id="l_6" name="fii-bu" value="L6" class="input-text js-input form-check-input" type="checkbox" {% if 'L6' in visitorform.fiiBU %} checked {% endif %}>
+            <label class="label form-check-label" for="business_visit">L6</label>
+        </div>
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline ">
+            <input id="l_10" name="fii-bu" value="L10" class="input-text js-input form-check-input" type="checkbox" {% if 'L10' in visitorform.fiiBU %} checked {% endif %}>
+            <label class="label form-check-label" for="event_visit">L10</label>
+        </div>
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline">
+            <input id="l_11" name="fii-bu" value="L11" class="input-text js-input form-check-input" type="checkbox" {% if 'L11' in visitorform.fiiBU %} checked {% endif %}>
+            <label class="label form-check-label" for="company">L11</label>
+        </div>
+
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline">
+            <input id="other_bu_check" name="other_bu_check" class="input-text js-input form-check-input" type="checkbox">
+            <label class="label form-check-label" for="company">Other</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="other_bu_field" name="fii-bu" class="input-text js-input" placeholder="Please Specify" type="text" value="{{ visitorform.fiibu_to_array.4 }}" disabled >
+        </div>
+
+        <div class="form-field col-lg-1 form-check-inline form-check form-check-inline ">
+            <input id="other" class="input-text js-input form-check-input" type="checkbox">
+            <label class="label form-check-label" for="company">Other</label>
+        </div>
+
+        <div class="form-field col-lg-2 ">
+            <input id="other_bu_2" name="fii-bu" class="input-text js-input" placeholder="Please Specify" type="text" value="{{ visitorform.fiibu_to_array.5 }}" disabled>
+        </div>
+
+
+        <div class="form-field col-lg-2 ">
+            <label class="label" for="">Location :</label>
+        </div>
+
+        <div class=" form-field col-lg-3 form-check">
+            <input id="mpb" name="location" value="MPB" class="input-text form-check-input js-input" type="checkbox" {% if "MPB" in visitorform.location %} checked {% endif %}>
+            <label class="label form-check-label" for="mpb">M. P. B</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="smc" name="location" value="SMC" class="input-text js-input" type="checkbox" {% if 'SMC' in visitorform.location %} checked {% endif %}>
+            <label class="label" for="smc">S. M. C</label>
+        </div>
+        <div class="form-field col-lg-2 ">
+            <input id="globe" name="location" value="GLOBE" class="input-text js-input" type="checkbox" {% if 'GLOBE' in visitorform.location %} checked {% endif %}>
+            <label class="label" for="globe">GLOBE</label>
+        </div>
+        <div class="form-field col-lg-3 ">
+            <input id="868" name="location" value="868" class="input-text js-input" type="checkbox" {% if '868' in visitorform.location %} checked {% endif %}>
+            <label class="label" for="868">868</label>
+        </div>
+
+        <div class="col-lg-12">
+            <p class="text-monospace drop">Schedule</p>
+            <hr />
+        </div>
+        <div class="form-field col-lg-12 ">
+            <table id="visitor_schedule" class="table table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col" style="width: 500px"> Agenda</th>
+                    <th scope="col" style="width: 200px">Location</th>
+                    <th scope="col">Fii Participants</th>
+                </tr>
+                </thead>
+                {% for schedule in visitorschedule %}
+                <tr id="schedule_0">
+                    <td rowspan="2" width="15%"><input id="schedule_date_1" name="schedule_date" value="{{ schedule.date }}" class="input-text js-input date" type="text" ></td>
+                    <td WIDTH="12%">
+                        <div class="form-field">
+                            <input id="schedule_time_1_from" value="{{ schedule.meeting_time_from }}" name="meeting_time_from" class="input-text js-input time" type="text">
+                            <label class="label2" for="schedule_meeting_1">Time (From) </label>
+                        </div>
+                        <div class="form-field  ">
+                            <input id="schedule_time_1_to" name="meeting_time_to" value="{{ schedule.meeting_time_to }}" class="input-text js-input time" type="text">
+                            <label class="label2" for="schedule_meeting_1">Time (To) </label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field  ">
+                            <input id="schedule_meeting_1" name="meeting_explain_0" class="input-text js-input" type="text" placeholder="Explain" value="{{ schedule.meeting_exp_to_array.0 }}">
+                            <label class="label2" for="schedule_meeting_1">Meeting <input id="meeting_length" name="meeting_length" value="{{ schedule.meeting_length }}" type="number" class="labelinput"> (Mins)</label>
+                        </div>
+
+                        <div class="form-field  ">
+                            <input id="explain_meeting_1" name="meeting_explain_0" class="input-text js-input" type="text" placeholder="Explain" value="{{ schedule.meeting_exp_to_array.1 }}">
+                        </div>
+                        <div class="form-field  ">
+                            <input id="explain_meeting_2" name="meeting_explain_0" class="input-text js-input" type="text" placeholder="Explain" value="{{ schedule.meeting_exp_to_array.2 }}">
+                        </div>
+                        <div class="form-field  ">
+                            <input id="presenter_meeting_1" name="meeting_presenter" value="{{ schedule.meeting_presenter }}" class="input-text js-input" type="text" placeholder="Presenter">
+
+                        </div>
+                        <div class="form-field  ">
+                            <input id="resource_meeting_1"  name="meeting_resources" value="{{ schedule.meeting_resources }}" class="input-text js-input" type="text" placeholder="Resources">
+
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field">
+                            <input id="schedule_location_1"  name="meeting_location" value="{{ schedule.meeting_location }}" class="input-text js-input time" type="text" placeholder="Room No">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field">
+                            <textarea name="meeting_participants" id="meeting_participants" value="{{ schedule.meeting_participants }}" rows="12"  placeholder="List participants"></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr id="tour_0">
+                    <td>
+                        <div class="form-field  ">
+                            <input id="tour_time_from_1" name="tour_time_from" value="{{ schedule.tour_time_from }}" class="input-text js-input time" type="text">
+                            <label class="label2" for="schedule_meeting_1">Time (From) </label>
+                        </div>
+                        <div class="form-field  ">
+                            <input id="tour_time_to_1" name="tour_time_to" value="{{ schedule.tour_time_to }}" class="input-text js-input time" type="text">
+                            <label class="label2" for="schedule_meeting_1">Time (To)</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field  ">
+                            <input id="schedule_tour_1" name="tour_explain_0" class="input-text js-input" type="text" placeholder="Explain" value="{{ schedule.tour_exp_to_array.0 }}">
+                            <label class="label2" for="schedule_meeting_1">Tour <input id="tour_length" name="tour_length" value="{{ schedule.tour_length }}" type="number" class="labelinput"> (Mins)</label>
+                        </div>
+                        <div class="form-field  ">
+                            <input id="explain_tour_1" name="tour_explain_0" class="input-text js-input" type="text" placeholder="Explain" value="{{ schedule.tour_exp_to_array.1 }}">
+                        </div>
+                        <div class="form-field  ">
+                            <input id="explain_tour_2" name="tour_explain_0" class=" input-text js-input" type="text" placeholder="Explain" value="{{ schedule.tour_exp_to_array.2 }}">
+                        </div>
+                        <div class="form-field  ">
+                            <input id="presenter_tour_1" name="tour_presenter" value="{{ schedule.tour_presenter }}" class="input-text js-input" type="text" placeholder="Presenter">
+
+                        </div>
+                        <div class="form-field  ">
+                            <input id="resource_tour_1" name="tour_resources" value="{{ schedule.tour_resources }}" class="input-text js-input" type="text" placeholder="Resources">
+
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field">
+                            <input id="tour_location_1" name="tour_location" value="{{ schedule.tour_location }}" class="input-text js-input time" type="text" placeholder=" Eg. MPB">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-field">
+                            <textarea name="tour_participants" rows="12" value="{{ schedule.tour_participants }}" placeholder="List participants"></textarea>
+                        </div>
+
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-12">
+            <p class="text-monospace drop">Approvers</p>
+            <hr />
+        </div>
+        <div class="col-lg-12">
+            <table id="approvers" class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Stage</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Action</th>
+                    <th scope="col">Action Date</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for approver in approvalprocess %}
+                <tr>
+                    <td>{{ approver.stage }}</td>
+                    <td>{{ approver.approver.full_name }}</td>
+                    <td>{% if approver.actionTaken == None %} Pending {% else %} {{ approver.actionTaken }} {% endif %} </td>
+                    <td>{% if approver.dateActionTaken != None %} {{ approver.dateActionTaken }} {% endif %}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if is_approver_allowed_action and not visitorform.isApproved and not visitorform.isDeclined %}
+        <div class="form-field col-lg-12">
+            <button class="submit-btn float-right ml-3" id="approve_btn" type="button" >Approve Form</button>
+            <button class="submit-btn float-right" id="decline_btn" type="button">Decline Form</button>
+        </div>
+        {% endif %}
+    </form>
+</section>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+<script src="{% static 'visitor/js/visitor_js.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+<script>
+    $('input, checkbox').attr('disabled', 'disabled');
+
+    $('#approve_btn').click(function () {
+        $.ajax({
+                url: "{% url 'visitor_api' %}?action=approveform&formid={{ visitorform.formID }}",
+                type: "PUT",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    Swal.fire({
+                        text: 'Working...',
+                        icon: 'info',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        allowEscapeKey: false,
+                        allowOutsideClick: false
+                    })
+                },
+                success: function (response) {
+                    Swal.fire({
+                        text: response,
+                        icon: 'success'
+                    }).then(function (result) {
+                        window.location.href = "{{ BASE_URL }}/visitor/approve_applications";
+                    });
+
+                },
+                error: function (err, msg) {
+                    Swal.fire({
+                        text: err.responseText,
+                        icon: 'error'
+                    })
+                }
+            })
+    });
+
+    $('#decline_btn').click(function () {
+        $.ajax({
+                url: "{% url 'visitor_api' %}?action=declineform&formid={{ visitorform.formID }}",
+                type: "PUT",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                    Swal.fire({
+                        text: 'Working...',
+                        icon: 'info',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        allowEscapeKey: false,
+                        allowOutsideClick: false
+                    })
+                },
+                success: function (response) {
+                    Swal.fire({
+                        text: response,
+                        icon: 'success'
+                    }).then(function (result) {
+                        window.location.href = "{{ BASE_URL }}/visitor/approve_applications";
+                    });
+
+                },
+                error: function (err, msg) {
+                    Swal.fire({
+                        text: err.responseText,
+                        icon: 'error'
+                    })
+                }
+            })
+    });
+
+    function menuOnClick() {
+        document.getElementById("menu-bar").classList.toggle("change");
+        document.getElementById("nav").classList.toggle("change");
+        document.getElementById("menu-bg").classList.toggle("change-bg");
+    }
+</script>
+
+
+
+</body>
+
+</html>
