@@ -1,4 +1,4 @@
-# Smart Office
+# Intellgent Office
 
 # Objectives
 To design, develop, test, and deploy an OA (office automation) software-
